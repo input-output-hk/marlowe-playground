@@ -6,12 +6,8 @@
 , fixPngOptimization
 , src
 , marlowe-playground
-, marlowe-dashboard
-, run-generated
 , play-generated
 , web-ghc
-, plutus-pab
-, marlowe-pab
 , docs
 , sources
 , vmCompileTests ? false
@@ -30,7 +26,7 @@ pkgs.recurseIntoAttrs {
 
   generated = pkgs.callPackage ./generated.nix {
     src = cleanSrc;
-    inherit run-generated play-generated;
+    inherit play-generated;
   };
 
   pursTidy = pkgs.callPackage ./purs-tidy.nix {
@@ -55,6 +51,6 @@ pkgs.recurseIntoAttrs {
 
   vmTests = pkgs.callPackage ./vm.nix {
     inherit vmCompileTests marlowe-playground
-      marlowe-dashboard web-ghc plutus-pab marlowe-pab docs sources;
+      web-ghc docs sources;
   };
 }
