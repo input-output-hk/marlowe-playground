@@ -1,18 +1,18 @@
-= https://github.com/input-output-hk/marlowe-cardano[Marlowe on the Cardano Blockchain]
+= https://github.com/input-output-hk/marlowe-playground[Marlowe Playground]
 :email: plutus@iohk.io
 :author: Input Output HK Limited
 :toc: left
 :reproducible:
 
-Marlowe is a platform for financial products as smart contracts. Marlowe-Cardano is
-an implementation of Marlowe for the Cardano blockchain, built on top of Plutus.
+Marlowe is a platform for financial products as smart contracts. Marlowe Playground is
+a development tool that helps build and simulate Marlowe Contracts.
 
-This repository contains:
+Related projects:
 
-* The implementation of the Marlowe domain-specific language.
-* Tools for working with Marlowe, including static analysis.
-* A selection of examples using Marlowe, including a number based on the ACTUS financial standard.
-* The Marlowe Playground, a web-based playground for learning and writing Marlowe Applications.
+* https://github.com/input-output-hk/marlowe[Marlowe]: Marlowe language specification
+* https://github.com/input-output-hk/marlowe-cardano[Marlowe Cardano]: Implementation of the Marlowe Language for the Cardano Blockchain. Also haskell lib.
+* https://github.com/input-output-hk/purescript-marlowe[PureScript Marlowe]: PureScript implementation of the Marlowe language for the Cardano Blockchain.
+
 
 [IMPORTANT]
 ====
@@ -33,31 +33,18 @@ If you find yourself building GHC, STOP and fix the cache.
 
 == Documentation
 
-=== User documentation
-
-The main documentation for the whole Plutus ecosystem is located https://plutus.readthedocs.io/en/latest/[here].
-
 == Working with the project
 
 === How to submit an issue
 
-Issues can be filed in the https://github.com/input-output-hk/marlowe-cardano/issues[GitHub Issue tracker].
+Issues can be filed in the https://github.com/input-output-hk/marlowe-playground/issues[GitHub Issue tracker].
 
 However, note that this is pre-release software, so we will not usually be providing support.
 
 [[how-to-develop]]
 === How to develop and contribute to the project
 
-See link:CONTRIBUTING{outfilesuffix}[CONTRIBUTING], which describes our processes in more detail including development environments; and link:ARCHITECTURE{outfilesuffix}[ARCHITECTURE], which describes the structure of the repository.
-
-=== How to depend on the project from another Haskell project
-
-None of our libraries are on Hackage, unfortunately (many of our dependencies aren't either).
-So for the time being, you need to:
-
-. Add `marlowe` as a `source-repository-package` to your `cabal.project`.
-. Copy the `source-repository-package` stanzas from our `cabal.project` to yours.
-. Copy additional stanzas from our `cabal.project` as you need, e.g. you may need some of the `allow-newer` stanzas.
+See link:CONTRIBUTING{outfilesuffix}[CONTRIBUTING], which describes our processes in more detail including development environments.
 
 === How to build the project's artifacts
 
@@ -65,6 +52,7 @@ This section contains information about how to build the project's artifacts for
 For development work see <<how-to-develop>> for more information.
 
 [[prerequisites]]
+
 ==== Prerequisites
 
 The Haskell libraries in the Marlowe project are built with `cabal` and Nix.
@@ -86,7 +74,6 @@ If you use Nix, these tools are provided for you via `shell.nix`, and you do *no
 
 * If you want to build our Haskell packages with https://www.haskell.org/cabal/[`cabal`], then install it.
 * If you want to build our Haskell packages with https://haskellstack.org/[`stack`], then install it.
-* If you want to build our Agda code, then install https://github.com/agda/agda[Agda] and the https://github.com/agda/agda-stdlib[standard library].
 
 [[building-with-nix]]
 ==== How to build the Haskell packages and other artifacts with Nix
@@ -112,10 +99,9 @@ See the link:./cabal.project[cabal project file] to see the other packages that 
 
 === Deployment
 
-Marlowe Run and the Marlowe Playground are automatically deployed upon certain pushes to GitHub
+The Marlowe Playground is automatically deployed upon certain pushes to GitHub
 
 * https://marlowe-playground-staging.plutus.aws.iohkdev.io/[Marlowe Playground staging] and https://marlowe-run-staging.plutus.aws.iohkdev.io/[Marlowe Run staging] are deployed from every commit pushed to `main` (these URLs subject to change)
-* https://play.marlowe-finance.io/[Marlowe Playground production] and https://run.marlowe-finance.io/[Marlowe Run production] are deployed from every commit pushed to `production`
 
 For more details, including instructions for setting up ad hoc testing deployments, see https://github.com/input-output-hk/plutus-ops[the plutus-ops repo].
 
