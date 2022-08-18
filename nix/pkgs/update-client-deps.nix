@@ -41,7 +41,6 @@ lib.meta.addMetaAttrs { platforms = lib.platforms.linux; } (writeShellScriptBinI
     spago2nix
   ] ++ lib.optionals stdenv.isDarwin [ clang ])}
 
-  ${doUpdate "marlowe-dashboard-client" "Marlowe Run"}
   ${doUpdate "marlowe-playground-client" "Marlowe Play"}
   echo Done
 '')
