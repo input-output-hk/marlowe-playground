@@ -11,7 +11,6 @@
 , rPackages
 , z3
 , enableHaskellProfiling
-, actus-tests
 , source-repo-override
 }:
 let
@@ -40,7 +39,6 @@ let
       inherit checkMaterialization compiler-nix-name gitignore-nix;
       inherit enableHaskellProfiling;
       inherit deferPluginErrors;
-      inherit actus-tests;
       inherit source-repo-override;
     };
   project = baseProject { deferPluginErrors = false; };

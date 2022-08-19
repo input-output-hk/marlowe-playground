@@ -58,9 +58,6 @@ rec {
 
   docs = import ./nix/docs.nix { inherit pkgs marlowe; };
 
-  # Test data needed by marlowe-actus provided via niv
-  inherit (sources) actus-tests;
-
   # Packages needed for the bitte deployment
   bitte-packages = import ./bitte {
     inherit marlowe-playground web-ghc docs pkgs sources;
