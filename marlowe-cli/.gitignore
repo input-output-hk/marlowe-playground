@@ -1,5 +1,0 @@
-marlowe.plutus
-private.protocol
-tx-?.*
-tx-?-*.*
-.ipynb_checkpoints/

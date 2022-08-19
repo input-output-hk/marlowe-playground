@@ -81,9 +81,6 @@ pkgs/.stack
 
 # Backend config files
 marlowe-playground-server/playground.yaml
-plutus-playground-server/playground.yaml
-plutus-pab/plutus-pab.yaml
-marlowe-dashboard-server/config.json
 
 # Misc
 .history/
@@ -103,18 +100,9 @@ gh-pages
 *.db-shm
 *.db-wal
 hie.yaml
-node-server.sock*
-node.sock
-**/node?/db
 .pre-commit-config.yaml
 secrets/*/.gpg-id
 ghcid.txt
-plutus-pab/test-node/testnet/db
-plutus-pab/test-node/alonzo-purple/db
 # profiling output files
 *.timelog
 *.stacks
-
-# Arion
-*.tmp-arion-docker*
-treasury

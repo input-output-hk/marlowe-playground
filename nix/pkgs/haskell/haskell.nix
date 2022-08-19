@@ -14,7 +14,6 @@
   # Whether to set the `defer-plugin-errors` flag on those packages that need
   # it. If set to true, we will also build the haddocks for those packages.
 , deferPluginErrors
-, actus-tests
 , source-repo-override
 }:
 let
@@ -67,7 +66,6 @@ let
           marlowe.package.buildable = false; # Would also require libpq
           marlowe-actus.package.buildable = false;
           marlowe-contracts.package.buildable = false;
-          marlowe-cli.package.buildable = false;
           marlowe-dashboard-server.package.buildable = false;
           marlowe-playground-server.package.buildable = false; # Would also require libpq
           marlowe-symbolic.package.buildable = false;
@@ -180,13 +178,6 @@ let
               # Seems to be broken on darwin for some reason
               platforms = lib.platforms.linux;
             };
-
-            # The marlowe-actus tests depend on external data which is
-            # provided from Nix (as niv dependency)
-            marlowe-actus.components.tests.marlowe-actus-test.preCheck = ''
-              export ACTUS_TEST_DATA_DIR=${actus-tests}/tests/
-            '';
-
 
             # Note: The following two statements say that these tests should
             # _only_ run on linux. In actual fact we just don't want them

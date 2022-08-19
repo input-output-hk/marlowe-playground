@@ -24,10 +24,6 @@
       flake = false;
     };
 
-    actus-tests = {
-      url = "github:actusfrf/actus-tests";
-      flake = false;
-    };
     cardano-repo-tool = {
       url = "github:input-output-hk/cardano-repo-tool";
       flake = false;

@@ -3,10 +3,9 @@
 , packages ? import ./. { inherit system enableHaskellProfiling; }
 }:
 let
-  inherit (packages) pkgs marlowe marlowe-playground marlowe-dashboard docs webCommon bitte-packages marlowe-cli marlowe-pab plutus-chain-index cardano-wallet dev-scripts;
-  inherit (dev-scripts) start-marlowe-run start-cardano-node start-wallet start-chain-index start-marlowe-pab start-dashboard-server;
+  inherit (packages) pkgs marlowe marlowe-playground docs webCommon bitte-packages;
   inherit (pkgs) stdenv lib utillinux python3 nixpkgs-fmt writeShellScriptBin;
-  inherit (marlowe) haskell stylish-haskell sphinxcontrib-haddock sphinx-markdown-tables sphinxemoji nix-pre-commit-hooks cardano-cli cardano-node;
+  inherit (marlowe) haskell stylish-haskell sphinxcontrib-haddock sphinx-markdown-tables sphinxemoji nix-pre-commit-hooks;
   inherit (marlowe) writeShellScriptBinInRepoRoot;
 
   set-xdg = ''
@@ -16,13 +15,8 @@ let
     mkdir -p "''${XDG_RUNTIME_DIR}"
   '';
 
-  start-marlowe-run-with-arion = writeShellScriptBinInRepoRoot "start-marlowe-run-with-arion" ''
-    cd marlowe-dashboard-client
-    ${pkgs.arion}/bin/arion --nix-arg --system --nix-arg x86_64-linux "$@" up --force-recreate
-  '';
-
   generate-purescript = writeShellScriptBinInRepoRoot "generate-purescript" ''
-    marlowe-run-generate-purs; marlowe-playground-generate-purs
+    marlowe-playground-generate-purs
   '';
 
   # For Sphinx, and ad-hoc usage
@@ -77,7 +71,6 @@ let
 
   # build inputs from nixpkgs ( -> ./nix/default.nix )
   nixpkgsInputs = (with pkgs; [
-    arion
     cacert
     editorconfig-core-c
     ghcid
@@ -92,13 +85,11 @@ let
     z3
     zlib
     nodePackages.prettier
-    tmux
   ] ++ (lib.optionals (!stdenv.isDarwin) [ rPackages.plotly R ]));
 
   # local build inputs ( -> ./nix/pkgs/default.nix )
   localInputs = (with marlowe; [
     cabal-install
-    cardano-node
     easyPS.psa
     easyPS.spago
     easyPS.psc-package
@@ -107,15 +98,6 @@ let
     easyPS.purs
     easyPS.purs-tidy
     easyPS.purescript-language-server
-    start-cardano-node
-    start-wallet
-    start-chain-index
-    start-marlowe-pab
-    start-dashboard-server
-    start-marlowe-run
-    start-marlowe-run-with-arion
-    cardano-repo-tool
-    cardano-wallet
     fixPngOptimization
     fix-prettier
     fix-purs-tidy
@@ -125,22 +107,14 @@ let
     haskell-language-server-wrapper
     hie-bios
     hlint
-    marlowe-dashboard.build-client
-    marlowe-dashboard.test-client
-    marlowe-dashboard.generate-purescript
-    marlowe-dashboard.start-backend
-    marlowe-pab
     marlowe-playground.build-client
     marlowe-playground.generate-purescript
     marlowe-playground.start-backend
     generate-purescript
-    plutus-chain-index
     stylish-haskell
     updateMaterialized
     updateClientDeps
     docs.build-and-serve-docs
-    marlowe-cli
-    cardano-cli
   ]);
 
 in
@@ -163,7 +137,6 @@ haskell.project.shellFor {
   ''
   # Point to some source dependencies
   + ''
-    export ACTUS_TEST_DATA_DIR=${packages.actus-tests}/tests/
     export WEB_COMMON_SRC="${webCommon.cleanSrc}"
   '';
 }
