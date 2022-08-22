@@ -8,7 +8,7 @@ error () {
 
 readonly ops_repo="input-output-hk/plutus-ops"
 readonly ops_branch="master"
-readonly name="marlowe"
+readonly name="marlowePlay"
 readonly rev="${GITHUB_SHA:-}"
 
 if [ -z "${rev}" ]
