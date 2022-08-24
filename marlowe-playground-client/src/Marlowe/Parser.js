@@ -1,9 +1,6 @@
-/*eslint-env node*/
-"use strict";
-
-const nearley = require("nearley");
-const grammar = require("grammar");
-exports.parse_ = function (emptyInputError, parserError, success, fs, input) {
+import nearley from "nearley";
+import grammar from "grammar";
+export function parse_(emptyInputError, parserError, success, fs, input) {
   if (!input) {
     return emptyInputError;
   }
@@ -36,7 +33,7 @@ exports.parse_ = function (emptyInputError, parserError, success, fs, input) {
       return parserError({ message, row: 1, column: 0, token: "" });
     }
   }
-};
+}
 
 function getErrorMessage(error) {
   if (typeof error === "string") {

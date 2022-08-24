@@ -45,5 +45,6 @@ main args = do
     void
       $ liftEffect
       $ matchesWith (Routing.parse Router.route) \old new -> do
-          when (old /= Just new) $ launchAff_ $ driver.query
-            (MainFrame.ChangeRoute new unit)
+          when (old /= Just new) $ launchAff_
+            $ void
+            $ driver.query (MainFrame.ChangeRoute new unit)

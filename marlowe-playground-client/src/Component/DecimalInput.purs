@@ -9,6 +9,7 @@ import Data.Int as I
 import Data.Lens (over) as L
 import Data.Lens.Record (prop) as L
 import Data.Maybe (Maybe(..), fromMaybe)
+import Data.Number (pow)
 import Data.Numbers.Natural (Natural)
 import Data.Numbers.Natural as N
 import Effect.Class (class MonadEffect)
@@ -27,7 +28,6 @@ import Halogen.HTML.Properties
   , type_
   , value
   ) as HH
-import Math as M
 import Type.Prelude (Proxy(..))
 
 type Input =
@@ -94,7 +94,7 @@ render state = HH.input
   , HH.onBlur $ const $ ChangeValue $ fromMaybe state.value do
       d <- D.fromString state.value
       pure $ printDecimal state.precision d
-  , HH.step $ HH.Step (M.pow 10.0 (I.toNumber $ -1 * N.toInt state.precision))
+  , HH.step $ HH.Step (pow 10.0 (I.toNumber $ -1 * N.toInt state.precision))
   , HH.placeholder $ printDecimal state.precision $ D.fromInt 0
   , HH.type_ HH.InputNumber
   , HH.value $ state.value

@@ -1,21 +1,21 @@
-/*eslint-env node*/
-"use strict";
+import jsonBigInt from "json-bigint";
+import { registerDateTimeField } from "src/Blockly/DateTimeField.js";
+import blockly from "blockly";
 
-const JSONbig = require("json-bigint")({ useNativeBigInt: true });
-const { registerDateTimeField } = require("src/Blockly/DateTimeField.js");
+const JSONbig = jsonBigInt({ useNativeBigInt: true });
 
-exports.createBlocklyInstance_ = () => {
-  return require("blockly");
+export const createBlocklyInstance_ = () => {
+  return blockly;
 };
 
-exports.debugBlockly = (name) => (state) => () => {
+export const debugBlockly = (name) => (state) => () => {
   if (typeof window.blockly === "undefined") {
     window.blockly = {};
   }
   window.blockly[name] = state;
 };
 
-exports.createWorkspace =
+export const createWorkspace =
   (blockly) => (workspaceDiv) => (config) => (tzInfo) => () => {
     /* Disable comments */
     try {
@@ -185,7 +185,7 @@ exports.createWorkspace =
     return workspace;
   };
 
-exports.resize = (blockly) => (workspace) => () => {
+export const resize = (blockly) => (workspace) => () => {
   blockly.svgResize(workspace);
   workspace.render();
 };
@@ -206,7 +206,7 @@ function removeEmptyArrayFields(obj) {
   }
 }
 
-exports.addBlockType_ = (blockly) => (name) => (block) => () => {
+export const addBlockType_ = (blockly) => (name) => (block) => () => {
   // we really don't want to be mutating the input object, it is not supposed to be state
   var clone = JSONbig.parse(JSONbig.stringify(block));
   removeUndefinedFields(clone);
@@ -218,26 +218,27 @@ exports.addBlockType_ = (blockly) => (name) => (block) => () => {
   };
 };
 
-exports.initializeWorkspace_ =
+export const initializeWorkspace_ =
   (blockly) => (workspace) => (workspaceBlocks) => () => {
     blockly.Xml.domToWorkspace(workspaceBlocks, workspace);
     workspace.getAllBlocks()[0].setDeletable(false);
   };
 
-exports.render = (workspace) => () => {
+export const render = (workspace) => () => {
   workspace.render();
 };
 
-exports.getBlockById_ = (just) => (nothing) => (workspace) => (id) => () => {
-  var result = workspace.getBlockById(id);
-  if (result) {
-    return just(result);
-  } else {
-    return nothing;
-  }
-};
+export const getBlockById_ =
+  (just) => (nothing) => (workspace) => (id) => () => {
+    var result = workspace.getBlockById(id);
+    if (result) {
+      return just(result);
+    } else {
+      return nothing;
+    }
+  };
 
-exports.workspaceXML = (blockly) => (workspace) => () => {
+export const workspaceXML = (blockly) => (workspace) => () => {
   const isEmpty = workspace.getAllBlocks()[0].getChildren().length == 0;
   if (isEmpty) {
     return "";
@@ -247,105 +248,105 @@ exports.workspaceXML = (blockly) => (workspace) => () => {
   }
 };
 
-exports.loadWorkspace = (blockly) => (workspace) => (xml) => () => {
+export const loadWorkspace = (blockly) => (workspace) => (xml) => () => {
   var dom = blockly.utils.xml.textToDomDocument(xml);
   blockly.Xml.clearWorkspaceAndLoadFromXml(dom.childNodes[0], workspace);
   workspace.getAllBlocks()[0].setDeletable(false);
 };
 
-exports.addChangeListener = (workspace) => (listener) => () => {
+export const addChangeListener = (workspace) => (listener) => () => {
   workspace.addChangeListener(listener);
 };
 
-exports.removeChangeListener = (workspace) => (listener) => () => {
+export const removeChangeListener = (workspace) => (listener) => () => {
   workspace.removeChangeListener(listener);
 };
 
-exports.workspaceToDom = (blockly) => (workspace) => () => {
+export const workspaceToDom = (blockly) => (workspace) => () => {
   return blockly.Xml.workspaceToDom(workspace);
 };
 
-exports.select = (block) => () => {
+export const select = (block) => () => {
   block.select();
 };
 
-exports.centerOnBlock = (workspace) => (blockId) => () => {
+export const centerOnBlock = (workspace) => (blockId) => () => {
   workspace.centerOnBlock(blockId);
 };
 
-exports.hideChaff = (blockly) => () => {
+export const hideChaff = (blockly) => () => {
   blockly.hideChaff();
 };
 
-exports.getBlockType = (block) => {
+export const getBlockType = (block) => {
   return block.type;
 };
 
-exports.updateToolbox_ = (toolboxJson) => (workspace) => () => {
+export const updateToolbox_ = (toolboxJson) => (workspace) => () => {
   workspace.updateToolbox(toolboxJson);
 };
 
-exports.clearUndoStack = (workspace) => () => {
+export const clearUndoStack = (workspace) => () => {
   workspace.clearUndo();
 };
 
-exports.isWorkspaceEmpty = (workspace) => () => {
+export const isWorkspaceEmpty = (workspace) => () => {
   var topBlocks = workspace.getTopBlocks(false);
   return topBlocks == null || topBlocks.length == 0;
 };
 
-exports.setGroup = (blockly) => (isGroup) => () =>
+export const setGroup = (blockly) => (isGroup) => () =>
   blockly.Events.setGroup(isGroup);
 
-exports.inputList = (block) => {
+export const inputList = (block) => {
   return block.inputList;
 };
 
-exports.connectToPrevious = (block) => (input) => () => {
+export const connectToPrevious = (block) => (input) => () => {
   block.previousConnection.connect(input.connection);
 };
-exports.previousConnection = (block) => {
+export const previousConnection = (block) => {
   return block.previousConnection;
 };
 
-exports.nextConnection = (block) => {
+export const nextConnection = (block) => {
   return block.nextConnection;
 };
 
-exports.connect = (from) => (to) => () => {
+export const connect = (from) => (to) => () => {
   from.connect(to);
 };
 
-exports.connectToOutput = (block) => (input) => () => {
+export const connectToOutput = (block) => (input) => () => {
   block.outputConnection.connect(input.connection);
 };
 
-exports.newBlock = (workspace) => (name) => () => {
+export const newBlock = (workspace) => (name) => () => {
   var block = workspace.newBlock(name);
   block.initSvg();
   return block;
 };
 
-exports.inputName = (input) => {
+export const inputName = (input) => {
   return input.name;
 };
 
-exports.inputType = (input) => {
+export const inputType = (input) => {
   return input.type;
 };
 
-exports.clearWorkspace = (workspace) => () => {
+export const clearWorkspace = (workspace) => () => {
   workspace.clear();
 };
 
-exports.fieldRow = (input) => {
+export const fieldRow = (input) => {
   return input.fieldRow;
 };
 
-exports.setFieldText = (field) => (text) => () => {
+export const setFieldText = (field) => (text) => () => {
   field.setValue(text);
 };
 
-exports.fieldName = (field) => {
+export const fieldName = (field) => {
   return field.name;
 };

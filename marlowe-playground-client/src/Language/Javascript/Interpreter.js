@@ -1,14 +1,14 @@
 /*eslint-env node*/
-"use strict";
-const safeEval = require("safe-eval");
-const JSONbig = require("json-bigint")({ useNativeBigInt: true });
+import jsonBigInt from "json-bigint";
+import safeEval from "safe-eval";
+import context from "src/Language/Javascript/MarloweJS.ts";
 
-exports.eval_ = function (left, right, model) {
+const JSONbig = jsonBigInt({ useNativeBigInt: true });
+
+export function eval_(left, right, model) {
   // include any libraries etc we want by providing a context. be careful!
   // here we can pass in our library for constructing contracts
-  var monaco = global.monaco;
-  var context = require("src/Language/Javascript/MarloweJS.ts");
-  context["bignumber"] = require("bignumber.js");
+  var monaco = globalThis.monaco;
   return monaco.languages.typescript
     .getTypeScriptWorker()
     .then(function (worker) {
@@ -30,4 +30,4 @@ exports.eval_ = function (left, right, model) {
         });
       });
     });
-};
+}

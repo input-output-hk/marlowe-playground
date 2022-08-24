@@ -1,9 +1,9 @@
-var { TarReader, TarWriter } = require("tarballjs");
+import { TarReader, TarWriter } from "tarballjs";
 
-exports.tarWriter = function () {
+export function tarWriter() {
   return new TarWriter();
-};
+}
 
-exports.tarReader = function () {
+export function tarReader() {
   return new TarReader();
-};
+}

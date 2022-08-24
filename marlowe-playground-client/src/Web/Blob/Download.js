@@ -1,4 +1,4 @@
-exports.downloadImpl = function (filename, blob) {
+export function downloadImpl(filename, blob) {
   var URL = window.URL || window.webkitURL;
   var downloadUrl = URL.createObjectURL(blob);
   var a = document.createElement("a");
@@ -28,4 +28,4 @@ exports.downloadImpl = function (filename, blob) {
   }, 0);
 
   return {};
-};
+}

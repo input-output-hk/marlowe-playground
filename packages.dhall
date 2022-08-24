@@ -2,7 +2,7 @@ let mkPackage =
       https://raw.githubusercontent.com/purescript/package-sets/psc-0.13.0-20190626/src/mkPackage.dhall sha256:0b197efa1d397ace6eb46b243ff2d73a3da5638d8d0ac8473e8e4a8fc528cf57
 
 let upstream =
-      https://github.com/purescript/package-sets/releases/download/psc-0.14.7-20220315/packages.dhall sha256:708ca6d205ab5ecc1a3522e4bbe44fa576a0ebebbbc094a3aa9417be7b246974
+      https://github.com/purescript/package-sets/releases/download/psc-0.15.2-20220706/packages.dhall sha256:7a24ebdbacb2bfa27b2fc6ce3da96f048093d64e54369965a2a7b5d9892b6031
 
 in  upstream
   with js-object =
@@ -15,7 +15,7 @@ in  upstream
         , "typelevel-prelude"
         ]
         "https://git@github.com/paluh/purescript-js-object"
-        "c1e765914e107cece6e0f5442eabdd278d45c103"
+        "73db55f89744b032f44c9ec49804f46e3ee63ed7"
   with infinite-lists =
       mkPackage
         [ "console"
@@ -60,7 +60,7 @@ in  upstream
         , "validation"
         ]
         "https://github.com/input-output-hk/purescript-markdown"
-        "022d8afd0d9e0ef8114da9e9ef5a67d9ffc86a29"
+        "3c5536d5cad663c0912bae89205dd1c8934d525b"
   with datetime-iso =
       mkPackage
         [ "aff"
@@ -79,13 +79,23 @@ in  upstream
         , "parsing"
         , "partial"
         , "prelude"
-        , "psci-support"
         , "spec"
         , "strings"
         , "transformers"
         ]
         "https://github.com/input-output-hk/purescript-datetime-iso"
-        "c5b3b5421ae36631b0e2823e1199febd5b209791"
+        "a5de49e1e4b75d1731b7ec08e07f94eb6985d452"
+  with undefined-or =
+    { dependencies = [ "prelude", "control", "maybe" ]
+    , repo = "https://github.com/CarstenKoenig/purescript-undefined-or.git"
+    , version = "5822ab71acc9ed276afd6fa96f1cb3135e376719"
+    }
+  with uuid =
+    { dependencies =
+      [ "prelude", "aff", "effect", "maybe", "partial", "spec", "strings" ]
+    , repo = "https://github.com/megamaddu/purescript-uuid.git"
+    , version = "v9.0.0"
+    }
   with servant-support =
       mkPackage
         [ "aff"
@@ -106,7 +116,7 @@ in  upstream
         , "uri"
         ]
         "https://github.com/input-output-hk/purescript-servant-support"
-        "3e0d530a03093da7ec8fbfacc67628e715c1f51b"
+        "61f85eb0657196d4bfc80ae4736d6a6d9ebd4529"
   with json-helpers =
       mkPackage
         [ "aff"
@@ -136,7 +146,7 @@ in  upstream
         , "typelevel-prelude"
         ]
         "https://github.com/input-output-hk/purescript-bridge-json-helpers.git"
-        "60615c36abaee16d8dbe09cdd0e772e6d523d024"
+        "0ff78186a949722f37218046a09abdf27d77ecfe"
   with web-common =
       mkPackage
         [ "aff"
@@ -195,7 +205,7 @@ in  upstream
         , "tailrec"
         , "transformers"
         , "tuples"
-        , "undefinable"
+        , "undefined-or"
         , "unfoldable"
         , "unsafe-coerce"
         , "uuid"
@@ -206,7 +216,7 @@ in  upstream
         , "web-uievents"
         ]
         "https://github.com/input-output-hk/purescript-web-common"
-        "v3.2.2"
+        "ca788ff613e22d1cba115eb2f3553514681f603b"
   with halogen-nselect =
       mkPackage
         [ "aff"
@@ -223,7 +233,7 @@ in  upstream
         , "web-uievents"
         ]
         "https://github.com/jhbertra/purescript-halogen-nselect"
-        "v1.0.0"
+        "5a7a39e41c3a918a8cf48b24ac87c5cf7e080fe8"
   with unlift =
       mkPackage
         [ "aff"
@@ -238,4 +248,4 @@ in  upstream
         , "tuples"
         ]
         "https://github.com/tweag/purescript-unlift"
-        "v1.0.1"
+        "c05bf5f8b29059dc568b34999eb0a5714305076c"

@@ -1,42 +1,39 @@
-/*eslint-env node*/
-"use strict";
+import * as monaco from "src/Marlowe/Monaco.ts";
 
-const monaco = require("src/Marlowe/Monaco.ts");
-
-exports.hoverProvider_ = function (hoverProvider) {
+export function hoverProvider_(hoverProvider) {
   return new monaco.MarloweHoverProvider(hoverProvider);
-};
+}
 
-exports.completionItemProvider_ = function (suggestionsProvider) {
+export function completionItemProvider_(suggestionsProvider) {
   let uncurriedSuggestions = (word, stripParens, contract, range, context) =>
     suggestionsProvider(word)(stripParens)(contract)(range)(context);
   return new monaco.MarloweCompletionItemProvider(uncurriedSuggestions);
-};
+}
 
-exports.codeActionProvider_ = function (provideCodeActions, additionalContext) {
+export function codeActionProvider_(provideCodeActions, additionalContext) {
   let uncurriedProvideCodeActions = (a, b, c) => provideCodeActions(a)(b)(c);
   return new monaco.MarloweCodeActionProvider(
     uncurriedProvideCodeActions,
     additionalContext
   );
-};
+}
 
-exports.updateAdditionalContext_ = function (
+export function updateAdditionalContext_(
   codeActionProvider,
   completionItemProvider,
   additionalContext
 ) {
   codeActionProvider.updateAdditionalContext(additionalContext);
   completionItemProvider.updateAdditionalContext(additionalContext);
-};
+}
 
-exports.documentFormattingEditProvider_ = function (format) {
+export function documentFormattingEditProvider_(format) {
   return new monaco.MarloweDocumentFormattingEditProvider(format);
-};
+}
 
-exports.tokensProvider_ = function () {
+export function tokensProvider_() {
   return new monaco.MarloweTokensProvider();
-};
+}
 
 const purple = "#832DC4";
 const orange = "#EB4A22";
@@ -46,7 +43,7 @@ const blue = "#1746A0";
 const red = "#EB2256";
 const grey = "#AAAAAA";
 
-exports.daylightTheme_ = {
+export const daylightTheme_ = {
   base: "vs",
   inherit: true,
   rules: [

@@ -1,24 +1,24 @@
-exports.unsafeSnocArray = function (suffix) {
+export const unsafeSnocArray = function (suffix) {
   return function (arr) {
     arr.push(...suffix);
     return arr;
   };
 };
 
-exports.unsafeCons = function (a) {
+export const unsafeCons = function (a) {
   return function (arr) {
     arr.unshift(a);
     return arr;
   };
 };
 
-exports.unsafeConsArray = function (prefix) {
+export const unsafeConsArray = function (prefix) {
   return function (arr) {
     arr.unshift(...prefix);
     return arr;
   };
 };
-exports.unsafeSnoc = function (a) {
+export const unsafeSnoc = function (a) {
   return function (arr) {
     arr.push(a);
     return arr;
