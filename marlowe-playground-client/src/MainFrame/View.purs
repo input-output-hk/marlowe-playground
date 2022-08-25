@@ -177,11 +177,11 @@ render state =
           , div_ [ text (copyright <> " 2021 IOHK Ltd") ]
           , div [ classNames [ "flex" ] ]
               [ a
-                  [ href "https://t.me/IOHK_Marlowe"
+                  [ href "https://discord.gg/p2P27Fcuun"
                   , target "_blank"
                   , classNames [ "pr-small" ]
                   ]
-                  [ text "Telegram" ]
+                  [ text "Discord" ]
               , a
                   [ href "https://twitter.com/hashtag/Marlowe"
                   , target "_blank"
