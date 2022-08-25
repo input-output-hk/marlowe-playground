@@ -14,11 +14,11 @@ import Data.BigInt.Argonaut as BigInt
 import Data.Either (hush)
 import Data.Int (round)
 import Data.Lens (_Just, preview, previewOn, set, (^.))
-import Data.Lens.NonEmptyList (_Head)
 import Data.List.NonEmpty as NEL
 import Data.Map as Map
 import Data.Maybe (fromJust)
 import Data.NonEmpty ((:|))
+import Data.NonEmptyList.Lens (_Head)
 import Data.Time.Duration (Minutes(..))
 import Data.Tuple.Nested ((/\))
 import Examples.Marlowe.Contracts as Contracts

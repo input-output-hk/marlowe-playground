@@ -21,12 +21,12 @@ import Data.DateTime.Instant as Instant
 import Data.Enum (fromEnum)
 import Data.Lens (has, only, preview, previewOn, to, view, (^.), (^?))
 import Data.Lens.Iso.Newtype (_Newtype)
-import Data.Lens.NonEmptyList (_Head)
 import Data.Map (Map)
 import Data.Map as Map
 import Data.Map.Ordered.OMap as OMap
 import Data.Maybe (fromMaybe, isJust, maybe)
 import Data.Newtype (unwrap)
+import Data.NonEmptyList.Lens (_Head)
 import Data.Numbers.Natural (Natural)
 import Data.Numbers.Natural as N
 import Data.Set.Ordered.OSet (OSet)
