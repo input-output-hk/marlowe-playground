@@ -58,7 +58,9 @@ import Language.Haskell.Interpreter
 import Language.Haskell.Monaco as HM
 import Language.Marlowe.Extended.V1 as E
 import Language.Marlowe.Extended.V1.Metadata.Types (MetaData)
+import Language.Marlowe.ToTerm (toTerm)
 import MainFrame.Types (ChildSlots, _haskellEditorSlot)
+import Marlowe.Holes as T
 import Network.RemoteData (RemoteData(..), _Success)
 import Page.HaskellEditor.Types
   ( Action(..)
@@ -204,7 +206,12 @@ panelContents state _ GeneratedOutputView =
   printContractOrError s =
     case parseJSONContract s of
       Left err -> printJsonDecodeError err
-      Right contract -> (show <<< pretty) contract
+      Right contract ->
+        let
+          termContract :: T.Term T.Contract
+          termContract = toTerm contract
+        in
+          show $ pretty termContract
 
 panelContents state metadata StaticAnalysisView =
   section_

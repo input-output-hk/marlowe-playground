@@ -10,6 +10,7 @@ import Data.Array as Array
 import Data.BigInt.Argonaut (BigInt)
 import Data.BigInt.Argonaut as BigInt
 import Data.Bounded.Generic (genericBottom, genericTop)
+import Data.DateTime.Instant (Instant)
 import Data.Enum (class BoundedEnum, class Enum, upFromIncluding)
 import Data.Enum.Generic
   ( genericCardinality
@@ -93,7 +94,6 @@ import Marlowe.Template
   )
 import Marlowe.Time (unixEpoch)
 import Monaco (IRange)
-import Plutus.V1.Ledger.Time (POSIXTime(..))
 import Text.Pretty
   ( class Args
   , class Pretty
@@ -536,7 +536,7 @@ instance fillableTerm :: Fillable a b => Fillable (Term a) b where
 instance hasTimeoutTerm :: HasTimeout a => HasTimeout (Term a) where
   timeouts (Term a _) = timeouts a
   timeouts (Hole _ _) = Timeouts
-    { maxTime: POSIXTime unixEpoch, minTime: Nothing }
+    { maxTime: unixEpoch, minTime: Nothing }
 
 mkHole :: forall a. String -> Location -> Term a
 mkHole name range = Hole name range
@@ -696,7 +696,7 @@ instance boundHasMarloweHoles :: HasMarloweHoles Bound where
   getHoles (Bound _ _) m = m
 
 data Timeout
-  = TimeValue POSIXTime
+  = TimeValue Instant
   | TimeParam String
 
 derive instance genericTimeout :: Generic Timeout _
@@ -727,7 +727,7 @@ instance templateTimeout :: Template Timeout Placeholders where
 
 instance fillableTimeout :: Fillable Timeout TemplateContent where
   fillTemplate placeholders v@(TimeParam timeParamId) =
-    maybe v (TimeValue <<< POSIXTime) $
+    maybe v TimeValue $
       Map.lookup timeParamId (unwrap placeholders).timeContent
   fillTemplate _ (TimeValue x) = TimeValue x
 
@@ -737,7 +737,7 @@ instance hasTimeoutTimeout :: HasTimeout Timeout where
     , minTime: Just time
     }
   timeouts (TimeParam _) = Timeouts
-    { maxTime: POSIXTime unixEpoch, minTime: Nothing }
+    { maxTime: unixEpoch, minTime: Nothing }
 
 instance timeoutFromTerm :: FromTerm Timeout EM.Timeout where
   fromTerm (TimeValue b) = pure $ EM.TimeValue b
@@ -1251,7 +1251,7 @@ instance fillableContract :: Fillable Contract TemplateContent where
     go = fillTemplate placeholders
 
 instance hasTimeoutContract :: HasTimeout Contract where
-  timeouts Close = Timeouts { maxTime: POSIXTime unixEpoch, minTime: Nothing }
+  timeouts Close = Timeouts { maxTime: unixEpoch, minTime: Nothing }
   timeouts (Pay _ _ _ _ contract) = timeouts contract
   timeouts (If _ contractTrue contractFalse) = timeouts
     [ contractTrue, contractFalse ]

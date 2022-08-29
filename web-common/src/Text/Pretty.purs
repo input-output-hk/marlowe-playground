@@ -148,6 +148,10 @@ instance hasArgsBigInt :: Args BigInt where
   hasArgs _ = false
   hasNestedArgs _ = false
 
+instance Args Instant where
+  hasArgs _ = false
+  hasNestedArgs _ = false
+
 instance argsArray :: Args a => Args (Array a) where
   hasArgs _ = false
   hasNestedArgs as = any hasNestedArgs as

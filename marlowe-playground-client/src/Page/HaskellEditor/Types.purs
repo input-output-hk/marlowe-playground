@@ -24,6 +24,8 @@ import Language.Haskell.Interpreter
   )
 import Language.Marlowe.Extended.V1 as E
 import Language.Marlowe.Extended.V1.Metadata.Types (MetadataHintInfo)
+import Language.Marlowe.ToTerm (toTerm)
+import Marlowe.Holes as T
 import Network.RemoteData (RemoteData(..), _Loading, _Success)
 import StaticAnalysis.Types (AnalysisState, initAnalysisState)
 import Text.Pretty (pretty)
@@ -102,7 +104,8 @@ _Pretty :: Getter' String String
 _Pretty = to f
   where
   f ugly = case parseJSONContract ugly of
-    Right contract -> (show <<< pretty) contract
+    Right contract ->
+      (show <<< pretty <<< (toTerm :: E.Contract -> T.Term T.Contract)) contract
     Left _ -> ugly
 
   parseJSONContract :: String -> Either JsonDecodeError E.Contract

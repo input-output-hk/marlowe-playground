@@ -59,7 +59,6 @@ import Marlowe.Holes
   )
 import Marlowe.Holes as H
 import Partial.Unsafe (unsafePartial)
-import Plutus.V1.Ledger.Time (POSIXTime(..))
 
 newtype GenerationOptions = GenerationOptions
   { withHoles :: Boolean, withExtendedConstructs :: Boolean }
@@ -97,9 +96,6 @@ genInstant = do
   n <- chooseFloat (unwrap (unInstant bottom)) (unwrap (unInstant top))
   pure $ unsafePartial $ fromJust $ instant $ Milliseconds n
 
-genPOSIXTime :: forall m. MonadGen m => MonadRec m => m POSIXTime
-genPOSIXTime = POSIXTime <$> genInstant
-
 genTimeout
   :: forall m
    . MonadGen m
@@ -113,7 +109,7 @@ genTimeout = do
   else
     slot
   where
-  slot = H.TimeValue <$> genPOSIXTime
+  slot = H.TimeValue <$> genInstant
 
   timeParam = H.TimeParam <$> genTokenName
 
@@ -164,7 +160,7 @@ genCurrencySymbol :: forall m. MonadGen m => MonadRec m => m CurrencySymbol
 genCurrencySymbol = genBase16
 
 genTimeInterval
-  :: forall m. MonadGen m => MonadRec m => m POSIXTime -> m TimeInterval
+  :: forall m. MonadGen m => MonadRec m => m Instant -> m TimeInterval
 genTimeInterval gen = do
   from <- gen
   to <- suchThat gen (\v -> v > from)
@@ -541,7 +537,7 @@ genTransactionInput
   => MonadRec m
   => m S.TransactionInput
 genTransactionInput = do
-  interval <- genTimeInterval genPOSIXTime
+  interval <- genTimeInterval genInstant
   inputs <- unfoldable genInput
   pure $ TransactionInput { interval, inputs }
 

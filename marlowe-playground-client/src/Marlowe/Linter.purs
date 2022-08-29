@@ -16,6 +16,7 @@ import Prologue
 import Control.Monad.State as CMS
 import Data.Bifunctor (bimap)
 import Data.BigInt.Argonaut (BigInt)
+import Data.DateTime.Instant (Instant)
 import Data.Eq.Generic (genericEq)
 import Data.Foldable (foldM)
 import Data.FoldableWithIndex (traverseWithIndex_)
@@ -71,14 +72,13 @@ import Marlowe.Holes
 import Marlowe.Holes as MH
 import Marlowe.Time (unixEpoch)
 import Monaco (TextEdit)
-import Plutus.V1.Ledger.Time (POSIXTime(..))
 import Pretty (showPrettyParty)
 import StaticAnalysis.Reachability (initializePrefixMap, stepPrefixMap)
 import StaticAnalysis.Types (ContractPath, ContractPathStep(..), PrefixMap)
 import Text.Pretty (hasArgs, pretty)
 import Type.Proxy (Proxy(..))
 
-newtype MaxTimeout = MaxTimeout POSIXTime
+newtype MaxTimeout = MaxTimeout Instant
 
 derive instance newtypeMaxTimeout :: Newtype MaxTimeout _
 
@@ -246,7 +246,7 @@ _choicesMade = _Newtype <<< prop (Proxy :: _ "choicesMade")
 _letBindings :: Lens' LintEnv (Set S.ValueId)
 _letBindings = _Newtype <<< prop (Proxy :: _ "letBindings")
 
-_maxTimeout :: Lens' LintEnv POSIXTime
+_maxTimeout :: Lens' LintEnv Instant
 _maxTimeout = _Newtype <<< prop (Proxy :: _ "maxTimeout") <<< _Newtype
 
 _deposits :: Lens' LintEnv (Map (S.AccountId /\ S.Token) (Maybe BigInt))
@@ -738,8 +738,7 @@ lintValue env t@(Term (DivValue a b) pos) = do
     (ConstantSimp _ _ v1 /\ ConstantSimp _ _ v2) ->
       let
         evaluated = evalValue
-          -- TODO: SCP-3887 unify time construct
-          (makeEnvironment (POSIXTime unixEpoch) (POSIXTime unixEpoch))
+          (makeEnvironment unixEpoch unixEpoch)
           emptyState
           (S.DivValue (S.Constant v1) (S.Constant v2))
       in

@@ -98,7 +98,7 @@ import Halogen.HTML.Events (onClick)
 import Halogen.HTML.Properties (class_, classes, disabled, enabled, id)
 import Halogen.Monaco (monacoComponent)
 import Humanize
-  ( formatPOSIXTime
+  ( formatInstant
   , humanizeInterval
   , humanizeOffset
   , humanizeValue
@@ -140,7 +140,6 @@ import Monaco as Monaco
 import Page.Simulation.BottomPanel (panelContents)
 import Page.Simulation.Lenses (_bottomPanelState)
 import Page.Simulation.Types (Action(..), BottomPanelView(..), State)
-import Plutus.V1.Ledger.Time (POSIXTime(..))
 import Pretty (renderPrettyParty, renderPrettyPayee, showPrettyChoice)
 import Simulator.Lenses
   ( _SimulationRunning
@@ -565,10 +564,8 @@ simulationStateWidget state =
     currentTime = state ^.
       ( _currentMarloweState <<< _executionState <<< _SimulationRunning
           <<< _time
-          -- TODO: SCP-3887 unify time construct
-          <<< to POSIXTime
           -- TODO SCP-3833 Add type safety to timezone conversions
-          <<< to (formatPOSIXTime tzOffset)
+          <<< to (formatInstant tzOffset)
           <<< to \(dateStr /\ timeStr) ->
             intercalate " " [ dateStr, timeStr, offsetStr ]
       )
@@ -582,7 +579,7 @@ simulationStateWidget state =
         let
           posixTime = (_.maxTime <<< unwrap <<< timeouts) contract
           -- TODO SCP-3833 Add type safety to timezone conversions
-          dateStr /\ timeStr = formatPOSIXTime tzOffset posixTime
+          dateStr /\ timeStr = formatInstant tzOffset posixTime
         in
           intercalate " " [ dateStr, timeStr, offsetStr ]
 
@@ -846,9 +843,9 @@ inputItem _ state (MoveToTime moveType time) =
 
   ref = "move-to-" <> show moveType
   fullTime =
-    formatPOSIXTime
+    formatInstant
       state.tzOffset
-      (POSIXTime time)
+      time
       # \(dateStr /\ timeStr) ->
           intercalate " " [ dateStr, timeStr, humanizeOffset state.tzOffset ]
   isForward = currentTime < time
@@ -1001,7 +998,7 @@ logTime (step /\ subStep) tzOffset time@(TimeInterval start _) = span
   ]
   where
   ref = intercalate "-" [ "log", "time", show step, show subStep ]
-  _ /\ startTime = formatPOSIXTime tzOffset start
+  _ /\ startTime = formatInstant tzOffset start
   fullTime = intercalate " "
     [ "Event executed"
     , humanizeInterval tzOffset time
@@ -1021,8 +1018,7 @@ logToLines tzOffset _ stepNumber (StartEvent time) =
   , logTime (stepNumber /\ 0) tzOffset interval
   ]
   where
-  interval = TimeInterval time' time'
-  time' = POSIXTime time
+  interval = TimeInterval time time
 logToLines
   tzOffset
   metadata

@@ -7,6 +7,10 @@ import Prologue
 
 import Data.BigInt.Argonaut (BigInt)
 import Data.BigInt.Argonaut as BigInt
+import Data.DateTime.Instant
+  ( Instant
+  )
+import Data.DateTime.Instant.Extra (bigIntToInstant)
 import Data.Function.Uncurried (Fn5, runFn5)
 import Data.Generic.Rep (class Generic)
 import Data.Maybe (fromJust)
@@ -35,8 +39,6 @@ import Marlowe.Holes
 import Marlowe.Holes as H
 import Monaco (IRange)
 import Partial.Unsafe (unsafePartial)
-import Plutus.V1.Ledger.Time (POSIXTime)
-import Plutus.V1.Ledger.Time as POSIXTime
 
 type HelperFunctions a =
   { mkHole :: String -> IRange -> Term a
@@ -44,7 +46,7 @@ type HelperFunctions a =
   , mkTermWrapper :: a -> IRange -> TermWrapper a
   , getRange :: Term a -> IRange
   , mkBigInteger :: Int -> BigInt
-  , mkPOSIXTime :: BigInt -> POSIXTime
+  , mkInstant :: BigInt -> Instant
   , mkExtendedTimeValue :: String -> Timeout
   , mkExtendedTimeParam :: String -> Timeout
   , mkClose :: Contract
@@ -115,9 +117,9 @@ helperFunctions =
   , mkTermWrapper: \a pos -> TermWrapper a (Range pos)
   , getRange: getLocation >>> locationToRange
   , mkBigInteger: BigInt.fromInt
-  , mkPOSIXTime: \bi -> unsafePartial $ fromJust $ POSIXTime.fromBigInt bi
+  , mkInstant: \bi -> unsafePartial $ fromJust $ bigIntToInstant bi
   , mkExtendedTimeValue: \str ->
-      H.TimeValue <<< unsafePartial $ fromJust $ POSIXTime.fromBigInt =<<
+      H.TimeValue <<< unsafePartial $ fromJust $ bigIntToInstant =<<
         BigInt.fromString str
   , mkExtendedTimeParam: TimeParam
   , mkClose: Close

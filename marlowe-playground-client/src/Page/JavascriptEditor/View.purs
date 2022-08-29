@@ -51,8 +51,11 @@ import Language.Javascript.Interpreter
   ( CompilationError(..)
   , InterpreterResult(..)
   )
+import Language.Marlowe.Extended.V1 (Contract)
 import Language.Marlowe.Extended.V1.Metadata.Types (MetaData)
+import Language.Marlowe.ToTerm (toTerm)
 import MainFrame.Types (ChildSlots, _jsEditorSlot)
+import Marlowe.Holes as T
 import Page.JavascriptEditor.State (mkEditor)
 import Page.JavascriptEditor.Types
   ( Action(..)
@@ -191,7 +194,10 @@ panelContents state _ GeneratedOutputView =
       where
       numberedText = (code_ <<< Array.singleton <<< text) <$> split
         (Pattern "\n")
-        ((show <<< pretty <<< _.result) result)
+        ( ( show <<< pretty <<< (toTerm :: Contract -> T.Term T.Contract) <<<
+              _.result
+          ) result
+        )
     _ -> [ text "There is no generated code" ]
 
 panelContents state metadata StaticAnalysisView =

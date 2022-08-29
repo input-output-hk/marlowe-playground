@@ -85,6 +85,9 @@
   , "web-html"
   , "web-socket"
   , "web-uievents"
+  , "free"
+  , "freeap"
+  , "identity"
   ]
 , packages = ../packages.dhall
 , sources =

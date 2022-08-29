@@ -112,22 +112,21 @@ transfer amount from to timeout timeoutContinuation continuation =
 contract :: Contract
 contract =
   deposit (guaranteedAmount (fromInt 3)) guarantor investor
-    -- TODO: SCP-3887 unify time construct
-    (TimeValue $ POSIXTime $ unsafeInstantFromInt 300)
+    (TimeValue $ unsafeInstantFromInt 300)
     Close
     $ transfer principal investor issuer
-        (TimeValue $ POSIXTime $ unsafeInstantFromInt 600)
+        (TimeValue $ unsafeInstantFromInt 600)
         (refundGuarantor (guaranteedAmount (fromInt 3)) Close)
     $ transfer instalment issuer investor
-        (TimeValue $ POSIXTime $ unsafeInstantFromInt 900)
+        (TimeValue $ unsafeInstantFromInt 900)
         Close
     $ refundGuarantor instalment
     $ transfer instalment issuer investor
-        (TimeValue $ POSIXTime $ unsafeInstantFromInt 1200)
+        (TimeValue $ unsafeInstantFromInt 1200)
         Close
     $ refundGuarantor instalment
     $ transfer lastInstalment issuer investor
-        (TimeValue $ POSIXTime $ unsafeInstantFromInt 1500)
+        (TimeValue $ unsafeInstantFromInt 1500)
         Close
     $ refundGuarantor lastInstalment
         Close

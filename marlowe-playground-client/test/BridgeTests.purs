@@ -38,7 +38,6 @@ import Language.Marlowe.Core.V1.Semantics.Types
 import Marlowe.Time (unsafeInstantFromInt)
 import Node.Encoding (Encoding(UTF8))
 import Node.FS.Sync as FS
-import Plutus.V1.Ledger.Time (POSIXTime(..))
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (fail, shouldEqual)
 
@@ -113,7 +112,7 @@ serializationTest =
                   )
                   Close
               ]
-              (POSIXTime $ unsafeInstantFromInt 100)
+              (unsafeInstantFromInt 100)
               Close
           )
 
@@ -125,7 +124,7 @@ serializationTest =
               [ Tuple (ValueId "x") (fromInt 1)
               , Tuple (ValueId "y") (fromInt 2)
               ]
-          , minTime: POSIXTime $ unsafeInstantFromInt 123
+          , minTime: unsafeInstantFromInt 123
           }
 
       json = encodeStringifyJson contract

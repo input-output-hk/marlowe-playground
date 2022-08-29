@@ -33,6 +33,7 @@ import Data.Time.Duration
 import Partial.Unsafe (unsafePartial)
 import Text.Pretty (class Args, class Pretty)
 
+-- TODO: try to delete this file
 newtype POSIXTime = POSIXTime Instant
 
 derive instance Newtype POSIXTime _

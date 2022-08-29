@@ -19,6 +19,8 @@ import Language.Javascript.Interpreter (_result)
 import Language.Javascript.Interpreter as JS
 import Language.Marlowe.Extended.V1 (Contract)
 import Language.Marlowe.Extended.V1.Metadata.Types (MetadataHintInfo)
+import Language.Marlowe.ToTerm (toTerm)
+import Marlowe.Holes as T
 import StaticAnalysis.Types (AnalysisState, initAnalysisState)
 import Text.Pretty (pretty)
 import Type.Proxy (Proxy(..))
@@ -37,7 +39,7 @@ _CompiledSuccessfully = prism CompiledSuccessfully unwrap
   unwrap y = Left y
 
 _Pretty :: Getter' Contract String
-_Pretty = to (show <<< pretty)
+_Pretty = to (show <<< pretty <<< (toTerm :: Contract -> T.Term T.Contract))
 
 _ContractString :: forall r. Monoid r => Fold' r State String
 _ContractString = _compilationResult <<< _CompiledSuccessfully <<< _result <<<

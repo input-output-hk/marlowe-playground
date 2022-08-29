@@ -4,9 +4,9 @@ module Humanize
   , humanizeDuration
   , formatDate
   , formatDate'
-  , formatTime
-  , formatTime'
-  , formatPOSIXTime
+  , formatInstant
+  , formatDateTime'
+  , formatDateTime
   , humanizeInterval
   , humanizeValue
   , humanizeOffset
@@ -17,7 +17,7 @@ import Prologue
 import Data.BigInt.Argonaut (BigInt)
 import Data.BigInt.Argonaut as BigInt
 import Data.DateTime (DateTime, adjust)
-import Data.DateTime.Instant (toDateTime)
+import Data.DateTime.Instant (Instant, toDateTime)
 import Data.Formatter.DateTime (FormatterCommand(..), format) as DateTime
 import Data.Formatter.Number (Formatter(..), format) as Number
 import Data.Int (floor, round)
@@ -61,8 +61,8 @@ humanizeDuration (Seconds seconds)
 
 humanizeInterval :: Minutes -> TimeInterval -> String
 humanizeInterval tzOffset (TimeInterval from to) = humanize
-  (formatPOSIXTime tzOffset from)
-  (formatPOSIXTime tzOffset to)
+  (formatInstant tzOffset from)
+  (formatInstant tzOffset to)
   where
   humanize ((fromDate /\ fromTime)) ((toDate /\ toTime))
     | fromDate == toDate && fromTime == toTime = "on " <> fromDate <> " at " <>
@@ -74,13 +74,17 @@ humanizeInterval tzOffset (TimeInterval from to) = humanize
         <> " "
         <> toTime
 
-formatPOSIXTime :: Minutes -> POSIXTime -> (Tuple String String)
-formatPOSIXTime tzOffset time =
+toLocalDateTime :: Minutes -> Instant -> Maybe DateTime
+toLocalDateTime tzOffset = adjust (over Minutes negate tzOffset :: Minutes)
+  <<< toDateTime
+
+formatInstant :: Minutes -> Instant -> (Tuple String String)
+formatInstant tzOffset time =
   let
-    localDateTime = fromMaybe (toDateTime $ unwrap time)
-      $ POSIXTime.toLocalDateTime tzOffset time
+    localDateTime = fromMaybe (toDateTime time)
+      $ toLocalDateTime tzOffset time
   in
-    formatDate' localDateTime /\ formatTime' localDateTime
+    formatDate' localDateTime /\ formatDateTime' localDateTime
 
 -- Adjusts a DateTime via an offset (that can be obtained using timezoneOffset)
 -- The `adjust` function can overflow, if that happens (it shouldn't) we resolve to
@@ -139,11 +143,11 @@ formatDate' =
         , DateTime.YearFull
         ]
 
-formatTime :: Minutes -> DateTime -> String
-formatTime tzOffset dt = formatTime' $ utcToLocal tzOffset dt
+formatDateTime :: Minutes -> DateTime -> String
+formatDateTime tzOffset dt = formatDateTime' $ utcToLocal tzOffset dt
 
-formatTime' :: DateTime -> String
-formatTime' =
+formatDateTime' :: DateTime -> String
+formatDateTime' =
   DateTime.format
     $ List.fromFoldable
         [ DateTime.Hours24
