@@ -1,3 +1,3 @@
-window = {};
+globalThis.window = {};
 
-exports.forDeps = function () {};
+export function forDeps() {}

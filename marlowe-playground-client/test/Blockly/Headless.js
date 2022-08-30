@@ -1,16 +1,14 @@
-/*eslint-env node*/
-"use strict";
-const { registerDateTimeField } = require("src/Blockly/DateTimeField.js");
+import { registerDateTimeField } from "src/Blockly/DateTimeField.js";
 
-exports.createBlocklyInstance_ = function () {
+export function createBlocklyInstance_() {
   return require("blockly/blockly-node");
-};
+}
 
-exports.createWorkspace_ = function (blockly) {
+export function createWorkspace_(blockly) {
   return new blockly.Workspace();
-};
+}
 
-exports.initializeWorkspace_ = function (blockly, workspace) {
+export function initializeWorkspace_(blockly, workspace) {
   try {
     blockly.Extensions.register("hash_validator", function () {});
   } catch (err) {}
@@ -29,8 +27,8 @@ exports.initializeWorkspace_ = function (blockly, workspace) {
   var workspaceBlocks = blockly.Xml.textToDom(xmlText);
   blockly.Xml.domToWorkspace(workspaceBlocks, workspace);
   workspace.getAllBlocks()[0].setDeletable(false);
-};
+}
 
-exports.newBlock_ = function (workspace, name) {
+export function newBlock_(workspace, name) {
   return workspace.newBlock(name);
-};
+}

@@ -5,14 +5,13 @@ import "@fortawesome/fontawesome-free/css/all.css";
 import "./static/css/main.css";
 import "blockly";
 import "./grammar.ne";
+import jsonBigInt from "json-bigint";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import { EmacsExtension } from "monaco-emacs";
 import { initVimMode } from "monaco-vim";
 import * as bignumberDTS from "!!raw-loader!bignumber.js/bignumber.d.ts";
 import * as marloweDTS from "!!raw-loader!src/Language/Javascript/MarloweJS.ts";
 import { main } from "./output/Main";
-
-const { stringify, parse } = require("json-bigint")({ useNativeBigInt: true });
 
 global.monaco = monaco;
 global.EmacsExtension = EmacsExtension;
@@ -21,6 +20,9 @@ global.monacoExtraTypeScriptLibs = [
   [bignumberDTS.default, "inmemory://model/bignumber.js.d.ts"],
   [marloweDTS.default, "inmemory://model/marlowe-js.d.ts"],
 ];
+
+// We need to patch the JSON.stringify in order for BigInt serialization to work.
+const { stringify, parse } = jsonBigInt({ useNativeBigInt: true });
 
 JSON.stringify = stringify;
 JSON.parse = parse;

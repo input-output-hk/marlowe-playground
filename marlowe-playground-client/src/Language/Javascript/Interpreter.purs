@@ -46,8 +46,9 @@ eval model = do
   pure
     ( case res of
         Left err -> Left (RawError err)
-        Right result -> case parseDecodeJson result of
-          Left err -> Left (JSONParsingError (show err))
-          Right contract -> Right
-            (InterpreterResult { warnings: [], result: contract })
+        Right result ->
+          case parseDecodeJson result of
+            Left err -> Left (JSONParsingError (show err))
+            Right contract -> Right
+              (InterpreterResult { warnings: [], result: contract })
     )

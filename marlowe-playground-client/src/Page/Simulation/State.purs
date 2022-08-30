@@ -9,9 +9,10 @@ import Prologue hiding (div)
 
 import Component.BottomPanel.State (handleAction) as BottomPanel
 import Component.BottomPanel.Types (Action(..), State, initialState) as BottomPanel
-import Control.Monad.Except (lift, runExcept)
+import Control.Monad.Except (lift)
 import Control.Monad.Maybe.Trans (MaybeT(..), runMaybeT)
-import Data.Argonaut (encodeJson, stringify)
+import Data.Argonaut (decodeJson, encodeJson, parseJson, stringify)
+import Data.Argonaut.Decode.Error (JsonDecodeError)
 import Data.Array as Array
 import Data.BigInt.Argonaut (BigInt, fromString)
 import Data.Decimal (fromNumber, truncated)
@@ -24,7 +25,6 @@ import Data.Lens (assign, modifying, use)
 import Data.Lens.Extra (peruse)
 import Data.List.NonEmpty (last)
 import Data.List.NonEmpty as NEL
-import Data.List.Types (NonEmptyList)
 import Data.Map as Map
 import Data.Maybe (fromMaybe)
 import Data.MediaType.Common (applicationJSON)
@@ -38,8 +38,6 @@ import Effect.Aff.Class (class MonadAff)
 import Effect.Class (class MonadEffect, liftEffect)
 import Effect.Console (log)
 import Effect.Now (now, nowDateTime)
-import Foreign.Generic (ForeignError, decode)
-import Foreign.JSON (parseJSON)
 import Halogen (HalogenM, query, tell)
 import Halogen.Extra (mapSubmodule)
 import Halogen.Monaco (Message(..), Query(..)) as Monaco
@@ -324,14 +322,10 @@ getPrice inverse exchange pair = do
       Failure e -> do
         log $ "Failure" <> printAjaxError e
         pure "0"
-      Success (RawJson json) -> do
+      Success (RawJson jsonStr) -> do
         let
-          response :: Either (NonEmptyList ForeignError) Resp
-          response =
-            runExcept
-              $ do
-                  foreignJson <- parseJSON json
-                  decode foreignJson
+          response :: Either JsonDecodeError Resp
+          response = decodeJson =<< parseJson jsonStr
         case response of
           Right resp -> do
             let

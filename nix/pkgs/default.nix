@@ -97,7 +97,7 @@ let
     let
       p = pkgs.callPackage (sources.easy-purescript-nix) { };
     in
-    p // { purs = p.purs-0_14_9; };
+    p // { purs = p.purs-0_15_2; };
 
 
   # We pull out some packages from easyPS that are a pain to get otherwise.

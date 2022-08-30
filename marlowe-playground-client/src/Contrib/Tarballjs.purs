@@ -6,8 +6,8 @@ import Control.Promise (Promise)
 import Control.Promise as Promise
 import Data.ArrayBuffer.Types (ArrayBuffer, Uint8Array)
 import Data.Maybe (Maybe)
-import Data.Undefinable (Undefinable)
-import Data.Undefinable as Undefinable
+import Data.UndefinedOr (UndefinedOr)
+import Data.UndefinedOr as Undefined
 import Effect (Effect)
 import Effect.Aff (Aff)
 import JS.Object
@@ -40,7 +40,7 @@ download :: TarWriter -> FileName -> Effect Unit
 download = runEffectMth1 (Proxy :: Proxy "download")
 
 type TarReader = JSObject
-  ( getTextFile :: EffectMth1 FileName (Undefinable String)
+  ( getTextFile :: EffectMth1 FileName (UndefinedOr String)
   , readFile :: EffectMth1 File (Promise ArrayBuffer)
   )
 
@@ -53,6 +53,6 @@ readFile reader = Promise.toAffE <<< runEffectMth1 (Proxy :: Proxy "readFile")
   reader
 
 getTextFile :: TarReader -> FileName -> Effect (Maybe String)
-getTextFile reader = map Undefinable.toMaybe <<< runEffectMth1
+getTextFile reader = map Undefined.fromUndefined <<< runEffectMth1
   (Proxy :: Proxy "getTextFile")
   reader

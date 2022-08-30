@@ -60,6 +60,7 @@ import Blockly.Types
   , Input
   , Workspace
   )
+import Control.Promise (Promise, toAffE)
 import Data.Argonaut.Core (Json)
 import Data.Array (catMaybes)
 import Data.Array as Array
@@ -68,6 +69,8 @@ import Data.Number (infinity)
 import Data.Time.Duration (Minutes)
 import Data.Traversable (class Foldable, traverse_)
 import Effect (Effect)
+import Effect.Aff (Aff)
+import Effect.Class (liftEffect)
 import Effect.Exception (throw)
 import Foreign (Foreign)
 import Halogen.HTML (AttrName(..), ElemName(..), Node)
@@ -213,7 +216,7 @@ newtype ElementId = ElementId String
 
 derive instance newtypeElementId :: Newtype ElementId _
 
-foreign import createBlocklyInstance_ :: Effect Blockly
+foreign import createBlocklyInstance_ :: Effect (Promise Blockly)
 
 -- TODO: Now that ActusBlockly is removed we should pass two Elements instead
 -- of two ElementIds.
@@ -223,17 +226,17 @@ createBlocklyInstance
   -> ElementId
   -> Toolbox
   -> Minutes
-  -> Effect BlocklyState
+  -> Aff BlocklyState
 createBlocklyInstance
   rootBlockName
   (ElementId workspaceElementId)
   (ElementId blocksElementId)
   toolbox
   tzOffset = do
-  blockly <- createBlocklyInstance_
-  workspace <- createWorkspace blockly workspaceElementId config
+  blockly <- toAffE createBlocklyInstance_
+  workspace <- liftEffect $ createWorkspace blockly workspaceElementId config
     { tzOffset: unwrap tzOffset, offsetString: humanizeOffset tzOffset }
-  debugBlockly workspaceElementId
+  liftEffect $ debugBlockly workspaceElementId
     { blockly, workspace, rootBlockName, blocksElementId }
   pure { blockly, workspace, rootBlockName, blocksElementId }
   where
