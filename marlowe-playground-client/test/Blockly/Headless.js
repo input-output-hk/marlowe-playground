@@ -1,5 +1,3 @@
-/*eslint-env node*/
-"use strict";
 import { registerDateTimeField } from "src/Blockly/DateTimeField.js";
 
 export function createBlocklyInstance_() {

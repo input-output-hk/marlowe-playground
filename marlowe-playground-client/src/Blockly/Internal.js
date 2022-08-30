@@ -1,11 +1,9 @@
 import jsonBigInt from "json-bigint";
 import { registerDateTimeField } from "src/Blockly/DateTimeField.js";
-import blockly from "blockly";
-
 const JSONbig = jsonBigInt({ useNativeBigInt: true });
 
 export const createBlocklyInstance_ = () => {
-  return blockly;
+  return import("blockly");
 };
 
 export const debugBlockly = (name) => (state) => () => {

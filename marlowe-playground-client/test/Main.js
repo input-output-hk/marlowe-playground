@@ -1,3 +1,3 @@
-window = {};
+globalThis.window = {};
 
 export function forDeps() {}

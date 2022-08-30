@@ -199,16 +199,14 @@ handleAction (Inject rootBlockName blockDefinitions toolbox) = do
   mElement <- (pure <<< map HTMLElement.toElement) =<< getHTMLElementRef
     blocklyRef
   tzOffset <- gets _.tzOffset
-  blocklyState <-
-    liftEffect do
-      state <- Blockly.createBlocklyInstance rootBlockName
-        (ElementId "blocklyWorkspace")
-        (ElementId "workspaceBlocks")
-        toolbox
-        tzOffset
-      Blockly.addBlockTypes state.blockly blockDefinitions
-      Blockly.initializeWorkspace state
-      pure state
+  blocklyState <- liftAff $ Blockly.createBlocklyInstance rootBlockName
+    (ElementId "blocklyWorkspace")
+    (ElementId "workspaceBlocks")
+    toolbox
+    tzOffset
+  void $ liftEffect do
+    Blockly.addBlockTypes blocklyState.blockly blockDefinitions
+    Blockly.initializeWorkspace blocklyState
   -- Subscribe to the resize events on the main section to resize blockly automatically.
   for_ mElement $ H.subscribe <<< elementResize ContentBox
     (const ResizeWorkspace)
