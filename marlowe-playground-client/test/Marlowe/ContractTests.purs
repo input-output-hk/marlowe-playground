@@ -1,4 +1,3 @@
--- TODO: Move these tests to marlowe-commons
 module Marlowe.ContractTests where
 
 import Prologue
@@ -84,21 +83,6 @@ import Type.Prelude (Proxy(..))
 unixEpoch :: Instant
 unixEpoch = unsafeInstantFromInt 0
 
-shelleyEpoch :: Instant
-shelleyEpoch =
-  let
-    -- 2020-07-29 21:44:51 UTC expressed as unix epoch
-    epoch = Milliseconds 1596059091000.0
-  in
-    unsafePartial $ fromJust $ instant $ epoch
-
-secondsSinceShelley :: Int -> Instant
-secondsSinceShelley seconds = fromDateTime
-  $ fromMaybe (if seconds < 0 then bottom else top)
-  $ adjust (Seconds $ Int.toNumber seconds)
-  $ toDateTime
-  $ shelleyEpoch
-
 mkState :: Term T.Contract -> Simulation.State
 mkState contract =
   let
@@ -168,10 +152,10 @@ filledEscrow =
         ( TemplateContent
             { timeContent:
                 Map.fromFoldable
-                  [ "Payment deadline" /\ secondsSinceShelley 10
-                  , "Complaint deadline" /\ secondsSinceShelley 50
-                  , "Complaint response deadline" /\ secondsSinceShelley 100
-                  , "Mediation deadline" /\ secondsSinceShelley 1000
+                  [ "Payment deadline" /\ unsafeInstantFromInt 10
+                  , "Complaint deadline" /\ unsafeInstantFromInt 50
+                  , "Complaint response deadline" /\ unsafeInstantFromInt 100
+                  , "Mediation deadline" /\ unsafeInstantFromInt 1000
                   ]
             , valueContent:
                 Map.fromFoldable
@@ -205,8 +189,8 @@ filledZeroCouponBond =
         ( TemplateContent
             { timeContent:
                 Map.fromFoldable
-                  [ "Interest" /\ secondsSinceShelley 100
-                  , "Amount" /\ secondsSinceShelley 200
+                  [ "Interest" /\ unsafeInstantFromInt 100
+                  , "Amount" /\ unsafeInstantFromInt 200
                   ]
             , valueContent:
                 Map.fromFoldable
@@ -257,12 +241,12 @@ filledContractForDifferences =
         ( TemplateContent
             { timeContent:
                 Map.fromFoldable
-                  [ "Party deposit deadline" /\ secondsSinceShelley 10
-                  , "Counterparty deposit deadline" /\ secondsSinceShelley 20
-                  , "First window beginning" /\ secondsSinceShelley 30
-                  , "First window deadline" /\ secondsSinceShelley 40
-                  , "Second window beginning" /\ secondsSinceShelley 100
-                  , "Second window deadline" /\ secondsSinceShelley 110
+                  [ "Party deposit deadline" /\ unsafeInstantFromInt 10
+                  , "Counterparty deposit deadline" /\ unsafeInstantFromInt 20
+                  , "First window beginning" /\ unsafeInstantFromInt 30
+                  , "First window deadline" /\ unsafeInstantFromInt 40
+                  , "Second window beginning" /\ unsafeInstantFromInt 100
+                  , "Second window deadline" /\ unsafeInstantFromInt 110
                   ]
             , valueContent:
                 Map.fromFoldable
@@ -281,12 +265,12 @@ filledContractForDifferencesWithOracle =
         ( TemplateContent
             { timeContent:
                 Map.fromFoldable
-                  [ "Party deposit deadline" /\ secondsSinceShelley 10
-                  , "Counterparty deposit deadline" /\ secondsSinceShelley 20
-                  , "First window beginning" /\ secondsSinceShelley 30
-                  , "First window deadline" /\ secondsSinceShelley 40
-                  , "Second window beginning" /\ secondsSinceShelley 100
-                  , "Second window deadline" /\ secondsSinceShelley 110
+                  [ "Party deposit deadline" /\ unsafeInstantFromInt 10
+                  , "Counterparty deposit deadline" /\ unsafeInstantFromInt 20
+                  , "First window beginning" /\ unsafeInstantFromInt 30
+                  , "First window deadline" /\ unsafeInstantFromInt 40
+                  , "Second window beginning" /\ unsafeInstantFromInt 100
+                  , "Second window deadline" /\ unsafeInstantFromInt 110
                   ]
             , valueContent:
                 Map.fromFoldable
