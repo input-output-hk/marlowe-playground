@@ -52,6 +52,10 @@ import Data.Bifunctor (lmap)
 import Data.BigInt.Argonaut (BigInt)
 import Data.BigInt.Argonaut as BigInt
 import Data.Bounded.Generic (genericBottom, genericTop)
+import Data.DateTime.Instant
+  ( Instant
+  )
+import Data.DateTime.Instant.Extra (bigIntToInstant, instantToBigInt)
 import Data.Either (note')
 import Data.Enum (class BoundedEnum, class Enum, upFromIncluding)
 import Data.Enum.Generic
@@ -89,8 +93,6 @@ import Marlowe.Holes
   , Value(..)
   , ValueId(..)
   )
-import Plutus.V1.Ledger.Time (POSIXTime)
-import Plutus.V1.Ledger.Time as POSIXTime
 import Prologue
   ( class Bounded
   , class Eq
@@ -1452,15 +1454,15 @@ fieldAsString attr block =
     (asField =<< getRequiredAttribute attr block)
     (\err -> throwError $ ErrorInChild block attr err)
 
-fieldAsPOSIXTime
+fieldAsInstant
   :: forall m
    . MonadError ParseTermError m
   => String
   -> BDom.Block
-  -> m POSIXTime
-fieldAsPOSIXTime attr block = do
+  -> m Instant
+fieldAsInstant attr block = do
   bigIntVal <- fieldAsBigInt attr block
-  case POSIXTime.fromBigInt bigIntVal of
+  case bigIntToInstant bigIntVal of
     Nothing -> throwError $ ErrorInChild block attr $
       InvalidFieldCast (BigInt.toString bigIntVal) "POSIXTime"
     Just time -> pure time
@@ -1501,7 +1503,7 @@ instance blockToTermContract :: BlockToTerm Contract where
       location = (BlockId id)
     timeout <- case timeoutType of
       "time" -> do
-        time <- fieldAsPOSIXTime "timeout" b
+        time <- fieldAsInstant "timeout" b
         pure $ Term (TimeValue time) location
       "time_param" -> do
         timeParam <- fieldAsString "timeout" b
@@ -1914,7 +1916,7 @@ instance toBlocklyContract :: ToBlockly Contract where
     setField block "timeout"
       ( case timeout of
           Term (TimeValue time) _ ->
-            BigInt.toString $ POSIXTime.toBigInt time
+            BigInt.toString $ instantToBigInt time
           Term (TimeParam paramName) _ -> paramName
           _ -> "0"
       )

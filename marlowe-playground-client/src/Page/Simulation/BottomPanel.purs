@@ -6,8 +6,8 @@ import Data.BigInt.Argonaut (BigInt)
 import Data.BigInt.Argonaut as BigInt
 import Data.Foldable (foldMap)
 import Data.Lens (preview, to, view, (^.))
-import Data.Lens.NonEmptyList (_Head)
 import Data.Map as Map
+import Data.NonEmptyList.Lens (_Head)
 import Data.Tuple.Nested ((/\))
 import Effect.Aff.Class (class MonadAff)
 import Halogen (ComponentHTML)

@@ -29,10 +29,8 @@ import Data.Array
 import Data.DateTime (adjust)
 import Data.DateTime.Instant (Instant, fromDateTime, toDateTime)
 import Data.FoldableWithIndex (foldlWithIndex)
-import Data.Function (on)
 import Data.Lens (modifying, over, previewOn, set, to, use, (^.))
 import Data.Lens.Extra (peruse)
-import Data.Lens.NonEmptyList (_Head)
 import Data.List (List(..))
 import Data.List as List
 import Data.List.Types (NonEmptyList)
@@ -43,7 +41,7 @@ import Data.Maybe (fromMaybe)
 import Data.Newtype (unwrap, wrap)
 import Data.NonEmpty ((:|))
 import Data.NonEmptyList.Extra (extendWith)
-import Data.NonEmptyList.Lens (_Tail)
+import Data.NonEmptyList.Lens (_Head, _Tail)
 import Data.Semigroup.Foldable (foldl1)
 import Data.Time.Duration (Minutes(..))
 import Data.Tuple.Nested ((/\))
@@ -89,7 +87,6 @@ import Marlowe.Template
   , initializeTemplateContentWithIncreasingTime
   )
 import Marlowe.Time (unixEpoch)
-import Plutus.V1.Ledger.Time (POSIXTime(..))
 import Simulator.Lenses
   ( _SimulationRunning
   , _contract
@@ -251,7 +248,7 @@ updatePossibleActions
           , moveToTimePartyAction <$> Just NextTime <*>
               (fromDateTime <$> (adjust (Minutes one) $ toDateTime currentTime))
           , let
-              expirationTime = (unwrap <<< _.maxTime <<< unwrap <<< timeouts)
+              expirationTime = (_.maxTime <<< unwrap <<< timeouts)
                 contract
             in
               Just $ moveToTimePartyAction ExpirationTime expirationTime
@@ -422,7 +419,7 @@ pendingTransactionInputs executionState =
   let
     time = executionState ^. _time
 
-    interval = on TimeInterval POSIXTime time time
+    interval = TimeInterval time time
 
     inputs = executionState ^. _pendingInputs
   in
@@ -489,11 +486,7 @@ startSimulation initialTime contract =
                 [ Just $ StartEvent initialTime
                 , case contract of
                     Term Close _ -> Just $ CloseEvent
-                      -- TODO: SCP-3887 unify time construct
-                      ( TimeInterval
-                          (POSIXTime initialTime)
-                          (POSIXTime initialTime)
-                      )
+                      (TimeInterval initialTime initialTime)
                     _ -> Nothing
                 ]
             )
@@ -559,7 +552,7 @@ nextTimeout state = do
     (_executionState <<< _SimulationRunning <<< _contract)
   let
     Timeouts { minTime } = timeouts contract
-  map unwrap minTime
+  minTime
 
 mapPartiesActionInput
   :: (ActionInput -> ActionInput) -> PartiesAction -> PartiesAction

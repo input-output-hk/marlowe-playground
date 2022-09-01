@@ -7,7 +7,6 @@ import Effect (Effect)
 import Effect.Aff (launchAff_)
 import Marlowe.BlocklyTests as BlocklyTests
 import Marlowe.ContractTests as ContractTests
-import Marlowe.DeinstantiatorTests as DeinstantiatorTests
 import Marlowe.Holes.SemanticTest as HolesSemanticTest
 import Marlowe.Holes.TemplateTest as HolesTemplateTest
 import Marlowe.Holes.TimeoutTest as HolesTimeoutTest
@@ -26,7 +25,6 @@ main = launchAff_ $ runSpec [ consoleReporter ] do
   ContractTests.all
   BlocklyTests.all
   LintTests.all
-  DeinstantiatorTests.all
   HolesSemanticTest.all
   HolesTemplateTest.all
   HolesTimeoutTest.all

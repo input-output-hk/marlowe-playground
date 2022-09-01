@@ -5,9 +5,7 @@ import Prologue
 import Control.Monad.Error.Class (class MonadError)
 import Data.BigInt.Argonaut (BigInt, fromInt)
 import Data.DateTime.Instant (Instant)
-import Data.Either (hush)
 import Data.Foldable (for_)
-import Data.Function (on)
 import Data.List (List(..), (:))
 import Data.List as List
 import Data.Map as Map
@@ -34,35 +32,33 @@ import Language.Marlowe.Core.V1.Semantics.Types
   )
 import Language.Marlowe.Extended.V1 (toCore)
 import Language.Marlowe.Extended.V1 as EM
+import Language.Marlowe.ToTerm (toTerm)
 import Marlowe.Holes (Term, fromTerm)
 import Marlowe.Holes as T
-import Marlowe.Parser (parseContract)
 import Marlowe.Template (TemplateContent(..), fillTemplate)
 import Marlowe.Time (unixEpoch, unsafeInstantFromInt)
-import Plutus.V1.Ledger.Time (POSIXTime(..))
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (fail, shouldEqual)
-import Text.Pretty (pretty)
 
 -- For the purposes of this test all transactions can happen in slot 0
 transaction :: Input -> TransactionInput
 transaction input =
   S.TransactionInput
-    { interval: on S.TimeInterval POSIXTime unixEpoch unixEpoch
+    { interval: S.TimeInterval unixEpoch unixEpoch
     , inputs: List.singleton input
     }
 
 multipleInputs :: List Input -> TransactionInput
 multipleInputs inputs =
   S.TransactionInput
-    { interval: on S.TimeInterval POSIXTime unixEpoch unixEpoch
+    { interval: S.TimeInterval unixEpoch unixEpoch
     , inputs: inputs
     }
 
 timeout :: Instant -> TransactionInput
 timeout instant =
   S.TransactionInput
-    { interval: S.TimeInterval (POSIXTime instant) (POSIXTime instant)
+    { interval: S.TimeInterval instant instant
     , inputs: mempty
     }
 
@@ -234,17 +230,13 @@ contractForDifferencesFlows =
     ]
 
 ------------------------------------------------------------------------------------------------------
--- We could use mkDefaultTerm to get rid of the Maybe, as we know for a fact that if we have
--- a semantic contract we can construct a holes contract from it, but this is simpler to write
--- for test purposes
-semanticToTerms :: S.Contract -> Maybe (Term T.Contract)
-semanticToTerms = hush <<< parseContract <<< show <<< pretty
 
 extendedToSemanticAndTerm
   :: EM.Contract -> Maybe (S.Contract /\ Term T.Contract)
 extendedToSemanticAndTerm extendedContract = do
   semanticContract <- toCore extendedContract
-  termContract <- semanticToTerms semanticContract
+  let
+    termContract = toTerm extendedContract
   pure $ semanticContract /\ termContract
 
 shouldHaveSameOutput

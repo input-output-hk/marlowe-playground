@@ -1,4 +1,3 @@
--- TODO: Move these tests to marlowe-commons
 module Marlowe.ContractTests where
 
 import Prologue
@@ -11,15 +10,18 @@ import Control.Monad.State (StateT, evalStateT, execState, get, gets, lift)
 import Data.Array.NonEmpty (NonEmptyArray, fromArray)
 import Data.BigInt.Argonaut (BigInt)
 import Data.BigInt.Argonaut as BigInt
+import Data.DateTime (adjust)
+import Data.DateTime.Instant (Instant, fromDateTime, instant, toDateTime)
 import Data.Either (hush)
 import Data.Int (round)
+import Data.Int as Int
 import Data.Lens (_Just, preview, previewOn, set, (^.))
-import Data.Lens.NonEmptyList (_Head)
 import Data.List.NonEmpty as NEL
 import Data.Map as Map
-import Data.Maybe (fromJust)
+import Data.Maybe (fromJust, fromMaybe)
 import Data.NonEmpty ((:|))
-import Data.Time.Duration (Minutes(..))
+import Data.NonEmptyList.Lens (_Head)
+import Data.Time.Duration (Milliseconds(..), Minutes(..), Seconds(..))
 import Data.Tuple.Nested ((/\))
 import Examples.Marlowe.Contracts as Contracts
 import Examples.PureScript.ContractForDifferences as ContractForDifferences
@@ -39,14 +41,16 @@ import Language.Marlowe.Core.V1.Semantics.Types
   , TransactionError
   , TransactionWarning
   )
-import Language.Marlowe.Extended.V1 (resolveRelativeTimes)
+-- FIXME FIXME FIXME
+-- import Language.Marlowe.Extended.V1 (resolveRelativeTimes)
 import Language.Marlowe.Extended.V1 as EM
 import Language.Marlowe.Extended.V1.Metadata (emptyContractMetadata)
+import Language.Marlowe.ToTerm (toTerm)
 import Marlowe.Holes (Term(..), fromTerm)
 import Marlowe.Holes as T
 import Marlowe.Parser (parseContract)
 import Marlowe.Template (TemplateContent(..), fillTemplate)
-import Marlowe.Time (secondsSinceShelley, shelleyEpoch, unixEpoch)
+import Marlowe.Time (unsafeInstantFromInt)
 import Page.Simulation.State (mkStateBase)
 import Page.Simulation.Types as Simulation
 import Partial.Unsafe (unsafePartial)
@@ -74,8 +78,10 @@ import Test.QuickCheck.Gen (Gen)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
 import Test.Spec.QuickCheck (quickCheck)
-import Text.Pretty (pretty)
 import Type.Prelude (Proxy(..))
+
+unixEpoch :: Instant
+unixEpoch = unsafeInstantFromInt 0
 
 mkState :: Term T.Contract -> Simulation.State
 mkState contract =
@@ -98,17 +104,6 @@ all =
     examplesMatch
     escrowSimpleFlow
     exampleContractsHaveNoErrors
-
--- We don't currently have a function that goes from semantic contract to term contract, so for the purposes
--- of these test we print it and parse it.
-toTerm :: EM.Contract -> Term T.Contract
-toTerm contract = unsafePartial
-  $ fromJust
-  $ hush
-  $ parseContract
-  $ show
-  $ pretty
-  $ resolveRelativeTimes shelleyEpoch contract
 
 contractToExtended :: String -> Maybe EM.Contract
 contractToExtended = fromTerm <=< hush <<< parseContract
@@ -157,10 +152,10 @@ filledEscrow =
         ( TemplateContent
             { timeContent:
                 Map.fromFoldable
-                  [ "Payment deadline" /\ secondsSinceShelley 10
-                  , "Complaint deadline" /\ secondsSinceShelley 50
-                  , "Complaint response deadline" /\ secondsSinceShelley 100
-                  , "Mediation deadline" /\ secondsSinceShelley 1000
+                  [ "Payment deadline" /\ unsafeInstantFromInt 10
+                  , "Complaint deadline" /\ unsafeInstantFromInt 50
+                  , "Complaint response deadline" /\ unsafeInstantFromInt 100
+                  , "Mediation deadline" /\ unsafeInstantFromInt 1000
                   ]
             , valueContent:
                 Map.fromFoldable
@@ -194,8 +189,8 @@ filledZeroCouponBond =
         ( TemplateContent
             { timeContent:
                 Map.fromFoldable
-                  [ "Interest" /\ secondsSinceShelley 100
-                  , "Amount" /\ secondsSinceShelley 200
+                  [ "Interest" /\ unsafeInstantFromInt 100
+                  , "Amount" /\ unsafeInstantFromInt 200
                   ]
             , valueContent:
                 Map.fromFoldable
@@ -246,12 +241,12 @@ filledContractForDifferences =
         ( TemplateContent
             { timeContent:
                 Map.fromFoldable
-                  [ "Party deposit deadline" /\ secondsSinceShelley 10
-                  , "Counterparty deposit deadline" /\ secondsSinceShelley 20
-                  , "First window beginning" /\ secondsSinceShelley 30
-                  , "First window deadline" /\ secondsSinceShelley 40
-                  , "Second window beginning" /\ secondsSinceShelley 100
-                  , "Second window deadline" /\ secondsSinceShelley 110
+                  [ "Party deposit deadline" /\ unsafeInstantFromInt 10
+                  , "Counterparty deposit deadline" /\ unsafeInstantFromInt 20
+                  , "First window beginning" /\ unsafeInstantFromInt 30
+                  , "First window deadline" /\ unsafeInstantFromInt 40
+                  , "Second window beginning" /\ unsafeInstantFromInt 100
+                  , "Second window deadline" /\ unsafeInstantFromInt 110
                   ]
             , valueContent:
                 Map.fromFoldable
@@ -270,12 +265,12 @@ filledContractForDifferencesWithOracle =
         ( TemplateContent
             { timeContent:
                 Map.fromFoldable
-                  [ "Party deposit deadline" /\ secondsSinceShelley 10
-                  , "Counterparty deposit deadline" /\ secondsSinceShelley 20
-                  , "First window beginning" /\ secondsSinceShelley 30
-                  , "First window deadline" /\ secondsSinceShelley 40
-                  , "Second window beginning" /\ secondsSinceShelley 100
-                  , "Second window deadline" /\ secondsSinceShelley 110
+                  [ "Party deposit deadline" /\ unsafeInstantFromInt 10
+                  , "Counterparty deposit deadline" /\ unsafeInstantFromInt 20
+                  , "First window beginning" /\ unsafeInstantFromInt 30
+                  , "First window deadline" /\ unsafeInstantFromInt 40
+                  , "Second window beginning" /\ unsafeInstantFromInt 100
+                  , "Second window deadline" /\ unsafeInstantFromInt 110
                   ]
             , valueContent:
                 Map.fromFoldable

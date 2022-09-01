@@ -13,6 +13,7 @@
   , "bifunctors"
   , "console"
   , "control"
+  , "coroutines"
   , "datetime"
   , "datetime-iso"
   , "decimals"
@@ -41,6 +42,8 @@
   , "json-helpers"
   , "lists"
   , "maybe"
+  , "marlowe"
+  , "markdown"
   , "media-types"
   , "newtype"
   , "node-buffer"
@@ -75,13 +78,16 @@
   , "unordered-collections"
   , "unsafe-coerce"
   , "uri"
-  , "web-common"
+  , "uuid"
   , "web-dom"
   , "web-events"
   , "web-file"
   , "web-html"
   , "web-socket"
   , "web-uievents"
+  , "free"
+  , "freeap"
+  , "identity"
   ]
 , packages = ../packages.dhall
 , sources =
@@ -89,5 +95,6 @@
   , "test/**/*.purs"
   , "generated/**/*.purs"
   , "../web-common-marlowe/src/**/*.purs"
+  , "../web-common/src/**/*.purs"
   ]
 }
