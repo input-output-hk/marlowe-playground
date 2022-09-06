@@ -10,18 +10,15 @@ import Control.Monad.State (StateT, evalStateT, execState, get, gets, lift)
 import Data.Array.NonEmpty (NonEmptyArray, fromArray)
 import Data.BigInt.Argonaut (BigInt)
 import Data.BigInt.Argonaut as BigInt
-import Data.DateTime (adjust)
-import Data.DateTime.Instant (Instant, fromDateTime, instant, toDateTime)
+import Data.DateTime.Instant (Instant)
 import Data.Either (hush)
 import Data.Int (round)
-import Data.Int as Int
 import Data.Lens (_Just, preview, previewOn, set, (^.))
 import Data.List.NonEmpty as NEL
 import Data.Map as Map
-import Data.Maybe (fromJust, fromMaybe)
 import Data.NonEmpty ((:|))
 import Data.NonEmptyList.Lens (_Head)
-import Data.Time.Duration (Milliseconds(..), Minutes(..), Seconds(..))
+import Data.Time.Duration (Minutes(..))
 import Data.Tuple.Nested ((/\))
 import Examples.Marlowe.Contracts as Contracts
 import Examples.PureScript.ContractForDifferences as ContractForDifferences
@@ -53,7 +50,6 @@ import Marlowe.Template (TemplateContent(..), fillTemplate)
 import Marlowe.Time (unsafeInstantFromInt)
 import Page.Simulation.State (mkStateBase)
 import Page.Simulation.Types as Simulation
-import Partial.Unsafe (unsafePartial)
 import Record (insert) as Record
 import Simulator.Lenses
   ( _SimulationRunning

@@ -24,13 +24,11 @@ import Data.Int (floor, round)
 import Data.Int (toNumber) as Int
 import Data.List as List
 import Data.Maybe (fromMaybe)
-import Data.Newtype (over, unwrap)
+import Data.Newtype (over)
 import Data.Ord (abs)
 import Data.Time.Duration (Minutes(..), Seconds(..))
 import Data.Tuple.Nested ((/\))
 import Language.Marlowe.Core.V1.Semantics.Types (TimeInterval(..), Token(..))
-import Plutus.V1.Ledger.Time (POSIXTime)
-import Plutus.V1.Ledger.Time as POSIXTime
 
 humanizeDuration :: Seconds -> String
 humanizeDuration (Seconds seconds)

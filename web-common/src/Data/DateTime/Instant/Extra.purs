@@ -9,12 +9,9 @@ import Data.DateTime.Instant
   , instant
   , unInstant
   )
-import Data.Maybe (Maybe(..), fromJust)
+import Data.Maybe (Maybe, fromJust)
 import Data.Newtype (unwrap)
-import Data.Time.Duration
-  ( Milliseconds(..)
-
-  )
+import Data.Time.Duration (Milliseconds(..))
 import Partial.Unsafe (unsafePartial)
 
 instantToBigInt :: Instant -> BigInt

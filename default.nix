@@ -36,11 +36,12 @@ rec {
   inherit (marlowe) webCommon web-ghc;
 
   webCommonMarlowe = pkgs.callPackage ./web-common-marlowe { inherit (marlowe.lib) gitignore-nix; };
+  webCommonSrc = pkgs.callPackage ./web-common { inherit (marlowe.lib) gitignore-nix; };
 
   marlowe-playground = pkgs.recurseIntoAttrs rec {
     inherit (pkgs.callPackage ./marlowe-playground-client {
       inherit (marlowe.lib) buildPursPackage buildNodeModules filterNpm gitignore-nix;
-      inherit haskell webCommon webCommonMarlowe;
+      inherit haskell webCommon webCommonMarlowe webCommonSrc;
       inherit (marlowe) purs-tidy writeShellScriptBinInRepoRoot;
       inherit (pkgs.nodePackages) prettier;
     }) client server generated-purescript generate-purescript start-backend build-client;
