@@ -23,7 +23,6 @@ import Language.Marlowe.Extended.V1
 import Language.Marlowe.Extended.V1.Metadata (lovelaceFormat)
 import Language.Marlowe.Extended.V1.Metadata.Types (ContractType(..), MetaData)
 import Marlowe.Time (unsafeInstantFromInt)
-import Plutus.V1.Ledger.Time (POSIXTime(..))
 
 contractModule :: Module
 contractModule = Module { metadata, contract }

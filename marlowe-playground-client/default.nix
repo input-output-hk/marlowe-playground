@@ -2,6 +2,7 @@
 , gitignore-nix
 , haskell
 , webCommon
+, webCommonSrc
 , webCommonMarlowe
 , buildPursPackage
 , buildNodeModules
@@ -78,6 +79,7 @@ let
       name = "marlowe-playground-client";
       extraSrcs = {
         web-common-marlowe = webCommonMarlowe;
+        web-common = webCommonSrc;
       };
       spagoPackages = pkgs.callPackage ./spago-packages.nix { };
     })

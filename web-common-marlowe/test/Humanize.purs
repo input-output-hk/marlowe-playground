@@ -11,7 +11,7 @@ import Data.Time (hour)
 import Data.Time.Duration (Milliseconds(..), Minutes(..))
 import Data.Tuple.Nested ((/\))
 import Humanize
-  ( formatPOSIXTime
+  ( formatInstant
   , humanizeOffset
   , humanizeValue
   , localToUtc
@@ -19,16 +19,15 @@ import Humanize
   )
 import Language.Marlowe.Core.V1.Semantics.Types (Token(..), adaToken)
 import Partial.Unsafe (unsafePartial)
-import Plutus.V1.Ledger.Time (POSIXTime(..))
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
 
-humanizeSpec :: Spec Unit
-humanizeSpec = do
+all :: Spec Unit
+all = do
   -- TODO: humanizeDurationSpec, humanizeIntervalSpec
   humanizeValueSpec
   humanizeOffsetSpec
-  formatPOSIXTimeSpec
+  formatInstantSpec
   utcToLocalSpec
   localToUtcSpec
 
@@ -70,23 +69,23 @@ humanizeOffsetSpec = describe "humanizeOffset" do
   it "should display minutes when the offset is not a full hour" do
     humanizeOffset (Minutes 90.0) `shouldEqual` "GMT-1:30"
 
-formatPOSIXTimeSpec :: Spec Unit
-formatPOSIXTimeSpec = describe "formatPOSIXTime" do
+formatInstantSpec :: Spec Unit
+formatInstantSpec = describe "formatInstant" do
   -- Wednesday, April 27, 2022 7:57:26 PM GMT
   let
-    someUTCTime = POSIXTime $ unsafePartial $ fromJust $ instant $ Milliseconds
+    someUTCTime = unsafePartial $ fromJust $ instant $ Milliseconds
       1651089446000.0
   it "should not modify the date if the offset is zero" do
-    formatPOSIXTime (Minutes zero) someUTCTime `shouldEqual`
+    formatInstant (Minutes zero) someUTCTime `shouldEqual`
       ("27 Apr 2022" /\ "19:57")
   it "should substract the time for positive offset" do
-    formatPOSIXTime (Minutes 180.0) someUTCTime `shouldEqual`
+    formatInstant (Minutes 180.0) someUTCTime `shouldEqual`
       ("27 Apr 2022" /\ "16:57")
   it "should add the time for negative offset" do
-    formatPOSIXTime (Minutes (-60.0)) someUTCTime `shouldEqual`
+    formatInstant (Minutes (-60.0)) someUTCTime `shouldEqual`
       ("27 Apr 2022" /\ "20:57")
   it "should modify the date if the time passes 24 hours" do
-    formatPOSIXTime (Minutes (-720.0)) someUTCTime `shouldEqual`
+    formatInstant (Minutes (-720.0)) someUTCTime `shouldEqual`
       ("28 Apr 2022" /\ "07:57")
 
 utcToLocalSpec :: Spec Unit
