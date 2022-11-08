@@ -16,7 +16,8 @@ component
 component = H.mkComponent
   { initialState: deriveState
   , render
-  , eval: H.mkEval $ H.defaultEval { handleAction = handleAction }
+  , eval: H.mkEval $ H.defaultEval
+      { handleAction = handleAction, receive = Just <<< Receive }
   }
 
 deriveState :: Input -> State
