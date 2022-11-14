@@ -1,95 +1,46 @@
-# NOTE: This flake is only provided as interface to `bitte` and shouldn't be used otherwise
-#
-# Occasionally building flake builds will segfault. The workaround for this is to
-# disable the garbage collector  `GC_DONT_GC=1  nix build .#web-ghc-server
-#
-# In case you are not sure if you should be using this flake, the answer is: No.
 {
-  description = "plutus flake for pinning sources and bitte deployments";
-
-  inputs = {
-    flake-utils.url = "github:numtide/flake-utils";
-
-    # We intentionally import nixpkgs and haskell.nix as non-flakes, to match the
-    # flake-free normal build workflow exactly.
-    nixpkgs = {
-      type = "github";
-      owner = "NixOS";
-      repo = "nixpkgs";
-      ref = "nixpkgs-unstable";
-      flake = false;
-    };
-    haskell-nix = {
-      url = "github:input-output-hk/haskell.nix";
-      flake = false;
-    };
-
-    cardano-repo-tool = {
-      url = "github:input-output-hk/cardano-repo-tool";
-      flake = false;
-    };
-    easy-purescript-nix = {
-      url = "github:justinwoo/easy-purescript-nix";
-      flake = false;
-    };
-    gitignore-nix = {
-      url = "github:hercules-ci/gitignore.nix";
-      flake = false;
-    };
-    hackage-nix = {
-      url = "github:input-output-hk/hackage.nix";
-      flake = false;
-    };
-    haskell-language-server = {
-      # Pinned to a release
-      url = "github:haskell/haskell-language-server?ref=1.3.0";
-      flake = false;
-    };
-    iohk-nix = {
-      url = "github:input-output-hk/iohk-nix/marlowe-dev-testnet";
-      flake = false;
-    };
-    npmlock2nix = {
-      url = "github:tweag/npmlock2nix";
-      flake = false;
-    };
-    plutus-core = {
-      url = "github:input-output-hk/plutus";
-      flake = false;
-    };
-    plutus-apps = {
-      url = "github:input-output-hk/plutus-apps?rev=682977c8c9fe181a0dc066ac2b40a4b1c1b5072c";
-      flake = false;
-    };
-    pre-commit-hooks-nix = {
-      url = "github:cachix/pre-commit-hooks.nix";
-      flake = false;
-    };
-    sphinxcontrib-haddock = {
-      url = "github:michaelpj/sphinxcontrib-haddock";
-      flake = false;
-    };
-    stackage-nix = {
-      url = "github:input-output-hk/stackage.nix";
-      flake = false;
-    };
-    web-common = {
-      url = "github:input-output-hk/purescript-web-common";
-      flake = true;
-    };
-  };
-
-  outputs = { self, flake-utils, ... }@inputs:
-    (flake-utils.lib.eachSystem [ "x86_64-linux" ] (system:
+  # This is a template created by `hix init`
+  inputs.haskellNix.url = "github:input-output-hk/haskell.nix";
+  inputs.nixpkgs.follows = "haskellNix/nixpkgs-unstable";
+  inputs.flake-utils.url = "github:numtide/flake-utils";
+  outputs = { self, nixpkgs, flake-utils, haskellNix }:
+    let
+      supportedSystems = [
+        # "x86_64-linux"
+        "x86_64-darwin"
+      ];
+    in
+    flake-utils.lib.eachSystem supportedSystems (system:
       let
-        topLevel = import ./. {
-          inherit system;
-          sources = inputs;
-        };
+        overlays = [
+          haskellNix.overlay
+          (final: prev: {
+            playground =
+              final.haskell-nix.cabalProject' {
+                src = ./.;
+                compiler-nix-name = "ghc8107";
+                shell.tools = {
+                  cabal = { };
+                  # hlint = {};
+                  haskell-language-server = { };
+                };
+              };
+          })
+        ];
+        pkgs = import nixpkgs { inherit system overlays; inherit (haskellNix) config; };
+        flake = pkgs.playground.flake { };
       in
-      {
-        packages = topLevel.bitte-packages // {
-          entrypoints = topLevel.bitte-packages;
-        };
-      }));
+      flake // {
+        legacyPackages = pkgs;
+      });
+
+  # --- Flake Local Nix Configuration ----------------------------
+  nixConfig = {
+    # This sets the flake to use the IOG nix cache.
+    # Nix should ask for permission before using it,
+    # but remove it here if you do not want it to.
+    extra-substituters = [ "https://cache.iog.io" ];
+    extra-trusted-public-keys = [ "hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ=" ];
+    allow-import-from-derivation = "true";
+  };
 }
