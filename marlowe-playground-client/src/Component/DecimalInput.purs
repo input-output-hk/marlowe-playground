@@ -8,12 +8,11 @@ import Data.Either (Either(..))
 import Data.Int as I
 import Data.Lens (set) as L
 import Data.Lens.Record (prop) as L
-import Data.Maybe (Maybe(..), fromMaybe)
+import Data.Maybe (Maybe(..))
 import Data.Number (pow)
 import Data.Numbers.Natural (Natural)
 import Data.Numbers.Natural as N
 import Effect.Class (class MonadEffect)
-import Effect.Class.Console (info)
 import Halogen (RefLabel(..))
 import Halogen as H
 import Halogen.Css (classNames) as HH
