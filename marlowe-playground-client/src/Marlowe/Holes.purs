@@ -51,9 +51,9 @@ import Language.Marlowe.Core.V1.Semantics
   )
 import Language.Marlowe.Core.V1.Semantics.Types
   ( class HasTimeout
+  , Address
   , CurrencySymbol
   , IntervalResult(..)
-  , PubKey
   , Timeouts(..)
   , TokenName
   , _timeInterval
@@ -322,9 +322,9 @@ getMarloweConstructors TokenType = Map.singleton "Token" $ ArgumentArray
 
 getMarloweConstructors PartyType =
   Map.fromFoldable
-    [ ( Tuple "PK" $ ArgumentArray
+    [ ( Tuple "Address" $ ArgumentArray
           [ DefaultString
-              "0000000000000000000000000000000000000000000000000000000000000000"
+              ""
           ]
       )
     , (Tuple "Role" $ ArgumentArray [ DefaultString "token" ])
@@ -751,7 +751,7 @@ instance timeoutHasMarloweHoles :: HasMarloweHoles Timeout where
   getHoles (TimeParam _) m = m
 
 data Party
-  = PK PubKey
+  = Address Address
   | Role TokenName
 
 derive instance genericParty :: Generic Party _
@@ -771,14 +771,14 @@ instance hasArgsParty :: Args Party where
   hasNestedArgs = genericHasNestedArgs
 
 instance partyFromTerm :: FromTerm Party S.Party where
-  fromTerm (PK b) = pure $ S.PK b
+  fromTerm (Address b) = pure $ S.Address b
   fromTerm (Role b) = pure $ S.Role b
 
 instance partyIsMarloweType :: IsMarloweType Party where
   marloweType _ = PartyType
 
 instance partyHasMarloweHoles :: HasMarloweHoles Party where
-  getHoles (PK _) m = m
+  getHoles (Address _) m = m
   getHoles (Role _) m = m
 
 instance partyHasContractData :: HasContractData Party where

@@ -117,13 +117,13 @@ escrowWithCollateral =
                                       (Pay
                                          (Role "Seller")
                                          (Party
-                                            (PK "0000000000000000000000000000000000000000000000000000000000000000"))
+                                            (Address "0000000000000000000000000000000000000000000000000000000000000000"))
                                          (Token "" "")
                                          (ConstantParam "Collateral amount")
                                          (Pay
                                             (Role "Buyer")
                                             (Party
-                                               (PK "0000000000000000000000000000000000000000000000000000000000000000"))
+                                               (Address "0000000000000000000000000000000000000000000000000000000000000000"))
                                             (Token "" "")
                                             (ConstantParam "Collateral amount") Close)))] (TimeParam "Complaint deadline") Close)))] (TimeParam "Dispute by buyer timeout") Close))] (TimeParam "Deposit of price by buyer timeout") Close))] (TimeParam "Deposit of collateral by buyer timeout") Close))] (TimeParam "Collateral deposit by seller timeout") Close"""
 

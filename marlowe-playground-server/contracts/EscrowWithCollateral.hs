@@ -14,7 +14,7 @@ explicitRefunds = False
 seller, buyer, burnAddress :: Party
 buyer = Role "Buyer"
 seller = Role "Seller"
-burnAddress = PK "0000000000000000000000000000000000000000000000000000000000000000"
+burnAddress = Address "0000000000000000000000000000000000000000000000000000000000000000"
 
 price, collateral :: Value
 price = ConstantParam "Price"

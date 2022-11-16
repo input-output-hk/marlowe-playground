@@ -28,9 +28,9 @@ import Data.Semigroup.Foldable (foldl1)
 import Data.String.CodeUnits (fromCharArray)
 import Data.Time.Duration (Milliseconds(..))
 import Language.Marlowe.Core.V1.Semantics.Types
-  ( CurrencySymbol
+  ( Address
+  , CurrencySymbol
   , Input(..)
-  , PubKey
   , Rational(..)
   , TimeInterval(..)
   , TokenName
@@ -138,7 +138,7 @@ genAlphaNum = oneOf $ genAlpha :| [ genDigitChar ]
 genString :: forall m. MonadGen m => MonadRec m => m String
 genString = fromCharArray <$> resize (_ - 1) (unfoldable genAlphaNum)
 
-genPubKey :: forall m. MonadGen m => MonadRec m => m PubKey
+genPubKey :: forall m. MonadGen m => MonadRec m => m Address
 genPubKey = genBase16
 
 genTokenName :: forall m. MonadGen m => MonadRec m => m TokenName
@@ -150,9 +150,9 @@ genParty
   => MonadRec m
   => MonadReader GenerationOptions m
   => m Party
-genParty = oneOf $ pk :| [ role ]
+genParty = oneOf $ addr :| [ role ]
   where
-  pk = PK <$> genPubKey
+  addr = Address <$> genPubKey
 
   role = Role <$> genTokenName
 
@@ -492,9 +492,9 @@ genTokenValue = do
   pure $ S.Token currencySymbol tokenName
 
 genPartyValue :: forall m. MonadGen m => MonadRec m => m S.Party
-genPartyValue = oneOf $ pk :| [ role ]
+genPartyValue = oneOf $ addr :| [ role ]
   where
-  pk = S.PK <$> genPubKey
+  addr = S.Address <$> genPubKey
 
   role = S.Role <$> genTokenNameValue
 

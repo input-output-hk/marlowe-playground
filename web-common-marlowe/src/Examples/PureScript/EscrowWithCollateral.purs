@@ -147,7 +147,7 @@ seller :: Party
 seller = Role "Seller"
 
 burnAddress :: Party
-burnAddress = PK
+burnAddress = Address
   "0000000000000000000000000000000000000000000000000000000000000000"
 
 price :: Value

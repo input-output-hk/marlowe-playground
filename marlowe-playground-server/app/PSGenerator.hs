@@ -277,7 +277,7 @@ writePangramJson outputDir = do
 
     let
 
-        alicePk = S.PK "a2c20c77887ace1cd986193e4e75babd8993cfd56995cd5cfce609c2"
+        alicePk = S.Address "a2c20c77887ace1cd986193e4e75babd8993cfd56995cd5cfce609c2"
 
         bobRole = S.Role "Bob"
 

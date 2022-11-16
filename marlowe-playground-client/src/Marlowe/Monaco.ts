@@ -219,7 +219,7 @@ const marloweLexer = moo.compile({
       ],
       TOKEN: ["Token"],
       PAYEE: ["Account", "Party"],
-      PARTY: ["PK", "Role"],
+      PARTY: ["Address", "Role"],
       BOUND: ["Bound"],
       TIMEOUT: ["TimeParam"],
       VALUE_ID: ["ValueId"],

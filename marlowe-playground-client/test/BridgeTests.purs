@@ -64,13 +64,14 @@ serializationTest =
     let
       ada = Token "" ""
 
-      alicePk = PK "a2c20c77887ace1cd986193e4e75babd8993cfd56995cd5cfce609c2"
+      aliceAddr = Address
+        "a2c20c77887ace1cd986193e4e75babd8993cfd56995cd5cfce609c2"
 
       bobRole = Role "Bob"
 
       const = Constant (fromInt 100)
 
-      choiceId = ChoiceId "choice" alicePk
+      choiceId = ChoiceId "choice" aliceAddr
 
       valueExpr = AddValue const (SubValue const (NegValue const))
 
@@ -79,9 +80,9 @@ serializationTest =
       contract =
         Assert TrueObs
           ( When
-              [ Case (Deposit alicePk alicePk ada valueExpr)
+              [ Case (Deposit aliceAddr aliceAddr ada valueExpr)
                   ( Let (ValueId "x") valueExpr
-                      ( Pay alicePk (Party bobRole) ada
+                      ( Pay aliceAddr (Party bobRole) ada
                           ( Cond TrueObs (UseValue (ValueId "x"))
                               (UseValue (ValueId "y"))
                           )
@@ -98,8 +99,8 @@ serializationTest =
                       ( ChoseSomething choiceId `OrObs`
                           (ChoiceValue choiceId `ValueEQ` const)
                       )
-                      ( Pay alicePk (Account alicePk) token
-                          (DivValue (AvailableMoney alicePk token) const)
+                      ( Pay aliceAddr (Account aliceAddr) token
+                          (DivValue (AvailableMoney aliceAddr token) const)
                           Close
                       )
                       Close
@@ -118,7 +119,7 @@ serializationTest =
 
       state =
         State
-          { accounts: Map.singleton (Tuple alicePk token) (fromInt 12)
+          { accounts: Map.singleton (Tuple aliceAddr token) (fromInt 12)
           , choices: Map.singleton choiceId (fromInt 42)
           , boundValues: Map.fromFoldable
               [ Tuple (ValueId "x") (fromInt 1)

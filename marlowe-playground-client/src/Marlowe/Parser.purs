@@ -69,7 +69,7 @@ type HelperFunctions a =
   , mkChoiceId :: String -> Term Party -> ChoiceId
   , mkValueId :: String -> ValueId
   , mkToken :: String -> String -> Token
-  , mkPK :: String -> Party
+  , mkAddress :: String -> Party
   , mkRole :: String -> Party
   , mkAccount :: AccountId -> Payee
   , mkParty :: Term Party -> Payee
@@ -136,7 +136,7 @@ helperFunctions =
   , mkChoiceId: ChoiceId
   , mkValueId: ValueId
   , mkToken: Token
-  , mkPK: PK
+  , mkAddress: Address
   , mkRole: Role
   , mkAccount: Account
   , mkParty: Party

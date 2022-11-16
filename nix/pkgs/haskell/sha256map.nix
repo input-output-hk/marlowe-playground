@@ -19,5 +19,5 @@
   "https://github.com/input-output-hk/hedgehog-extras"."edf6945007177a638fbeb8802397f3a6f4e47c14" = "0wc7qzkc7j4ns2rz562h6qrx2f8xyq7yjcb7zidnj7f6j0pcd0i9";
   "https://github.com/input-output-hk/optparse-applicative"."7497a29cb998721a9068d5725d49461f2bba0e7a" = "1gvsrg925vynwgqwplgjmp53vj953qyh3wbdf34pw21c8r47w35r";
   "https://github.com/paluh/plutus-apps"."5bcc67b3b2eb219a54b90c24920a72c9266190a2" = "1yc8zwviqlvvizgi4ckpy5jdk2w21qjyijhgpfzrizz84ci2igzd";
-  "https://github.com/input-output-hk/marlowe-cardano"."f5a0f64d8697dd7a29af91b11530039dc98a1d44" = "sha256-tISV8kCZPaDjeuKDdnFE4ETc/BV/qavJLHeSCfM32Ac=";
+  "https://github.com/input-output-hk/marlowe-cardano"."d1ed1b9703f414ec1d1a29f6d4f5c58d2faf6c81" = "sha256-unCGFcHDDgizFwiIMe8J+p84uufX56uulvvCITh5KSg=";
 }

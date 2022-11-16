@@ -24,7 +24,7 @@ instance ToTerm TermWrapper S.ValueId T.ValueId where
   toTerm (S.ValueId s) = TermWrapper (T.ValueId s) NoLocation
 
 instance ToTerm Term S.Party T.Party where
-  toTerm (S.PK pubKey) = Term (T.PK pubKey) NoLocation
+  toTerm (S.Address address) = Term (T.Address address) NoLocation
   toTerm (S.Role tokenName) = Term (T.Role tokenName) NoLocation
 
 instance ToTerm Term E.Payee T.Payee where
