@@ -54,7 +54,6 @@ library
         http-client-tls -any,
         http-conduit -any,
         http-types -any,
-        playground-common -any,
         jwt -any,
         lens -any,
         marlowe -any,
@@ -77,7 +76,6 @@ library
         transformers -any,
         unordered-containers,
         wai-cors -any,
-        web-ghc -any,
         uuid -any,
         validation -any
 
@@ -109,7 +107,6 @@ executable marlowe-playground-server
         filepath -any,
         http-client -any,
         http-types -any,
-        playground-common -any,
         lens -any,
         marlowe -any,
         marlowe-playground-server -any,
@@ -117,7 +114,6 @@ executable marlowe-playground-server
         marlowe-actus -any,
         monad-logger -any,
         mtl -any,
-        plutus-contract -any,
         plutus-ledger,
         plutus-tx,
         purescript-bridge -any,
@@ -129,7 +125,6 @@ executable marlowe-playground-server
         text -any,
         wai -any,
         warp -any,
-        web-ghc -any,
         time -any,
         time-units -any
 
@@ -153,7 +148,6 @@ executable flow-chart-generator
     build-depends:
         aeson -any,
         base -any,
-        playground-common -any,
         marlowe -any,
         marlowe-playground-server -any
 
