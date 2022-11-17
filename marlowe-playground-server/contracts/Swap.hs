@@ -4,7 +4,7 @@ module Swap where
 import Language.Marlowe.Extended.V1
 
 main :: IO ()
-main = printJSON $ contract
+main = printJSON swap
 
 -- We can set explicitRefunds True to run Close refund analysis
 -- but we get a shorter contract if we set it to False
@@ -55,8 +55,8 @@ makePayment :: SwapParty -> SwapParty -> Contract -> Contract
 makePayment src dest =
   Pay (party src) (Party $ party dest) (currency src) (amount src)
 
-contract :: Contract
-contract = makeDeposit adaProvider adaDepositTimeout Close
+swap :: Contract
+swap = makeDeposit adaProvider adaDepositTimeout Close
          $ makeDeposit dollarProvider dollarDepositTimeout (refundSwapParty adaProvider)
          $ makePayment adaProvider dollarProvider
          $ makePayment dollarProvider adaProvider
