@@ -2,6 +2,7 @@
 {-# LANGUAGE DerivingStrategies    #-}
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE LambdaCase            #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE OverloadedStrings     #-}
@@ -19,7 +20,7 @@ import qualified API
 import qualified Auth
 import qualified ContractForDifferences
 import qualified ContractForDifferencesWithOracle
-import Control.Applicative ((<|>))
+import Control.Applicative (empty, (<|>))
 import Control.Lens (set, (&))
 import Control.Monad.Reader (MonadReader)
 import qualified CouponBondGuaranteed
@@ -33,11 +34,12 @@ import qualified Data.Text.IO as T ()
 import qualified Escrow
 import qualified EscrowWithCollateral
 import qualified Example
+import Gist (Gist, GistFile, NewGist, NewGistFile, Owner)
 import Language.Haskell.Interpreter (CompilationError, InterpreterError, InterpreterResult, SourceCode, Warning)
 import Language.Marlowe.Extended.V1
 import Language.PureScript.Bridge (BridgePart, Language (Haskell, PureScript), PSType, SumType (..), TypeInfo (..),
-                                   argonaut, buildBridge, genericShow, mkSumType, psTypeParameters, typeModule,
-                                   typeName, (^==))
+                                   argonaut, buildBridge, equal, genericShow, mkSumType, order, psTypeParameters,
+                                   typeModule, typeName, (^==))
 import Language.PureScript.Bridge.Builder (BridgeData)
 import Language.PureScript.Bridge.PSTypes (psString)
 import Language.PureScript.Bridge.TypeParameters (A)
@@ -46,7 +48,6 @@ import Marlowe.Contracts (contractForDifferences, contractForDifferencesWithOrac
 import qualified Marlowe.Symbolic.Server as MS
 import qualified Marlowe.Symbolic.Types.Request as MSReq
 import qualified Marlowe.Symbolic.Types.Response as MSRes
--- import qualified PSGenerator.Common
 import Servant ((:<|>), (:>))
 import Servant.PureScript (HasBridge, Settings, addTypes, apiModuleName, defaultBridge, defaultSettings,
                            generateWithSettings, languageBridge)
@@ -55,6 +56,15 @@ import System.Directory (createDirectoryIfMissing)
 import System.FilePath ((</>))
 import qualified Webghc.Server as Webghc
 import qualified ZeroCouponBond
+
+psJson :: PSType
+psJson = TypeInfo "web-common" "Data.RawJson" "RawJson" []
+
+aesonValueBridge :: BridgePart
+aesonValueBridge = do
+    typeName ^== "Value"
+    typeModule ^== "Data.Aeson.Types.Internal"
+    pure psJson
 
 -- See Note [GistID hotfix]
 psGistId :: TypeInfo 'PureScript
@@ -139,18 +149,40 @@ dayBridge = typeName ^== "Day" >> return psString
 timeBridge :: BridgePart
 timeBridge = typeName ^== "LocalTime" >> return psString
 
+psBigInteger :: PSType
+psBigInteger = TypeInfo "web-common" "Data.BigInt.Argonaut" "BigInt" []
+
+integerBridge :: BridgePart
+integerBridge = do
+    typeName ^== "Integer"
+    pure psBigInteger
+
+
+headersBridge :: BridgePart
+headersBridge = do
+    typeModule ^== "Servant.API.ResponseHeaders"
+    typeName ^== "Headers"
+    -- Headers should have two parameters, the list of headers and the return type.
+    psTypeParameters >>= \case
+        [_, returnType] -> pure returnType
+        _               -> empty
+
+headerBridge :: BridgePart
+headerBridge = do
+    typeModule ^== "Servant.API.Header"
+    typeName ^== "Header'"
+    empty
+
+servantBridge :: BridgePart
+servantBridge = headersBridge <|> headerBridge
+
 myBridge :: BridgePart
 myBridge =
     -- See Note [GistID hotfix]
     gistIdBridge <|>
-    -- FIXME: Just commenting these, not removing until I make SCP-4726 to see that it
-    --        does not affect the entire build
-    -- PSGenerator.Common.aesonBridge <|>
-    -- PSGenerator.Common.containersBridge <|>
-    -- PSGenerator.Common.languageBridge <|>
-    -- PSGenerator.Common.ledgerBridge <|>
-    -- PSGenerator.Common.servantBridge <|>
-    -- PSGenerator.Common.miscBridge <|>
+    aesonValueBridge <|>
+    servantBridge <|>
+    integerBridge <|>
     dayBridge <|>
     timeBridge <|>
     contractBridge <|>
@@ -169,27 +201,27 @@ myBridgeProxy = Proxy
 instance HasBridge MyBridge where
     languageBridge _ = buildBridge myBridge
 
--- -- See Note [GistID hotfix]
--- playgroundTypes' :: [SumType 'Haskell]
--- playgroundTypes' = filter (\(SumType TypeInfo{_typeName} _ _) -> _typeName /= "GistId" )
---     PSGenerator.Common.playgroundTypes
 
 
 myTypes :: [SumType 'Haskell]
 myTypes =
-    -- PSGenerator.Common.ledgerTypes <>
-    -- PSGenerator.Common.walletTypes <>
-    -- playgroundTypes' <>
-    [ argonaut $ mkSumType @SourceCode
-    , argonaut $ mkSumType @CompilationError
-    , argonaut $ mkSumType @InterpreterError
-    , argonaut $ mkSumType @Warning
-    , argonaut $ mkSumType @(InterpreterResult A)
-    , genericShow . argonaut $ mkSumType @MSRes.Response
-    , genericShow . argonaut $ mkSumType @MSRes.Result
-    , argonaut $ mkSumType @MSReq.Request
-    , argonaut $ mkSumType @Webghc.CompileRequest
-    ]
+       [
+         equal . genericShow . argonaut $ mkSumType @Gist
+       , equal . genericShow . argonaut $ mkSumType @GistFile
+       , argonaut $ mkSumType @NewGist
+       , argonaut $ mkSumType @NewGistFile
+       , equal . genericShow . argonaut $ mkSumType @Owner
+       , equal . genericShow . argonaut $ mkSumType @Auth.AuthStatus
+       , order . equal . genericShow . argonaut $ mkSumType @Auth.AuthRole
+       , argonaut $ mkSumType @CompilationError
+       , argonaut $ mkSumType @InterpreterError
+       , argonaut $ mkSumType @Warning
+       , argonaut $ mkSumType @(InterpreterResult A)
+       , genericShow . argonaut $ mkSumType @MSRes.Response
+       , genericShow . argonaut $ mkSumType @MSRes.Result
+       , argonaut $ mkSumType @MSReq.Request
+       , argonaut $ mkSumType @Webghc.CompileRequest
+       ]
 
 mySettings :: Settings
 mySettings = defaultSettings

@@ -24,6 +24,7 @@ library
         Marlowe.Contracts
         Marlowe.Mermaid
         Server
+        Gist
         -- contracts
         ContractForDifferences
         ContractForDifferencesWithOracle
@@ -43,7 +44,6 @@ library
         Control.Monad.Now
         Control.Monad.Trace
         Control.Monad.Web
-        Gist
         Webghc.Client
         Webghc.Interpreter
         Servant.Extra

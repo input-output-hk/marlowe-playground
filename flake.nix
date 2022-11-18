@@ -1,9 +1,15 @@
 {
-  # This is a template created by `hix init`
+
   inputs.haskellNix.url = "github:input-output-hk/haskell.nix";
   inputs.nixpkgs.follows = "haskellNix/nixpkgs-unstable";
   inputs.flake-utils.url = "github:numtide/flake-utils";
-  outputs = { self, nixpkgs, flake-utils, haskellNix }:
+
+  inputs.easy-purescript-nix = {
+    url = "github:justinwoo/easy-purescript-nix";
+    flake = false;
+  };
+
+  outputs = { self, nixpkgs, flake-utils, haskellNix, easy-purescript-nix }:
     let
       supportedSystems = [
         # "x86_64-linux"
@@ -12,6 +18,16 @@
     in
     flake-utils.lib.eachSystem supportedSystems (system:
       let
+        easyPS =
+          let
+            p = pkgs.callPackage (easy-purescript-nix) { };
+          in
+          p // { purs = p.purs-0_15_2; };
+
+        scripts = import ./nix/scripts.nix {
+          inherit pkgs system easyPS;
+          inherit (pkgs.nodePackages) prettier;
+        };
         overlays = [
           haskellNix.overlay
           (final: prev: {
@@ -24,6 +40,30 @@
                   # hlint = {};
                   haskell-language-server = { };
                 };
+                shell.buildInputs =
+                  (with pkgs; [
+                    nixpkgs-fmt
+                    nodePackages.prettier
+                  ]
+                  )
+                  ++
+                  (with scripts; [
+                    marlowePlaygroundGeneratePurs
+                  ]
+                  )
+                  ++
+                  (with easyPS; [
+                    purs-tidy
+                    purs
+                    spago
+                    spago2nix
+                    psa
+                    purescript-language-server
+                    pscid
+                  ]
+
+                  )
+                ;
               };
           })
         ];

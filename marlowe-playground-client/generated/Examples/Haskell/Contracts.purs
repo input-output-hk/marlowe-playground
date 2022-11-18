@@ -8,14 +8,14 @@ module Example where
 import Language.Marlowe.Extended.V1
 
 main :: IO ()
-main = printJSON $ contract
+main = printJSON example
 
 
 {- Define a contract, Close is the simplest contract which just ends the contract straight away
 -}
 
-contract :: Contract
-contract = Close
+example :: Contract
+example = Close
 """
 
 escrow :: String
@@ -26,7 +26,7 @@ module Escrow where
 import Language.Marlowe.Extended.V1
 
 main :: IO ()
-main = printJSON $ contract
+main = printJSON escrow
 
 -- We can set explicitRefunds True to run Close refund analysis
 -- but we get a shorter contract if we set it to False
@@ -78,8 +78,8 @@ refundSeller
  | explicitRefunds = Pay seller (Party seller) ada price Close
  | otherwise = Close
 
-contract :: Contract
-contract = deposit depositTimeout Close $
+escrow :: Contract
+escrow = deposit depositTimeout Close $
            choices disputeTimeout buyer refundSeller
               [ (0, "Everything is alright"
                 , refundSeller
@@ -111,10 +111,12 @@ escrowWithCollateral =
   """{-# LANGUAGE OverloadedStrings #-}
 module EscrowWithCollateral where
 
+import Language.Marlowe.Core.V1.Semantics.Types.Address (testnet)
 import Language.Marlowe.Extended.V1
-
+import qualified Plutus.V1.Ledger.Address as P
+import qualified Plutus.V1.Ledger.Credential as P
 main :: IO ()
-main = printJSON $ contract
+main = printJSON escrowC
 
 -- We can set explicitRefunds True to run Close refund analysis
 -- but we get a shorter contract if we set it to False
@@ -124,7 +126,7 @@ explicitRefunds = False
 seller, buyer, burnAddress :: Party
 buyer = Role "Buyer"
 seller = Role "Seller"
-burnAddress = Address "0000000000000000000000000000000000000000000000000000000000000000"
+burnAddress = Address testnet (P.Address (P.PubKeyCredential "0000000000000000000000000000000000000000000000000000000000000000") Nothing)
 
 price, collateral :: Value
 price = ConstantParam "Price"
@@ -191,8 +193,8 @@ refundSeller
  | explicitRefunds = Pay seller (Party seller) ada price Close
  | otherwise = Close
 
-contract :: Contract
-contract = depositCollateral seller sellerCollateralTimeout Close $
+escrowC :: Contract
+escrowC = depositCollateral seller sellerCollateralTimeout Close $
            depositCollateral buyer buyerCollateralTimeout (refundSellerCollateral Close) $
            deposit depositTimeout (refundCollaterals Close) $
            choices disputeTimeout buyer (refundCollaterals refundSeller)
@@ -221,7 +223,7 @@ module ZeroCouponBond where
 import Language.Marlowe.Extended.V1
 
 main :: IO ()
-main = printJSON $ contract
+main = printJSON zcb
 
 discountedPrice, notionalPrice :: Value
 discountedPrice = ConstantParam "Amount"
@@ -242,8 +244,8 @@ transfer timeout from to amount continuation =
          timeout
          Close
 
-contract :: Contract
-contract = transfer initialExchange investor issuer discountedPrice
+zcb :: Contract
+zcb = transfer initialExchange investor issuer discountedPrice
          $ transfer maturityExchangeTimeout issuer investor notionalPrice
            Close
 """
@@ -256,7 +258,7 @@ module CouponBondGuaranteed where
 import Language.Marlowe.Extended.V1
 
 main :: IO ()
-main = printJSON $ contract
+main = printJSON cbg
 
 -- We can set explicitRefunds True to run Close refund analysis
 -- but we get a shorter contract if we set it to False
@@ -298,8 +300,8 @@ giveCollateralToLender amount
   | explicitRefunds = Pay investor (Party investor) ada amount Close
   | otherwise = Close
 
-contract :: Contract
-contract = deposit (guaranteedAmount 3) guarantor investor
+cbg :: Contract
+cbg = deposit (guaranteedAmount 3) guarantor investor
                    300 Close
          $ transfer principal investor issuer
                     600 (refundGuarantor (guaranteedAmount 3) Close)
@@ -323,7 +325,7 @@ module Swap where
 import Language.Marlowe.Extended.V1
 
 main :: IO ()
-main = printJSON $ contract
+main = printJSON swap
 
 -- We can set explicitRefunds True to run Close refund analysis
 -- but we get a shorter contract if we set it to False
@@ -374,8 +376,8 @@ makePayment :: SwapParty -> SwapParty -> Contract -> Contract
 makePayment src dest =
   Pay (party src) (Party $ party dest) (currency src) (amount src)
 
-contract :: Contract
-contract = makeDeposit adaProvider adaDepositTimeout Close
+swap :: Contract
+swap = makeDeposit adaProvider adaDepositTimeout Close
          $ makeDeposit dollarProvider dollarDepositTimeout (refundSwapParty adaProvider)
          $ makePayment adaProvider dollarProvider
          $ makePayment dollarProvider adaProvider
@@ -391,7 +393,7 @@ module ContractForDifferences where
 import Language.Marlowe.Extended.V1
 
 main :: IO ()
-main = printJSON $ contract
+main = printJSON cfd
 
 -- We can set explicitRefunds True to run Close refund analysis
 -- but we get a shorter contract if we set it to False
@@ -469,8 +471,8 @@ refundAfterDifference payer payerDeposit payee payeeDeposit difference =
   $ refundUpToBothDeposits payee (AddValue payeeDeposit difference)
     Close
 
-contract :: Contract
-contract = initialDeposit party partyDeposit (TimeParam "Party deposit deadline") Close
+cfd :: Contract
+cfd = initialDeposit party partyDeposit (TimeParam "Party deposit deadline") Close
          $ initialDeposit counterparty counterpartyDeposit (TimeParam "Counterparty deposit deadline") (refund party partyDeposit Close)
          $ wait (TimeParam "First window beginning")
          $ oracleInput priceBeginning (TimeParam "First window deadline") refundBoth
@@ -497,7 +499,7 @@ module ContractForDifferencesWithOracle where
 import Language.Marlowe.Extended.V1
 
 main :: IO ()
-main = printJSON $ contract
+main = printJSON cfd
 
 -- We can set explicitRefunds True to run Close refund analysis
 -- but we get a shorter contract if we set it to False
@@ -585,8 +587,8 @@ refundAfterDifference payer payerDeposit payee payeeDeposit difference =
   $ refundUpToBothDeposits payee (AddValue payeeDeposit difference)
     Close
 
-contract :: Contract
-contract = initialDeposit party partyDeposit (TimeParam "Party deposit deadline") Close
+cfd :: Contract
+cfd = initialDeposit party partyDeposit (TimeParam "Party deposit deadline") Close
          $ initialDeposit counterparty counterpartyDeposit (TimeParam "Counterparty deposit deadline") (refund party partyDeposit Close)
          $ wait (TimeParam "First window beginning")
          $ oracleInput exchangeBeginning (TimeParam "First window deadline") refundBoth

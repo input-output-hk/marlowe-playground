@@ -20,8 +20,6 @@ import Data.Tuple (Tuple)
 import Gist (Gist, NewGist)
 import Gists.Extra (GistId)
 import Language.Haskell.Interpreter (InterpreterError, InterpreterResult)
-import Language.Marlowe.ACTUS.Domain.ContractTerms (ContractTermsPoly)
-import Language.Marlowe.ACTUS.Domain.Schedule (CashFlowPoly)
 import Marlowe.Symbolic.Types.Request (Request)
 import Marlowe.Symbolic.Types.Response (Response)
 import Servant.PureScript
@@ -64,84 +62,6 @@ getApiOracleByExchangeByPair exchange pair =
     , "oracle"
     , toPathSegment exchange
     , toPathSegment pair
-    ]
-  query = Nothing
-
-postApiActusGenerate
-  :: forall m
-   . MonadAjax Api m
-  => ContractTermsPoly Number
-  -> m (Either (AjaxError JsonDecodeError Json) String)
-postApiActusGenerate reqBody =
-  request Api req
-  where
-  req = { method, uri, headers, content, encode, decode }
-  method = Left POST
-  uri = RelativeRef relativePart query Nothing
-  headers = catMaybes
-    [
-    ]
-  content = Just reqBody
-  encode = E.encode encoder
-  decode = D.decode decoder
-  encoder = E.value
-  decoder = D.value
-  relativePart = RelativePartNoAuth $ Just
-    [ "api"
-    , "actus"
-    , "generate"
-    ]
-  query = Nothing
-
-postApiActusGeneratestatic
-  :: forall m
-   . MonadAjax Api m
-  => ContractTermsPoly Number
-  -> m (Either (AjaxError JsonDecodeError Json) String)
-postApiActusGeneratestatic reqBody =
-  request Api req
-  where
-  req = { method, uri, headers, content, encode, decode }
-  method = Left POST
-  uri = RelativeRef relativePart query Nothing
-  headers = catMaybes
-    [
-    ]
-  content = Just reqBody
-  encode = E.encode encoder
-  decode = D.decode decoder
-  encoder = E.value
-  decoder = D.value
-  relativePart = RelativePartNoAuth $ Just
-    [ "api"
-    , "actus"
-    , "generate-static"
-    ]
-  query = Nothing
-
-postApiActusCashflows
-  :: forall m
-   . MonadAjax Api m
-  => ContractTermsPoly Number
-  -> m (Either (AjaxError JsonDecodeError Json) (Array (CashFlowPoly Number)))
-postApiActusCashflows reqBody =
-  request Api req
-  where
-  req = { method, uri, headers, content, encode, decode }
-  method = Left POST
-  uri = RelativeRef relativePart query Nothing
-  headers = catMaybes
-    [
-    ]
-  content = Just reqBody
-  encode = E.encode encoder
-  decode = D.decode decoder
-  encoder = E.value
-  decoder = D.value
-  relativePart = RelativePartNoAuth $ Just
-    [ "api"
-    , "actus"
-    , "cashflows"
     ]
   query = Nothing
 
