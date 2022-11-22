@@ -6,7 +6,7 @@ steps:
       records: always
   - imports:
       align: none
-      post_qualify: true
+      post_qualify: false
   - language_pragmas:
       remove_redundant: false
 
