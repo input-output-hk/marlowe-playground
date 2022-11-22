@@ -8,6 +8,17 @@ const webpack = require("webpack");
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
+if (process.env.WEB_COMMON_SRC === undefined) {
+  process.env.WEB_COMMON_SRC = path.resolve(__dirname, "../web-common");
+}
+
+if (process.env.WEB_COMMON_MARLOWE_SRC === undefined) {
+  process.env.WEB_COMMON_MARLOWE_SRC = path.resolve(
+    __dirname,
+    "../web-common-marlowe"
+  );
+}
+
 class ErrorReportingPlugin {
   apply(compiler) {
     compiler.hooks.done.tap("ErrorReportingPlugin", (stats) =>

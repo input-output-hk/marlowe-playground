@@ -12,7 +12,7 @@
   outputs = { self, nixpkgs, flake-utils, haskellNix, easy-purescript-nix }:
     let
       supportedSystems = [
-        # "x86_64-linux"
+        "x86_64-linux"
         "x86_64-darwin"
       ];
     in
@@ -25,7 +25,7 @@
           p // { purs = p.purs-0_15_2; };
 
         scripts = import ./nix/scripts.nix {
-          inherit pkgs system easyPS;
+          inherit pkgs easyPS;
           inherit (pkgs.nodePackages) prettier;
         };
         overlays = [
@@ -49,6 +49,7 @@
                   ++
                   (with scripts; [
                     marlowePlaygroundGeneratePurs
+                    startBackend
                   ]
                   )
                   ++
@@ -69,10 +70,17 @@
         ];
         pkgs = import nixpkgs { inherit system overlays; inherit (haskellNix) config; };
         flake = pkgs.playground.flake { };
+        ghc-with-marlowe = pkgs.playground.ghcWithPackages (ps: [ ps.marlowe ]);
       in
-      flake // {
-        legacyPackages = pkgs;
-      });
+      pkgs.lib.recursiveUpdate
+        (flake // {
+          legacyPackages = pkgs;
+        })
+        {
+          packages = { inherit ghc-with-marlowe; };
+        }
+
+    );
 
   # --- Flake Local Nix Configuration ----------------------------
   nixConfig = {
