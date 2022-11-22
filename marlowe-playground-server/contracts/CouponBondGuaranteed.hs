@@ -4,7 +4,7 @@ module CouponBondGuaranteed where
 import Language.Marlowe.Extended.V1
 
 main :: IO ()
-main = printJSON $ contract
+main = printJSON cbg
 
 -- We can set explicitRefunds True to run Close refund analysis
 -- but we get a shorter contract if we set it to False
@@ -46,8 +46,8 @@ giveCollateralToLender amount
   | explicitRefunds = Pay investor (Party investor) ada amount Close
   | otherwise = Close
 
-contract :: Contract
-contract = deposit (guaranteedAmount 3) guarantor investor
+cbg :: Contract
+cbg = deposit (guaranteedAmount 3) guarantor investor
                    300 Close
          $ transfer principal investor issuer
                     600 (refundGuarantor (guaranteedAmount 3) Close)

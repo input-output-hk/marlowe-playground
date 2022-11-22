@@ -1,10 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 module EscrowWithCollateral where
 
+import Language.Marlowe.Core.V1.Semantics.Types.Address (testnet)
 import Language.Marlowe.Extended.V1
-
+import qualified Plutus.V1.Ledger.Address as P
+import qualified Plutus.V1.Ledger.Credential as P
 main :: IO ()
-main = printJSON $ contract
+main = printJSON escrowC
 
 -- We can set explicitRefunds True to run Close refund analysis
 -- but we get a shorter contract if we set it to False
@@ -14,7 +16,7 @@ explicitRefunds = False
 seller, buyer, burnAddress :: Party
 buyer = Role "Buyer"
 seller = Role "Seller"
-burnAddress = Address "0000000000000000000000000000000000000000000000000000000000000000"
+burnAddress = Address testnet (P.Address (P.PubKeyCredential "0000000000000000000000000000000000000000000000000000000000000000") Nothing)
 
 price, collateral :: Value
 price = ConstantParam "Price"
@@ -81,8 +83,8 @@ refundSeller
  | explicitRefunds = Pay seller (Party seller) ada price Close
  | otherwise = Close
 
-contract :: Contract
-contract = depositCollateral seller sellerCollateralTimeout Close $
+escrowC :: Contract
+escrowC = depositCollateral seller sellerCollateralTimeout Close $
            depositCollateral buyer buyerCollateralTimeout (refundSellerCollateral Close) $
            deposit depositTimeout (refundCollaterals Close) $
            choices disputeTimeout buyer (refundCollaterals refundSeller)

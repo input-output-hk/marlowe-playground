@@ -18,6 +18,7 @@ source-repository head
 library
     exposed-modules:
         -- src
+        Auth
         API
         Marlowe.Config
         Marlowe.Contracts
@@ -33,19 +34,31 @@ library
         Swap
         ZeroCouponBond
         Option
+        -- WebGHC
+        Webghc.Server
+        Language.Haskell.Interpreter
     -- Include 'contracts' so haskell.nix knows to include the files that we embed with TH
+    other-modules:
+        Auth.Types
+        Control.Monad.Now
+        Control.Monad.Trace
+        Control.Monad.Web
+        Gist
+        Webghc.Client
+        Webghc.Interpreter
+        Servant.Extra
+        System.IO.Extras
     hs-source-dirs:
         src
         contracts
     default-language: Haskell2010
     build-depends:
         aeson -any,
+        aeson-casing -any,
         base >=4.7 && <5,
         bytestring -any,
-        bytestring -any,
-        containers -any,
         cookie -any,
-        directory -any,
+        containers -any,
         exceptions -any,
         file-embed -any,
         filepath -any,
@@ -54,32 +67,33 @@ library
         http-client-tls -any,
         http-conduit -any,
         http-types -any,
-        playground-common -any,
         jwt -any,
         lens -any,
         marlowe -any,
-        marlowe-symbolic -any,
-        marlowe-actus -any,
         monad-logger -any,
         mtl -any,
         newtype-generics -any,
+        plutus-ledger-api -any,
         process -any,
         servant >= 0.16,
-        servant-client -any,
-        servant-client-core -any,
-        servant-purescript -any,
         servant-server -any,
-        stm -any,
-        temporary -any,
-        text -any,
-        time -any,
-        time-units -any,
         transformers -any,
-        unordered-containers,
-        wai-cors -any,
-        web-ghc -any,
-        uuid -any,
-        validation -any
+        text -any,
+        temporary -any,
+        servant-client -any,
+        servant-purescript -any,
+        time -any,
+        time-out -any,
+        time-units -any,
+        unordered-containers -any,
+        wai-cors -any
+        -- directory -any,
+        -- marlowe-symbolic -any,
+        -- marlowe-actus -any,
+        -- servant-client-core -any,
+        -- stm -any,
+        -- uuid -any,
+        -- validation -any
 
 executable marlowe-playground-server
     main-is: Main.hs
@@ -107,31 +121,28 @@ executable marlowe-playground-server
         containers -any,
         directory -any,
         filepath -any,
-        http-client -any,
-        http-types -any,
-        playground-common -any,
         lens -any,
         marlowe -any,
         marlowe-playground-server -any,
         marlowe-symbolic -any,
-        marlowe-actus -any,
         monad-logger -any,
         mtl -any,
-        plutus-contract -any,
-        plutus-ledger,
-        plutus-tx,
+        plutus-ledger-api,
         purescript-bridge -any,
         optparse-applicative -any,
-        servant-client -any,
-        servant-foreign -any,
         servant-server -any,
         servant-purescript -any,
         text -any,
-        wai -any,
         warp -any,
-        web-ghc -any,
-        time -any,
         time-units -any
+        -- marlowe-actus -any,
+        -- plutus-tx,
+        -- servant-foreign -any,
+        -- servant-client -any,
+        -- http-client -any,
+        -- http-types -any,
+        -- wai -any,
+        -- time -any,
 
 executable flow-chart-generator
     main-is: FlowChartGenerator.hs
@@ -153,9 +164,9 @@ executable flow-chart-generator
     build-depends:
         aeson -any,
         base -any,
-        playground-common -any,
         marlowe -any,
-        marlowe-playground-server -any
+        marlowe-playground-server -any,
+        plutus-ledger-api -any
 
 test-suite marlowe-playground-server-test
     type: exitcode-stdio-1.0

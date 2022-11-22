@@ -33,17 +33,8 @@ import Data.Text.Encoding (encodeUtf8)
 import Data.Time (NominalDiffTime, UTCTime, addUTCTime, diffUTCTime)
 import Data.Time.LocalTime (LocalTime)
 import Data.Time.Units (Second, toMicroseconds)
-import qualified Data.Validation as Validation
 import GHC.Generics (Generic)
 import Language.Haskell.Interpreter (InterpreterError (CompilationErrors), InterpreterResult)
-import Language.Marlowe.ACTUS.Domain.BusinessEvents (EventType, RiskFactors, RiskFactorsPoly (..))
-import Language.Marlowe.ACTUS.Domain.ContractTerms (ContractTerms, ContractTermsMarlowe, ContractTermsPoly (..))
-import Language.Marlowe.ACTUS.Domain.Ops (ActusOps, _one, _zero)
-import Language.Marlowe.ACTUS.Domain.Schedule (CashFlow)
-import Language.Marlowe.ACTUS.Generator.Analysis (genProjectedCashflows)
-import Language.Marlowe.ACTUS.Generator.GeneratorFs (genFsContract)
-import Language.Marlowe.ACTUS.Generator.GeneratorStatic (genStaticContract)
-import Language.Marlowe.ACTUS.Generator.MarloweCompat (toMarlowe)
 import Language.Marlowe.Pretty (pretty)
 import Network.HTTP.Client.Conduit (defaultManagerSettings, managerResponseTimeout, responseTimeoutMicro)
 import Network.HTTP.Conduit (newManager)
@@ -60,32 +51,6 @@ import qualified Web.JWT as JWT
 import Webghc.Client (runscript)
 import Webghc.Server (CompileRequest)
 
-genActusContract :: ContractTerms -> Handler String
-genActusContract terms =
-    case genFsContract defaultRiskFactors (toMarlowe terms) of
-        -- Should probably send this as a server error and handle it properly on the front end
-        Validation.Failure errs -> pure (unlines . (:) "ACTUS Term Validation Failed:" . map ((++) "    " . show) $ errs)
-        Validation.Success c -> pure . show . pretty $ c
-
-genActusContractStatic :: ContractTerms -> Handler String
-genActusContractStatic terms =
-    case genStaticContract defaultRiskFactors terms of
-        Validation.Failure errs -> pure (unlines . (:) "ACTUS Term Validation Failed:" . map ((++) "    " . show) $ errs)
-        Validation.Success c -> pure . show . pretty $ c
-
-genActusCashflows :: ContractTerms -> Handler [CashFlow]
-genActusCashflows terms = pure $ genProjectedCashflows defaultRiskFactors terms
-
-defaultRiskFactors :: ActusOps a => EventType -> LocalTime -> RiskFactorsPoly a
-defaultRiskFactors _ _ =
-    RiskFactorsPoly
-        { o_rf_CURS = _one,
-          o_rf_RRMO = _one,
-          o_rf_SCMO = _one,
-          pp_payoff = _zero,
-          xd_payoff = _zero,
-          dv_payoff = _zero
-        }
 
 oracle :: MonadIO m => String -> String -> m Value
 oracle exchange pair = do
@@ -140,7 +105,7 @@ mkHandlers AppConfig {..} = do
   pure (mhandlers webghcClientEnv :<|> liftedAuthServer githubEndpoints authConfig)
 
 mhandlers :: ClientEnv -> Server API
-mhandlers webghcClientEnv = oracle :<|> (genActusContract :<|> genActusContractStatic :<|> genActusCashflows) :<|> compile webghcClientEnv :<|> logout
+mhandlers webghcClientEnv = oracle :<|> compile webghcClientEnv :<|> logout
 
 app :: Server Web -> Application
 app handlers =
