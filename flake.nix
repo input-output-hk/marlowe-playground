@@ -1,5 +1,6 @@
 {
   inputs.haskellNix.url = "github:input-output-hk/haskell.nix";
+  inputs.iohkNix.url = "github:input-output-hk/iohk-nix";
   inputs.nixpkgs.follows = "haskellNix/nixpkgs-unstable";
   inputs.flake-utils.url = "github:numtide/flake-utils";
   inputs.pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
@@ -9,7 +10,7 @@
     flake = false;
   };
 
-  outputs = { self, nixpkgs, flake-utils, haskellNix, easy-purescript-nix, pre-commit-hooks }:
+  outputs = { self, nixpkgs, flake-utils, haskellNix, easy-purescript-nix, pre-commit-hooks, iohkNix }:
     let
       supportedSystems = [
         "x86_64-linux"
@@ -78,11 +79,20 @@
         };
         overlays = [
           haskellNix.overlay
+          iohkNix.overlays.crypto
           (final: prev: {
             playground =
               final.haskell-nix.cabalProject' {
                 src = ./.;
                 compiler-nix-name = "ghc8107";
+                modules = [
+                  {
+                    packages.plutus-script-utils.ghcOptions = [ "-Wwarn" "-Wno-unused-packages" ];
+                    # See https://github.com/input-output-hk/iohk-nix/pull/488
+                    packages.cardano-crypto-praos.components.library.pkgconfig = pkgs.lib.mkForce [ [ pkgs.libsodium-vrf pkgs.secp256k1 ] ];
+                    packages.cardano-crypto-class.components.library.pkgconfig = pkgs.lib.mkForce [ [ pkgs.libsodium-vrf pkgs.secp256k1 ] ];
+                  }
+                ];
                 shell.tools = {
                   cabal = { };
                   # hlint = {};
