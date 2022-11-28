@@ -5,7 +5,7 @@ Marlowe embedded in JavaScript
 
 Marlowe is written as a Haskell data type, and thus it is
 straightforward to describe Marlowe smart contracts using Haskell. But since Marlowe contracts are “just”
-a form of data, we can equally well represent them in other languages that can be serialized as JSON or CBOR.
+a form of data, we can equally well represent them in other languages that support serialization to JSON or CBOR.
 
 Here we describe a library written in TypeScript that can
 be used to generate Marlowe smart contracts from TypeScript or
