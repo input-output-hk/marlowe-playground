@@ -141,25 +141,6 @@ _InterpreterResult = _Newtype
 
 --------------------------------------------------------------------------------
 
-newtype SourceCode = SourceCode String
-
-instance EncodeJson SourceCode where
-  encodeJson = defer \_ -> E.encode $ unwrap >$< E.value
-
-instance DecodeJson SourceCode where
-  decodeJson = defer \_ -> D.decode $ (SourceCode <$> D.value)
-
-derive instance Generic SourceCode _
-
-derive instance Newtype SourceCode _
-
---------------------------------------------------------------------------------
-
-_SourceCode :: Iso' SourceCode String
-_SourceCode = _Newtype
-
---------------------------------------------------------------------------------
-
 newtype Warning = Warning String
 
 instance EncodeJson Warning where

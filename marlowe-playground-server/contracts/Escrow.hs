@@ -4,7 +4,7 @@ module Escrow where
 import Language.Marlowe.Extended.V1
 
 main :: IO ()
-main = printJSON $ contract
+main = printJSON escrow
 
 -- We can set explicitRefunds True to run Close refund analysis
 -- but we get a shorter contract if we set it to False
@@ -56,8 +56,8 @@ refundSeller
  | explicitRefunds = Pay seller (Party seller) ada price Close
  | otherwise = Close
 
-contract :: Contract
-contract = deposit depositTimeout Close $
+escrow :: Contract
+escrow = deposit depositTimeout Close $
            choices disputeTimeout buyer refundSeller
               [ (0, "Everything is alright"
                 , refundSeller

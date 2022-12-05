@@ -18,7 +18,6 @@ Related projects:
 ====
 The rest of this README is focussed on people who want to develop or contribute to Marlowe.
 
-For people who want to *use* Marlowe, please consult the <<user-documentation>>.
 ====
 
 [[cache-warning]]
@@ -38,8 +37,6 @@ If you find yourself building GHC, STOP and fix the cache.
 === How to submit an issue
 
 Issues can be filed in the https://github.com/input-output-hk/marlowe-playground/issues[GitHub Issue tracker].
-
-However, note that this is pre-release software, so we will not usually be providing support.
 
 [[how-to-develop]]
 === How to develop and contribute to the project
@@ -78,7 +75,7 @@ If you use Nix, these tools are provided for you via `shell.nix`, and you do *no
 [[building-with-nix]]
 ==== How to build the Haskell packages and other artifacts with Nix
 
-Run `nix build -f default.nix marlowe.haskell.packages.marlowe.components.library` from the root to build the Marlowe library.
+Run `nix build marlowe-playground-server:exe:marlowe-playground-server` from the root to build the Playground backend service.
 
 See <<nix-build-attributes>> to find out what other attributes you can build.
 
@@ -93,9 +90,8 @@ The best way is to do this is inside a `nix-shell`.
 For fresh development setups, you also need to run `cabal update`.
 ====
 
-Run `cabal build marlowe` from the root to build the Marlowe library.
+Run `cabal build all` from the root to build all artifacts.
 
-See the link:./cabal.project[cabal project file] to see the other packages that you can build with `cabal`.
 
 === Deployment
 
@@ -124,8 +120,9 @@ To set up the cache:
 . On non-NixOS, edit `/etc/nix/nix.conf` and add the following lines:
 +
 ----
-substituters        = https://hydra.iohk.io https://iohk.cachix.org https://cache.nixos.org/
-trusted-public-keys = hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ= iohk.cachix.org-1:DpRUyj7h7V830dp/i6Nti+NEO2/nhblbov/8MW7Rqoo= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+experimental-features = nix-command flakes
+substituters        = "https://cache.nixos.org" "https://cache.iog.io https://marlowe-playground.cachix.org"
+trusted-public-keys = "hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ= marlowe-playground.cachix.org-1:8TmdbVgcB4QzTmuzLxNdaCxdc8ZVI9S8eeeXsY9stxo="
 ----
 +
 [NOTE]
@@ -136,9 +133,15 @@ You must be a https://nixos.org/nix/manual/#ssec-multi-user[trusted user] to do 
 . On NixOS, set the following NixOS options:
 +
 ----
-nix = {
-  binaryCaches          = [ "https://hydra.iohk.io" "https://iohk.cachix.org" ];
-  binaryCachePublicKeys = [ "hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ=" "iohk.cachix.org-1:DpRUyj7h7V830dp/i6Nti+NEO2/nhblbov/8MW7Rqoo=" ];
+nix.settings = {
+  experimental-features = [ "nix-command" "flakes" ];
+  substituters = [
+    "https://cache.nixos.org"
+    "https://cache.iog.io"
+  ];
+  trusted-public-keys = [
+    "hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ="
+  ];
 };
 ----
 
@@ -164,19 +167,26 @@ sudo launchctl start org.nixos.nix-daemon
 [[nix-build-attributes]]
 === Which attributes to use to build different artifacts
 
-link:./default.nix[`default.nix`] defines a package set with attributes for all the artifacts you can build from this repository.
+link:./flake.nix[`flake.nix`] defines the packages that you can build from this repository.
 These can be built using `nix build`.
 For example:
 
 ----
-nix build -f default.nix docs.site
+nix build .#marlowe-playground-generate-purs
 ----
 
-.Example attributes
-* Project packages: defined inside `marlowe.haskell.packages`
-** e.g. `marlowe.haskell.packages.marlowe.components.library`
+.Other builds
+To see other packages that can be built or run, execute
 
-There are other attributes defined in link:./default.nix[`default.nix`].
+----
+nix flake show
+----
+
+[NOTE]
+====
+You might need to comment other build systems inside flake.nix
+====
+
 
 == Licensing
 
