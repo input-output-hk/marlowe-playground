@@ -87,13 +87,6 @@ library
         time-units -any,
         unordered-containers -any,
         wai-cors -any
-        -- directory -any,
-        -- marlowe-symbolic -any,
-        -- marlowe-actus -any,
-        -- servant-client-core -any,
-        -- stm -any,
-        -- uuid -any,
-        -- validation -any
 
 executable marlowe-playground-server
     main-is: Main.hs
@@ -135,14 +128,6 @@ executable marlowe-playground-server
         text -any,
         warp -any,
         time-units -any
-        -- marlowe-actus -any,
-        -- plutus-tx,
-        -- servant-foreign -any,
-        -- servant-client -any,
-        -- http-client -any,
-        -- http-types -any,
-        -- wai -any,
-        -- time -any,
 
 executable flow-chart-generator
     main-is: FlowChartGenerator.hs

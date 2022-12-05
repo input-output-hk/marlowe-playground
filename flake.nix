@@ -95,7 +95,6 @@
                 ];
                 shell.tools = {
                   cabal = { };
-                  # hlint = {};
                   haskell-language-server = { };
                 };
                 shell.shellHook = ''
