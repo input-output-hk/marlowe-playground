@@ -5,7 +5,7 @@ module ContractForDifferencesWithOracle where
 import Language.Marlowe.Extended.V1
 
 main :: IO ()
-main = printJSON $ contract
+main = printJSON cfd
 
 -- We can set explicitRefunds True to run Close refund analysis
 -- but we get a shorter contract if we set it to False
@@ -93,8 +93,8 @@ refundAfterDifference payer payerDeposit payee payeeDeposit difference =
   $ refundUpToBothDeposits payee (AddValue payeeDeposit difference)
     Close
 
-contract :: Contract
-contract = initialDeposit party partyDeposit (TimeParam "Party deposit deadline") Close
+cfd :: Contract
+cfd = initialDeposit party partyDeposit (TimeParam "Party deposit deadline") Close
          $ initialDeposit counterparty counterpartyDeposit (TimeParam "Counterparty deposit deadline") (refund party partyDeposit Close)
          $ wait (TimeParam "First window beginning")
          $ oracleInput exchangeBeginning (TimeParam "First window deadline") refundBoth

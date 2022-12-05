@@ -4,8 +4,8 @@ Marlowe embedded in JavaScript
 ==============================
 
 Marlowe is written as a Haskell data type, and thus it is
-straightforward to describe Marlowe smart contracts using Haskell. But since Marlowe contracts are “just” 
-a form of data, we can equally well represent them in other languages.
+straightforward to describe Marlowe smart contracts using Haskell. But since Marlowe contracts are “just”
+a form of data, we can equally well represent them in other languages that support serialization to JSON or CBOR.
 
 Here we describe a library written in TypeScript that can
 be used to generate Marlowe smart contracts from TypeScript or
@@ -14,7 +14,7 @@ are not familiar with TypeScript, you can also use the API as if it was
 written in JavaScript since TypeScript is a superset of JavaScript.
 
 You can try the library online in the
-Marlowe Playground by selecting **Start in JavaScript** on the home page, or by opening one of the 
+Marlowe Playground by selecting **Start in JavaScript** on the home page, or by opening one of the
 JavaScript examples.
 
 We begin this section by explaining the embedding, then explain a couple of particular points about
@@ -32,7 +32,7 @@ corresponding to each *constructor* there is a constant definition.
 .. code:: typescript
 
    import {
-      PK, Role, Account, Party, ada, AvailableMoney, Constant, ConstantParam,
+      Address, Role, Account, Party, ada, AvailableMoney, Constant, ConstantParam,
       NegValue, AddValue, SubValue, MulValue, DivValue, ChoiceValue, TimeIntervalStart,
       TimeIntervalEnd, UseValue, Cond, AndObs, OrObs, NotObs, ChoseSomething,
       ValueGE, ValueGT, ValueLT, ValueLE, ValueEQ, TrueObs, FalseObs, Deposit,

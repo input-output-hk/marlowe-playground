@@ -187,7 +187,7 @@ payeeTypes :: Array PayeeType
 payeeTypes = upFromIncluding bottom
 
 data PartyType
-  = PKPartyType
+  = AddressPartyType
   | RolePartyType
 
 derive instance genericPartyType :: Generic PartyType _
@@ -615,23 +615,22 @@ toDefinition blockType@(PayeeType PartyPayeeType) =
         defaultBlockDefinition
 
 -- Party
-toDefinition blockType@(PartyType PKPartyType) =
+toDefinition blockType@(PartyType AddressPartyType) =
   BlockDefinition
     $ merge
-        { type: show PKPartyType
-        , message0: "Public Key %1"
+        { type: show AddressPartyType
+        , message0: "Address %1"
         , args0:
             [ Input
-                { name: "pubkey"
+                { name: "address"
                 , text:
-                    "0000000000000000000000000000000000000000000000000000000000000000"
+                    ""
                 , spellcheck: false
                 }
             ]
         , colour: blockColour blockType
         , output: Just "party"
         , inputsInline: Just true
-        , extensions: [ "hash_validator" ]
         }
         defaultBlockDefinition
 
@@ -1660,9 +1659,9 @@ instance blockToTermCase :: BlockToTerm Case where
   blockToTerm block = throwError $ InvalidBlock block "Action"
 
 instance blockToTermParty :: BlockToTerm Party where
-  blockToTerm b@({ type: "PKPartyType", id }) = do
-    pubkey <- fieldAsString "pubkey" b
-    pure $ Term (PK pubkey) (BlockId id)
+  blockToTerm b@({ type: "AddressPartyType", id }) = do
+    address <- fieldAsString "address" b
+    pure $ Term (Address address) (BlockId id)
   blockToTerm b@({ type: "RolePartyType", id }) = do
     role <- fieldAsString "role" b
     pure $ Term (Role role) (BlockId id)
@@ -1761,10 +1760,10 @@ instance toBlocklyPayee :: ToBlockly Payee where
     inputToBlockly newBlock workspace block "party" party
 
 instance toBlocklyParty :: ToBlockly Party where
-  toBlockly newBlock workspace input (PK pk) = do
-    block <- newBlock workspace (show PKPartyType)
+  toBlockly newBlock workspace input (Address address) = do
+    block <- newBlock workspace (show AddressPartyType)
     connectToOutput block input
-    setField block "pubkey" pk
+    setField block "pubkey" address
   toBlockly newBlock workspace input (Role role) = do
     block <- newBlock workspace (show RolePartyType)
     connectToOutput block input

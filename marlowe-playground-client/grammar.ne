@@ -46,7 +46,7 @@ const lexer = moo.compile({
                 ],
                 TOKEN: ['Token'],
                 PAYEE: ['Account', 'Party'],
-                PARTY: ['PK', 'Role'],
+                PARTY: ['Address', 'Role'],
                 BOUND: ['Bound'],
                 TIMEOUT: ['TimeParam'],
                 VALUE_ID: ['ValueId'],
@@ -160,7 +160,7 @@ token
 
 party
    -> hole {% ([hole]) => hole %}
-    | lparen "PK" someWS base16 rparen {% ([start,{line,col},,k,end]) => opts.mkTerm(opts.mkPK(k))({startLineNumber: start.line, startColumn: start.col, endLineNumber: end.line, endColumn: end.col}) %}
+    | lparen "Address" someWS string rparen {% ([start,{line,col},,k,end]) => opts.mkTerm(opts.mkAddress(k))({startLineNumber: start.line, startColumn: start.col, endLineNumber: end.line, endColumn: end.col}) %}
     | lparen "Role" someWS string rparen {% ([start,{line,col},,k,end]) => opts.mkTerm(opts.mkRole(k))({startLineNumber: start.line, startColumn: start.col, endLineNumber: end.line, endColumn: end.col}) %}
 
 payee

@@ -1,6 +1,6 @@
 import bignumber = require("bignumber.js");
 
-type Party = { pk_hash: string } | { role_token: string };
+type Party = { address: string } | { role_token: string };
 
 type SomeNumber = number | string | bigint;
 
@@ -22,13 +22,8 @@ function coerceNumber(n: SomeNumber): bignumber.BigNumber {
   }
 }
 
-export const PK = function (pubKey: string): Party {
-  var regexp = /^([0-9a-f][0-9a-f])*$/g;
-  if (pubKey.match(regexp)) {
-    return { pk_hash: pubKey };
-  } else {
-    throw new Error("Public key must be base16");
-  }
+export const Address = function (address: string): Party {
+  return { address: address };
 };
 
 export const Role = function (roleToken: string): Party {

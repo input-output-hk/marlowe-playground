@@ -4,7 +4,7 @@ module ZeroCouponBond where
 import Language.Marlowe.Extended.V1
 
 main :: IO ()
-main = printJSON $ contract
+main = printJSON zcb
 
 discountedPrice, notionalPrice :: Value
 discountedPrice = ConstantParam "Amount"
@@ -25,7 +25,7 @@ transfer timeout from to amount continuation =
          timeout
          Close
 
-contract :: Contract
-contract = transfer initialExchange investor issuer discountedPrice
+zcb :: Contract
+zcb = transfer initialExchange investor issuer discountedPrice
          $ transfer maturityExchangeTimeout issuer investor notionalPrice
            Close

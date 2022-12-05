@@ -17,16 +17,16 @@ import qualified ZeroCouponBond as ZeroCouponBond
 main :: IO ()
 main = do
     putStrLn "===== SIMPLE ESCROW ====="
-    putStrLn $ toMermaid Escrow.contract
+    putStrLn $ toMermaid Escrow.escrow
     putStrLn "===== ESCROW WITH COLLATERAL ====="
-    putStrLn $ toMermaid EscrowWithCollateral.contract
+    putStrLn $ toMermaid EscrowWithCollateral.escrowC
     putStrLn "===== ZERO COUPON BOND ====="
-    putStrLn $ toMermaid ZeroCouponBond.contract
+    putStrLn $ toMermaid ZeroCouponBond.zcb
     putStrLn "===== COUPON BOND GUARANTEED ====="
-    putStrLn $ toMermaid CouponBondGuaranteed.contract
+    putStrLn $ toMermaid CouponBondGuaranteed.cbg
     putStrLn "===== SWAP OF ADA AND DOLLAR TOKENS ====="
-    putStrLn $ toMermaid Swap.contract
+    putStrLn $ toMermaid Swap.swap
     putStrLn "===== CONTRACT FOR DIFFERENCES ====="
-    putStrLn $ toMermaid ContractForDifferences.contract
+    putStrLn $ toMermaid ContractForDifferences.cfd
     putStrLn "===== CONTRACT FOR DIFFERENCES WITH ORACLE ====="
-    putStrLn $ toMermaid ContractForDifferencesWithOracle.contract
+    putStrLn $ toMermaid ContractForDifferencesWithOracle.cfd

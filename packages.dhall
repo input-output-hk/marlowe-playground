@@ -209,4 +209,4 @@ in  upstream
         , "unfoldable"
         ]
         "https://github.com/input-output-hk/purescript-marlowe"
-        "1f5d5606c2deced2363a69a76a1a24a052618c67"
+        "b1b556905c672ec0ae811fa4e48b367b5e7c5d5d"

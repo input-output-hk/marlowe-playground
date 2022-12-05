@@ -213,8 +213,8 @@ A Marlowe Account holds amounts of multiple currencies and/or fungible and non-f
 
 marloweTypeMarkerText PartyType =
   """
-A Party is represented as either a public key hash or a role name.
-In order to progress a Marlowe contract, a party must provide an evidence. For PK party that would be a valid signature of a transaction signed by a private key of a public key that hashes to party’s PubKeyHash, similarly to Bitcoin’s Pay to Public Key Hash mechanism. For a Role party the evidence is spending a role token within the same transaction, usually to the same owner.
+A Party is represented as either an address or a role name.
+In order to progress a Marlowe contract, a party must provide an evidence. For Address party that would be a valid signature of a transaction signed by the corresponding private key. For a Role party the evidence is spending a role token within the same transaction, usually to the same owner.
 
 So, Role parties will look like (Role "alice"), (Role "bob") and so on.
 """

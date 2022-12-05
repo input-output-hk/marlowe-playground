@@ -111,14 +111,12 @@ import Language.Marlowe.Core.V1.Semantics.Types
   , Assets(..)
   , Bound(..)
   , ChoiceId(..)
-  , CurrencySymbol
   , Input(..)
   , Party(..)
   , Payee(..)
   , Payment(..)
   , TimeInterval(..)
   , Token(..)
-  , TokenName
   , TransactionInput(..)
   , timeouts
   )
@@ -692,7 +690,7 @@ participant metadata state party actionInputs =
         ]
 
   partyName = case party of
-    (PK name) -> name
+    (Address name) -> name
     (Role name) -> name
 
 choiceRef :: String -> ChoiceId -> String
@@ -700,7 +698,7 @@ choiceRef prefix (ChoiceId choiceName choiceOwner) = intercalate "-"
   [ prefix, choiceName, choiceOwnerStr ]
   where
   choiceOwnerStr = case choiceOwner of
-    PK pk -> pk
+    Address addr -> addr
     Role name -> name
 
 inputItem
@@ -1112,62 +1110,16 @@ paymentToLines
   metadata
   timeInterval
   stepNumber
-  (Payment accountId payee money) =
-  let
-    Assets money' = money
-
-    assets :: Array (CurrencySymbol /\ TokenName /\ BigInt)
-    assets = do
-      currencySymbol /\ asset <- Map.toUnfoldable money'
-      tokenName /\ value <- Map.toUnfoldable asset
-      pure $ currencySymbol /\ tokenName /\ value
-
-  in
-    join $
-      mapWithIndex
-        ( \subStep (currencySymbol /\ tokenName /\ value) ->
-            paymentToLine
-              tzOffset
-              metadata
-              timeInterval
-              accountId
-              payee
-              (stepNumber /\ subStep)
-              (Token currencySymbol tokenName)
-              value
-        )
-        assets
-
-paymentToLine
-  :: forall m a
-   . MonadAff m
-  => Minutes
-  -> MetaData
-  -> TimeInterval
-  -> AccountId
-  -> Payee
-  -> Int /\ Int
-  -> Token
-  -> BigInt
-  -> Array (ComponentHTML a ChildSlots m)
-paymentToLine
-  tzOffset
-  metadata
-  timeInterval
-  accountId
-  payee
-  stepNumber
-  token
-  money =
+  (Payment accountId payee token amount) =
   [ span_
       [ text "The contract pays "
-      , strong_ [ text (humanizeValue token money) ]
+      , strong_ [ text (humanizeValue token amount) ]
       , text " from "
       , strong_ $ renderPrettyPayee metadata (Account accountId)
       , text " to "
       , strong_ $ renderPrettyPayee metadata payee
       ]
-  , logTime stepNumber tzOffset timeInterval
+  , logTime (stepNumber /\ 0) tzOffset timeInterval
   ]
 
 unfoldAssets :: forall a. Assets -> (Token -> BigInt -> a) -> Array a

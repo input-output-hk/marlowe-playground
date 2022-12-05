@@ -99,7 +99,6 @@ gh-pages
 *.db
 *.db-shm
 *.db-wal
-hie.yaml
 .pre-commit-config.yaml
 secrets/*/.gpg-id
 ghcid.txt

@@ -18,10 +18,10 @@ import Language.Marlowe.Core.V1.Semantics.Types (Party(..), Payee(..))
 import Language.Marlowe.Extended.V1.Metadata.Types (MetaData, NumberFormat(..))
 
 renderPrettyParty :: forall p i. MetaData -> Party -> HTML p i
-renderPrettyParty _ (PK pkh) =
-  if String.length pkh > 10 then abbr [ title $ "pubkey " <> pkh ]
-    [ text $ String.take 10 pkh ]
-  else text pkh
+renderPrettyParty _ (Address addr) =
+  if String.length addr > 10 then abbr [ title $ "address " <> addr ]
+    [ text $ String.take 10 addr ]
+  else text addr
 
 renderPrettyParty metadata (Role role) = abbr
   [ title $ "role " <> role <> explanationOrEmptyString ]
@@ -32,7 +32,7 @@ renderPrettyParty metadata (Role role) = abbr
       $ Map.lookup role metadata.roleDescriptions
 
 showPrettyParty :: Party -> String
-showPrettyParty (PK pkh) = "PubKey " <> pkh
+showPrettyParty (Address addr) = "Address " <> addr
 
 showPrettyParty (Role role) = show role
 
