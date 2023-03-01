@@ -75,9 +75,9 @@ If you use Nix, these tools are provided for you via `shell.nix`, and you do *no
 [[building-with-nix]]
 ==== How to build the Haskell packages and other artifacts with Nix
 
-Run `nix build marlowe-playground-server:exe:marlowe-playground-server` from the root to build the Playground backend service.
+Run `nix build .#marlowe-playground-server:exe:marlowe-playground-server` from the root to build the Playground backend service.
 
-See <<nix-build-attributes>> to find out what other attributes you can build.
+Try `nix flake show` to see the packages available to build.
 
 ==== How to build the Haskell packages with `cabal`
 
