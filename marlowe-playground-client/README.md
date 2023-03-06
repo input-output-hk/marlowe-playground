@@ -14,13 +14,13 @@ Now we will build and run the front end:
 [nix-shell] $ cd marlowe-playground-client
 # Generate the purescript bridge files
 [nix-shell] $ marlowe-playground-generate-purs
-# Download javascript dependencies
-[nix-shell] $ npm install
+# Download javascript dependencies (we use ci to use the package-lock.json)
+[nix-shell] $ npm ci
 # Install purescript depdendencies
 [nix-shell] $ npm run build:spago
 # Precompile js dependencies bundle
 [nix-shell] $ npm run build:webpack:dev:vendor
-# Run aun auto-reloading dev build on https://localhost:8009
+# Run aun auto-reloading dev build on http://localhost:8009
 [nix-shell] $ npm run build:webpack:dev
 ```
 

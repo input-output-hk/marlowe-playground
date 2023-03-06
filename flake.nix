@@ -107,6 +107,9 @@
                   (with pkgs; [
                     nixpkgs-fmt
                     nodePackages.prettier
+                    pkgs.nil
+                    pkgs.nodejs-14_x
+                    pkgs.z3
                   ]
                   )
                   ++
