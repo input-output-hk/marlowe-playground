@@ -56,7 +56,7 @@ export const createWorkspace =
         }
       };
 
-      ["currency_symbol", "pubkey"].forEach(function (fieldName) {
+      ["currency_symbol"].forEach(function (fieldName) {
         var field = thisBlock.getField(fieldName);
         if (field != null) {
           field.setValidator(hashValidator);
