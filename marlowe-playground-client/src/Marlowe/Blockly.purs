@@ -1763,7 +1763,7 @@ instance toBlocklyParty :: ToBlockly Party where
   toBlockly newBlock workspace input (Address address) = do
     block <- newBlock workspace (show AddressPartyType)
     connectToOutput block input
-    setField block "pubkey" address
+    setField block "address" address
   toBlockly newBlock workspace input (Role role) = do
     block <- newBlock workspace (show RolePartyType)
     connectToOutput block input
