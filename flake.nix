@@ -5,12 +5,17 @@
   inputs.flake-utils.url = "github:numtide/flake-utils";
   inputs.pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
 
+  inputs.CHaP = {
+    url = "github:input-output-hk/cardano-haskell-packages?ref=repo";
+    flake = false;
+  };
+
   inputs.easy-purescript-nix = {
     url = "github:justinwoo/easy-purescript-nix";
     flake = false;
   };
 
-  outputs = { self, nixpkgs, flake-utils, haskellNix, easy-purescript-nix, pre-commit-hooks, iohkNix }:
+  outputs = { self, nixpkgs, flake-utils, haskellNix, easy-purescript-nix, pre-commit-hooks, iohkNix, CHaP }:
     let
       supportedSystems = [
         "x86_64-linux"
@@ -83,6 +88,9 @@
           (final: prev: {
             playground =
               final.haskell-nix.cabalProject' {
+                inputMap = {
+                  "https://input-output-hk.github.io/cardano-haskell-packages" = CHaP;
+                };
                 src = ./.;
                 compiler-nix-name = "ghc8107";
                 modules = [
