@@ -4,6 +4,8 @@
   inputs.nixpkgs.follows = "haskellNix/nixpkgs-unstable";
   inputs.flake-utils.url = "github:numtide/flake-utils";
   inputs.pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
+  inputs.std.url = "github:divnix/std";
+  inputs.nosys.url = "github:divnix/nosys";
 
   inputs.CHaP = {
     url = "github:input-output-hk/cardano-haskell-packages?ref=repo";
@@ -15,10 +17,10 @@
     flake = false;
   };
 
-  outputs = { self, nixpkgs, flake-utils, haskellNix, easy-purescript-nix, pre-commit-hooks, iohkNix, CHaP }:
+  outputs = { self, nixpkgs, flake-utils, haskellNix, easy-purescript-nix, pre-commit-hooks, iohkNix, CHaP, std, nosys }@inputs:
     let
       supportedSystems = [
-        "x86_64-linux"
+        # "x86_64-linux"
         "x86_64-darwin"
       ];
     in
@@ -153,7 +155,6 @@
               };
           })
         ];
-
         pkgs = import nixpkgs { inherit system overlays; inherit (haskellNix) config; };
         flake = pkgs.playground.flake { };
         ghc-with-marlowe = pkgs.playground.ghcWithPackages (ps: [ ps.marlowe ]);
@@ -175,8 +176,13 @@
             test-stylish-haskell = tests.stylishHaskell;
             test-shell = tests.shellcheck;
           };
+          operables = import ./deploy/operables.nix {
+            inputs = nosys.lib.deSys system inputs;
+          };
+          oci-images = import ./deploy/oci-images.nix {
+            inputs = nosys.lib.deSys system inputs;
+          };
         }
-
     );
 
   # --- Flake Local Nix Configuration ----------------------------
