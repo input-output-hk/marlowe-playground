@@ -24,10 +24,10 @@ let
       name = "playground-server";
       description = "The backend of the Marlowe playground.";
     };
-    # playground-client = mkImage {
-    #   name = "playground-client";
-    #   description = "An HTTP server that serves the static client.";
-    # };
+    playground-client = mkImage {
+      name = "playground-client";
+      description = "An HTTP server that serves the static client.";
+    };
   };
 
   forAllImages = f: concatMapStrings (s: s + "\n") (mapAttrsToList (_: f) images);
@@ -36,6 +36,7 @@ images // {
   all = {
     copyToDockerDaemon = std.lib.ops.writeScript {
       name = "copy-to-docker-daemon";
+      # text = forAllImages (img: std.blockTypes.containers.load);
       text = forAllImages (img: "${img.copyToDockerDaemon}/bin/copy-to-docker-daemon");
     };
   };

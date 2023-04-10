@@ -12,6 +12,8 @@ let
     socat
     netcat
     curl
+    darkhttpd
+    mailcap
     ;
   inherit (inputs.bitte-cells._utils.packages) srvaddr;
 
@@ -44,8 +46,10 @@ let
 in
 {
   playground-client = mkOperable {
-    package = packages."marlowe-playground-server:exe:marlowe-playground-server";
+    package = packages."production-client";
+    runtimeInputs = [ darkhttpd ];
     runtimeScript = ''
+      exec darkhttpd "''${CONFIG_HTML_ROOT:-${packages.production-client}}" --port 8080 --mimetypes ${mailcap}/etc/mime.types
     '';
   };
   playground-server = mkOperable {

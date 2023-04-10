@@ -46,7 +46,12 @@ let
     export FRONTEND_URL=https://localhost:8009
     nix run .#marlowe-playground-server:exe:marlowe-playground-server -- webserver
   '';
+
+  update-client-deps = writeShellScriptBinInRepoRoot "update-client-deps" ''
+    cd marlowe-playground-client
+    ${easyPS.spago2nix}/bin/spago2nix generate
+  '';
 in
 {
-  inherit marlowe-playground-generate-purs start-backend generated-purescript;
+  inherit marlowe-playground-generate-purs start-backend generated-purescript update-client-deps;
 }

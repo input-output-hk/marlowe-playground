@@ -6,7 +6,10 @@
   inputs.pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
   inputs.std.url = "github:divnix/std";
   inputs.nosys.url = "github:divnix/nosys";
-
+  inputs.npmlock2nix = {
+    url = "github:nix-community/npmlock2nix";
+    flake = false;
+  };
   inputs.CHaP = {
     url = "github:input-output-hk/cardano-haskell-packages?ref=repo";
     flake = false;
@@ -17,7 +20,7 @@
     flake = false;
   };
 
-  outputs = { self, nixpkgs, flake-utils, haskellNix, easy-purescript-nix, pre-commit-hooks, iohkNix, CHaP, std, nosys }@inputs:
+  outputs = { self, nixpkgs, flake-utils, haskellNix, easy-purescript-nix, pre-commit-hooks, iohkNix, CHaP, std, nosys, ... }@inputs:
     let
       supportedSystems = [
         # "x86_64-linux"
@@ -56,6 +59,14 @@
           inherit (easyPS) purs-tidy;
           src = ./.;
           play-generated = scripts.generated-purescript;
+        };
+        spagoPkgs = import ./marlowe-playground-client/spago-packages.nix { inherit pkgs; };
+        production-client = import ./nix/production-client.nix {
+          inherit pkgs inputs spagoPkgs easyPS;
+
+          clientSrc = ./marlowe-playground-client;
+          webCommon = ./web-common;
+          webCommonMarlowe = ./web-common-marlowe;
         };
         pre-commit-check = pre-commit-hooks.lib.${system}.run {
           src = (pkgs.lib.cleanSource ./.);
@@ -126,6 +137,7 @@
                   (with scripts; [
                     marlowe-playground-generate-purs
                     start-backend
+                    update-client-deps
                   ]
                   )
                   ++
@@ -168,6 +180,7 @@
             inherit ghc-with-marlowe fixPngOptimization fixStylishHaskell;
             inherit (scripts) marlowe-playground-generate-purs generated-purescript;
             inherit (formatting) fix-purs-tidy fix-nix-fmt;
+            inherit production-client;
             test-nix-fmt = tests.nixpkgsFmt;
             test-prettier = tests.prettier;
             test-generated = tests.generated;
