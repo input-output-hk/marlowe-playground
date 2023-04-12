@@ -23,7 +23,7 @@
   outputs = { self, nixpkgs, flake-utils, haskellNix, easy-purescript-nix, pre-commit-hooks, iohkNix, CHaP, std, nosys, ... }@inputs:
     let
       supportedSystems = [
-        # "x86_64-linux"
+        "x86_64-linux"
         "x86_64-darwin"
       ];
     in
