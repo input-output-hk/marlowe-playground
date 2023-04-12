@@ -1,5 +1,8 @@
 {
-  inputs.haskellNix.url = "github:input-output-hk/haskell.nix";
+  inputs.haskellNix = {
+    url = "github:input-output-hk/haskell.nix";
+    inputs.hackage.follows = "hackage";
+  };
   inputs.iohkNix.url = "github:input-output-hk/iohk-nix";
   inputs.nixpkgs.follows = "haskellNix/nixpkgs-unstable";
   inputs.flake-utils.url = "github:numtide/flake-utils";
@@ -12,6 +15,11 @@
   };
   inputs.CHaP = {
     url = "github:input-output-hk/cardano-haskell-packages?ref=repo";
+    flake = false;
+  };
+
+  inputs.hackage = {
+    url = "github:input-output-hk/hackage.nix";
     flake = false;
   };
 
@@ -115,8 +123,8 @@
                   }
                 ];
                 shell.tools = {
-                  cabal = { };
-                  haskell-language-server = { };
+                  cabal = "3.6.2.0";
+                  haskell-language-server = "1.3.0.0";
                 };
                 shell.shellHook = ''
                   ${pre-commit-check.shellHook}
