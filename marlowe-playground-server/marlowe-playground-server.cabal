@@ -73,7 +73,7 @@ library
         monad-logger -any,
         mtl -any,
         newtype-generics -any,
-        plutus-ledger-api -any,
+        plutus-ledger-api ==1.0.0.1,
         process -any,
         servant >= 0.16,
         servant-server -any,
@@ -120,7 +120,7 @@ executable marlowe-playground-server
         marlowe-symbolic -any,
         monad-logger -any,
         mtl -any,
-        plutus-ledger-api,
+        plutus-ledger-api ==1.0.0.1,
         purescript-bridge -any,
         optparse-applicative -any,
         servant-server -any,
@@ -151,7 +151,7 @@ executable flow-chart-generator
         base -any,
         marlowe -any,
         marlowe-playground-server -any,
-        plutus-ledger-api -any
+        plutus-ledger-api ==1.0.0.1
 
 test-suite marlowe-playground-server-test
     type: exitcode-stdio-1.0
