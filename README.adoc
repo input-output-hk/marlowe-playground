@@ -172,7 +172,7 @@ These can be built using `nix build`.
 For example:
 
 ----
-nix build .#marlowe-playground-generate-purs
+nix build .#generate-purs
 ----
 
 .Other builds

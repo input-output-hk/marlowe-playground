@@ -34,3 +34,16 @@ test-show-details: streaming
 
 allow-newer:
   size-based:template-haskell
+
+-- Upgrading this breaks purescript bridges.
+source-repository-package
+  type: git
+  location: https://github.com/input-output-hk/servant-purescript
+  tag: 002e172173ad2f2f69f98a3b56b7312364f23afe
+  --sha256: sha256-trTSChCACAnKpAaUznWuSNJJLpU8W4rJKHaZvHq5G50=
+
+source-repository-package
+  type: git
+  location: https://github.com/input-output-hk/purescript-bridge
+  tag: 7e554e516e17299ec2100c0f25ae7400deaed592
+  --sha256: sha256-stskeDvPicCkXsnuivAk7NpgzThvEUFJmjO1mW0I8Ik=
