@@ -1,6 +1,7 @@
 { inputs, cell }:
 let
   inherit (cell.library) pkgs;
+  inherit (pkgs) lib stdenv;
   inherit (cell) operables;
   inherit (inputs.std.lib.ops) mkStandardOCI;
 
@@ -19,7 +20,7 @@ let
     };
 
 in
-{
+lib.attrsets.optionalAttrs stdenv.isLinux {
   marlowe-playground-server = mkImage {
     name = "marlowe-playground-server";
     description = "The backend of the Marlowe playground.";
@@ -29,4 +30,3 @@ in
     description = "An HTTP server that serves the client for the Marlowe Playground.";
   };
 }
-
