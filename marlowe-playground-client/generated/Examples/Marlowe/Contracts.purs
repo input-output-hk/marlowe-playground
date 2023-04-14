@@ -7,95 +7,95 @@ escrow :: String
 escrow =
   """When [
   (Case
-     (Deposit Role "Seller" Role "Buyer"
+     (Deposit (Role "Seller") (Role "Buyer")
         (Token "" "")
         (ConstantParam "Price"))
      (When [
            (Case
               (Choice
-                 (ChoiceId "Everything is alright" Role "Buyer") [
+                 (ChoiceId "Everything is alright" (Role "Buyer")) [
                  (Bound 0 0)]) Close)
            ,
            (Case
               (Choice
-                 (ChoiceId "Report problem" Role "Buyer") [
+                 (ChoiceId "Report problem" (Role "Buyer")) [
                  (Bound 1 1)])
-              (Pay Role "Seller"
-                 (Account Role "Buyer")
+              (Pay (Role "Seller")
+                 (Account (Role "Buyer"))
                  (Token "" "")
                  (ConstantParam "Price")
                  (When [
                        (Case
                           (Choice
-                             (ChoiceId "Confirm problem" Role "Seller") [
+                             (ChoiceId "Confirm problem" (Role "Seller")) [
                              (Bound 1 1)]) Close)
                        ,
                        (Case
                           (Choice
-                             (ChoiceId "Dispute problem" Role "Seller") [
+                             (ChoiceId "Dispute problem" (Role "Seller")) [
                              (Bound 0 0)])
                           (When [
                                 (Case
                                    (Choice
-                                      (ChoiceId "Dismiss claim" Role "Mediator") [
+                                      (ChoiceId "Dismiss claim" (Role "Mediator")) [
                                       (Bound 0 0)])
-                                   (Pay Role "Buyer"
-                                      (Party Role "Seller")
+                                   (Pay (Role "Buyer")
+                                      (Party (Role "Seller"))
                                       (Token "" "")
                                       (ConstantParam "Price") Close))
                                 ,
                                 (Case
                                    (Choice
-                                      (ChoiceId "Confirm problem" Role "Mediator") [
+                                      (ChoiceId "Confirm problem" (Role "Mediator")) [
                                       (Bound 1 1)]) Close)] (TimeParam "Mediation deadline") Close))] (TimeParam "Complaint response deadline") Close)))] (TimeParam "Complaint deadline") Close))] (TimeParam "Payment deadline") Close"""
 
 escrowWithCollateral :: String
 escrowWithCollateral =
   """When [
   (Case
-     (Deposit Role "Seller" Role "Seller"
+     (Deposit (Role "Seller") (Role "Seller")
         (Token "" "")
         (ConstantParam "Collateral amount"))
      (When [
         (Case
-           (Deposit Role "Buyer" Role "Buyer"
+           (Deposit (Role "Buyer") (Role "Buyer")
               (Token "" "")
               (ConstantParam "Collateral amount"))
            (When [
               (Case
-                 (Deposit Role "Seller" Role "Buyer"
+                 (Deposit (Role "Seller") (Role "Buyer")
                     (Token "" "")
                     (ConstantParam "Price"))
                  (When [
                        (Case
                           (Choice
-                             (ChoiceId "Everything is alright" Role "Buyer") [
+                             (ChoiceId "Everything is alright" (Role "Buyer")) [
                              (Bound 0 0)]) Close)
                        ,
                        (Case
                           (Choice
-                             (ChoiceId "Report problem" Role "Buyer") [
+                             (ChoiceId "Report problem" (Role "Buyer")) [
                              (Bound 1 1)])
-                          (Pay Role "Seller"
-                             (Account Role "Buyer")
+                          (Pay (Role "Seller")
+                             (Account (Role "Buyer"))
                              (Token "" "")
                              (ConstantParam "Price")
                              (When [
                                    (Case
                                       (Choice
-                                         (ChoiceId "Confirm problem" Role "Seller") [
+                                         (ChoiceId "Confirm problem" (Role "Seller")) [
                                          (Bound 1 1)]) Close)
                                    ,
                                    (Case
                                       (Choice
-                                         (ChoiceId "Dispute problem" Role "Seller") [
+                                         (ChoiceId "Dispute problem" (Role "Seller")) [
                                          (Bound 0 0)])
-                                      (Pay Role "Seller"
-                                         (Party Address "addr_test1vqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3lgle2")
+                                      (Pay (Role "Seller")
+                                         (Party (Address "addr_test1vqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3lgle2"))
                                          (Token "" "")
                                          (ConstantParam "Collateral amount")
-                                         (Pay Role "Buyer"
-                                            (Party Address "addr_test1vqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3lgle2")
+                                         (Pay (Role "Buyer")
+                                            (Party (Address "addr_test1vqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3lgle2"))
                                             (Token "" "")
                                             (ConstantParam "Collateral amount") Close)))] (TimeParam "Complaint deadline") Close)))] (TimeParam "Dispute by buyer timeout") Close))] (TimeParam "Deposit of price by buyer timeout") Close))] (TimeParam "Deposit of collateral by buyer timeout") Close))] (TimeParam "Collateral deposit by seller timeout") Close"""
 
@@ -103,22 +103,22 @@ zeroCouponBond :: String
 zeroCouponBond =
   """When [
   (Case
-     (Deposit Role "Lender" Role "Lender"
+     (Deposit (Role "Lender") (Role "Lender")
         (Token "" "")
         (ConstantParam "Amount"))
-     (Pay Role "Lender"
-        (Party Role "Borrower")
+     (Pay (Role "Lender")
+        (Party (Role "Borrower"))
         (Token "" "")
         (ConstantParam "Amount")
         (When [
            (Case
-              (Deposit Role "Borrower" Role "Borrower"
+              (Deposit (Role "Borrower") (Role "Borrower")
                  (Token "" "")
                  (AddValue
                     (ConstantParam "Interest")
                     (ConstantParam "Amount")))
-              (Pay Role "Borrower"
-                 (Party Role "Lender")
+              (Pay (Role "Borrower")
+                 (Party (Role "Lender"))
                  (Token "" "")
                  (AddValue
                     (ConstantParam "Interest")
@@ -128,7 +128,7 @@ couponBondGuaranteed :: String
 couponBondGuaranteed =
   """When [
   (Case
-     (Deposit Role "Lender" Role "Guarantor"
+     (Deposit (Role "Lender") (Role "Guarantor")
         (Token "" "")
         (AddValue
            (MulValue
@@ -137,60 +137,60 @@ couponBondGuaranteed =
            (ConstantParam "Principal")))
      (When [
         (Case
-           (Deposit Role "Borrower" Role "Lender"
+           (Deposit (Role "Borrower") (Role "Lender")
               (Token "" "")
               (ConstantParam "Principal"))
-           (Pay Role "Borrower"
-              (Party Role "Borrower")
+           (Pay (Role "Borrower")
+              (Party (Role "Borrower"))
               (Token "" "")
               (ConstantParam "Principal")
               (When [
                  (Case
-                    (Deposit Role "Lender" Role "Borrower"
+                    (Deposit (Role "Lender") (Role "Borrower")
                        (Token "" "")
                        (ConstantParam "Interest instalment"))
-                    (Pay Role "Lender"
-                       (Party Role "Lender")
+                    (Pay (Role "Lender")
+                       (Party (Role "Lender"))
                        (Token "" "")
                        (ConstantParam "Interest instalment")
-                       (Pay Role "Lender"
-                          (Party Role "Guarantor")
+                       (Pay (Role "Lender")
+                          (Party (Role "Guarantor"))
                           (Token "" "")
                           (ConstantParam "Interest instalment")
                           (When [
                              (Case
-                                (Deposit Role "Lender" Role "Borrower"
+                                (Deposit (Role "Lender") (Role "Borrower")
                                    (Token "" "")
                                    (ConstantParam "Interest instalment"))
-                                (Pay Role "Lender"
-                                   (Party Role "Lender")
+                                (Pay (Role "Lender")
+                                   (Party (Role "Lender"))
                                    (Token "" "")
                                    (ConstantParam "Interest instalment")
-                                   (Pay Role "Lender"
-                                      (Party Role "Guarantor")
+                                   (Pay (Role "Lender")
+                                      (Party (Role "Guarantor"))
                                       (Token "" "")
                                       (ConstantParam "Interest instalment")
                                       (When [
                                          (Case
-                                            (Deposit Role "Lender" Role "Borrower"
+                                            (Deposit (Role "Lender") (Role "Borrower")
                                                (Token "" "")
                                                (AddValue
                                                   (ConstantParam "Interest instalment")
                                                   (ConstantParam "Principal")))
-                                            (Pay Role "Lender"
-                                               (Party Role "Lender")
+                                            (Pay (Role "Lender")
+                                               (Party (Role "Lender"))
                                                (Token "" "")
                                                (AddValue
                                                   (ConstantParam "Interest instalment")
                                                   (ConstantParam "Principal"))
-                                               (Pay Role "Lender"
-                                                  (Party Role "Guarantor")
+                                               (Pay (Role "Lender")
+                                                  (Party (Role "Guarantor"))
                                                   (Token "" "")
                                                   (AddValue
                                                      (ConstantParam "Interest instalment")
                                                      (ConstantParam "Principal")) Close)))] 1500 Close))))] 1200 Close))))] 900 Close)))] 600
-        (Pay Role "Lender"
-           (Party Role "Guarantor")
+        (Pay (Role "Lender")
+           (Party (Role "Guarantor"))
            (Token "" "")
            (AddValue
               (MulValue
@@ -202,24 +202,24 @@ swap :: String
 swap =
   """When [
   (Case
-     (Deposit Role "Ada provider" Role "Ada provider"
+     (Deposit (Role "Ada provider") (Role "Ada provider")
         (Token "" "")
         (MulValue
            (Constant 1000000)
            (ConstantParam "Amount of Ada")))
      (When [
         (Case
-           (Deposit Role "Dollar provider" Role "Dollar provider"
+           (Deposit (Role "Dollar provider") (Role "Dollar provider")
               (Token "85bb65" "dollar")
               (ConstantParam "Amount of dollars"))
-           (Pay Role "Ada provider"
-              (Party Role "Dollar provider")
+           (Pay (Role "Ada provider")
+              (Party (Role "Dollar provider"))
               (Token "" "")
               (MulValue
                  (Constant 1000000)
                  (ConstantParam "Amount of Ada"))
-              (Pay Role "Dollar provider"
-                 (Party Role "Ada provider")
+              (Pay (Role "Dollar provider")
+                 (Party (Role "Ada provider"))
                  (Token "85bb65" "dollar")
                  (ConstantParam "Amount of dollars") Close)))] (TimeParam "Timeout for dollar deposit") Close))] (TimeParam "Timeout for Ada deposit") Close"""
 
@@ -227,40 +227,40 @@ contractForDifferences :: String
 contractForDifferences =
   """When [
   (Case
-     (Deposit Role "Party" Role "Party"
+     (Deposit (Role "Party") (Role "Party")
         (Token "" "")
         (ConstantParam "Amount paid by party"))
      (When [
         (Case
-           (Deposit Role "Counterparty" Role "Counterparty"
+           (Deposit (Role "Counterparty") (Role "Counterparty")
               (Token "" "")
               (ConstantParam "Amount paid by counterparty"))
            (When [] (TimeParam "First window beginning")
               (When [
                  (Case
                     (Choice
-                       (ChoiceId "Price in first window" Role "Oracle") [
+                       (ChoiceId "Price in first window" (Role "Oracle")) [
                        (Bound 0 1000000000)])
                     (When [] (TimeParam "Second window beginning")
                        (When [
                           (Case
                              (Choice
-                                (ChoiceId "Price in second window" Role "Oracle") [
+                                (ChoiceId "Price in second window" (Role "Oracle")) [
                                 (Bound 0 1000000000)])
                              (If
                                 (ValueGT
                                    (ChoiceValue
-                                      (ChoiceId "Price in first window" Role "Oracle"))
+                                      (ChoiceId "Price in first window" (Role "Oracle")))
                                    (ChoiceValue
-                                      (ChoiceId "Price in second window" Role "Oracle")))
+                                      (ChoiceId "Price in second window" (Role "Oracle"))))
                                 (Let "Decrease in price"
                                    (SubValue
                                       (ChoiceValue
-                                         (ChoiceId "Price in first window" Role "Oracle"))
+                                         (ChoiceId "Price in first window" (Role "Oracle")))
                                       (ChoiceValue
-                                         (ChoiceId "Price in second window" Role "Oracle")))
-                                   (Pay Role "Counterparty"
-                                      (Account Role "Party")
+                                         (ChoiceId "Price in second window" (Role "Oracle"))))
+                                   (Pay (Role "Counterparty")
+                                      (Account (Role "Party"))
                                       (Token "" "")
                                       (Cond
                                          (ValueLT
@@ -271,17 +271,17 @@ contractForDifferences =
                                 (If
                                    (ValueLT
                                       (ChoiceValue
-                                         (ChoiceId "Price in first window" Role "Oracle"))
+                                         (ChoiceId "Price in first window" (Role "Oracle")))
                                       (ChoiceValue
-                                         (ChoiceId "Price in second window" Role "Oracle")))
+                                         (ChoiceId "Price in second window" (Role "Oracle"))))
                                    (Let "Increase in price"
                                       (SubValue
                                          (ChoiceValue
-                                            (ChoiceId "Price in second window" Role "Oracle"))
+                                            (ChoiceId "Price in second window" (Role "Oracle")))
                                          (ChoiceValue
-                                            (ChoiceId "Price in first window" Role "Oracle")))
-                                      (Pay Role "Party"
-                                         (Account Role "Counterparty")
+                                            (ChoiceId "Price in first window" (Role "Oracle"))))
+                                      (Pay (Role "Party")
+                                         (Account (Role "Counterparty"))
                                          (Token "" "")
                                          (Cond
                                             (ValueLT
@@ -294,25 +294,25 @@ contractForDifferencesWithOracle :: String
 contractForDifferencesWithOracle =
   """When [
   (Case
-     (Deposit Role "Party" Role "Party"
+     (Deposit (Role "Party") (Role "Party")
         (Token "" "")
         (ConstantParam "Amount paid by party"))
      (When [
         (Case
-           (Deposit Role "Counterparty" Role "Counterparty"
+           (Deposit (Role "Counterparty") (Role "Counterparty")
               (Token "" "")
               (ConstantParam "Amount paid by counterparty"))
            (When [] (TimeParam "First window beginning")
               (When [
                  (Case
                     (Choice
-                       (ChoiceId "dir-adausd" Role "kraken") [
+                       (ChoiceId "dir-adausd" (Role "kraken")) [
                        (Bound 0 100000000000)])
                     (When [] (TimeParam "Second window beginning")
                        (When [
                           (Case
                              (Choice
-                                (ChoiceId "inv-adausd" Role "kraken") [
+                                (ChoiceId "inv-adausd" (Role "kraken")) [
                                 (Bound 0 100000000000)])
                              (Let "Price in second window"
                                 (DivValue
@@ -320,9 +320,9 @@ contractForDifferencesWithOracle =
                                       (ConstantParam "Amount of Ada to use as asset")
                                       (MulValue
                                          (ChoiceValue
-                                            (ChoiceId "dir-adausd" Role "kraken"))
+                                            (ChoiceId "dir-adausd" (Role "kraken")))
                                          (ChoiceValue
-                                            (ChoiceId "inv-adausd" Role "kraken"))))
+                                            (ChoiceId "inv-adausd" (Role "kraken")))))
                                    (Constant 10000000000000000))
                                 (If
                                    (ValueGT
@@ -332,8 +332,8 @@ contractForDifferencesWithOracle =
                                       (SubValue
                                          (ConstantParam "Amount of Ada to use as asset")
                                          (UseValue "Price in second window"))
-                                      (Pay Role "Counterparty"
-                                         (Account Role "Party")
+                                      (Pay (Role "Counterparty")
+                                         (Account (Role "Party"))
                                          (Token "" "")
                                          (Cond
                                             (ValueLT
@@ -349,8 +349,8 @@ contractForDifferencesWithOracle =
                                          (SubValue
                                             (UseValue "Price in second window")
                                             (ConstantParam "Amount of Ada to use as asset"))
-                                         (Pay Role "Party"
-                                            (Account Role "Counterparty")
+                                         (Pay (Role "Party")
+                                            (Account (Role "Counterparty"))
                                             (Token "" "")
                                             (Cond
                                                (ValueLT

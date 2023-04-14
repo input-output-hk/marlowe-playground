@@ -12,7 +12,6 @@ writeShellScriptInRepoRoot "generate-purs" ''
   rm -rf $generated
 
   # Re-generate the files
-  cp -a $(nix build .#generated-purescript --no-link --print-out-paths) $generated
+  cp -r $(nix build .#generated-purescript --no-link --print-out-paths) $generated
   chmod -R +w $generated
 ''
-
