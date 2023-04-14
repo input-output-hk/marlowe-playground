@@ -69,7 +69,7 @@ library
         http-types -any,
         jwt -any,
         lens -any,
-        marlowe -any,
+        marlowe-cardano -any,
         monad-logger -any,
         mtl -any,
         newtype-generics -any,
@@ -115,7 +115,7 @@ executable marlowe-playground-server
         directory -any,
         filepath -any,
         lens -any,
-        marlowe -any,
+        marlowe-cardano -any,
         marlowe-playground-server -any,
         marlowe-symbolic -any,
         monad-logger -any,
@@ -149,7 +149,7 @@ executable flow-chart-generator
     build-depends:
         aeson -any,
         base -any,
-        marlowe -any,
+        marlowe-cardano -any,
         marlowe-playground-server -any,
         plutus-ledger-api ==1.0.0.1
 

@@ -1,1 +1,1 @@
-{ inputs, cell }: cell.library.cabal-project.ghcWithPackages (pkgs: [ pkgs.marlowe ])
+{ inputs, cell }: cell.library.cabal-project.ghcWithPackages (pkgs: [ pkgs.marlowe-cardano ])

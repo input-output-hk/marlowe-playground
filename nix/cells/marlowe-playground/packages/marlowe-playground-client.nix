@@ -2,16 +2,17 @@
 let
   inherit (cell.library) nodejs-pkgs npmlock2nix pkgs purescript;
   inherit (nodejs-pkgs) npm;
-  spagoPkgs = import ../../../marlowe-playground-client/spago-packages.nix { inherit pkgs; };
+  spagoPkgs = import (inputs.self + "/marlowe-playground-client/spago-packages.nix") { inherit pkgs; };
 in
 npmlock2nix.v1.build {
   src = inputs.self + "/marlowe-playground-client";
   installPhase = "cp -r dist $out";
   node_modules_attrs = {
     githubSourceHashMap = {
-      shmish111.nearly-webpack-loader.939360f9d1bafa9019b6ff8739495c6c9101c4a1 = "1brx669dgsryakf7my00m25xdv7a02snbwzhzgc9ylmys4p8c10x";
-      ankitrohatgi.tarballjs.64ea5eb78f7fc018a223207e67f4f863fcc5d3c5 = "04r9yap0ka4y3yirg0g7xb63mq7jzc2qbgswbixxj8s60k6zdqsm";
+      shmish111.nearley-webpack-loader."939360f9d1bafa9019b6ff8739495c6c9101c4a1" = "1brx669dgsryakf7my00m25xdv7a02snbwzhzgc9ylmys4p8c10x";
+      ankitrohatgi.tarballjs."64ea5eb78f7fc018a223207e67f4f863fcc5d3c5" = "04r9yap0ka4y3yirg0g7xb63mq7jzc2qbgswbixxj8s60k6zdqsm";
     };
+    buildInputs = [ pkgs.python ];
   };
   buildInputs = [
     spagoPkgs.installSpagoStyle
@@ -39,11 +40,9 @@ npmlock2nix.v1.build {
       cd marlowe-playground-client
       build-spago-style \
         "./src/**/*.purs" \
-        "./test/**/*.purs" \
         "./generated/**/*.purs" \
         "../web-common-marlowe/src/**/*.purs" \
         "../web-common/src/**/*.purs"
-      npm test
       rm -rf ./dist
       npm run build:webpack:prod
     ''

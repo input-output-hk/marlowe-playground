@@ -1,3 +1,3 @@
 { inputs, cell }:
 
-cell.library.nodejs.pkgs;
+cell.library.nodejs.pkgs
