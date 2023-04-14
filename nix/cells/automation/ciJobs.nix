@@ -23,12 +23,12 @@ let
     };
 
   jobs = make-haskell-jobs library.cabal-project
-    // inputs.cells.marlowe-playground.devshells
     // inputs.cells.marlowe-playground.packages
     // inputs.cells.marlowe-playground.scripts
-    // inputs.cells.marlowe-playground.operables
-    // inputs.cells.marlowe-playground.oci-images
-    // inputs.cells.marlowe-playground.tests;
+    // inputs.cells.marlowe-playground.tests
+    // { devShells = inputs.cells.marlowe-playground.devshells; }
+    // { operables = inputs.cells.marlowe-playground.operables; }
+    // { oci-images = inputs.cells.marlowe-playground.oci-images; };
 
   # Hydra doesn't like these attributes hanging around in "jobsets": it thinks they're jobs!
   filtered-jobs = lib.filterAttrsRecursive (n: _: n != "recurseForDerivations") jobs;
