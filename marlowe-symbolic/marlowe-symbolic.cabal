@@ -18,9 +18,11 @@ library
     build-depends:      aeson -any,
                         base >=4.9,
                         marlowe-cardano,
-                        process,
                         clock,
                         formatting,
                         servant-server -any,
-                        utf8-string,
-                        wl-pprint
+                        utf8-string
+    ghc-options:
+        -Wall -Wnoncanonical-monad-instances -Wunused-packages
+        -Wincomplete-uni-patterns -Wincomplete-record-updates
+        -Wredundant-constraints -Widentities

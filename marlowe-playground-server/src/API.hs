@@ -6,12 +6,9 @@
 
 module API where
 
-import Data.Aeson (FromJSON, ToJSON, Value)
-import Data.Text (Text)
-import GHC.Generics (Generic)
+import Data.Aeson (Value)
 import Language.Haskell.Interpreter (InterpreterError, InterpreterResult)
-import Servant.API (Capture, Get, Header, Headers, JSON, NoContent, PlainText, Post, Raw, ReqBody, StdMethod (GET),
-                    Verb, (:<|>), (:>))
+import Servant.API (Capture, Get, Header, Headers, JSON, Post, ReqBody, (:<|>), (:>))
 import Web.Cookie (SetCookie)
 import Webghc.Server (CompileRequest)
 

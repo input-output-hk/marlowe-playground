@@ -16,37 +16,30 @@ import qualified Auth
 import Auth.Types (OAuthClientId (OAuthClientId), OAuthClientSecret (OAuthClientSecret))
 import Control.Monad.Except (ExceptT, runExceptT, throwError)
 import Control.Monad.IO.Class (MonadIO, liftIO)
-import Control.Monad.Logger (LoggingT, MonadLogger, logInfoN, runStderrLoggingT)
-import Control.Monad.Now (MonadNow (getCurrentTime, getPOSIXTime))
+import Control.Monad.Logger (LoggingT, runStderrLoggingT)
+import Control.Monad.Now (MonadNow (..))
 import Control.Monad.Reader (ReaderT, runReaderT)
-import Data.Aeson (FromJSON, ToJSON, eitherDecode, encode)
 import Data.Aeson as Aeson
 import qualified Data.Aeson as A
 import Data.Bits (toIntegralSized)
 import qualified Data.ByteString.Lazy.Char8 as BSL
-import qualified Data.HashMap.Strict as HM
 import Data.Proxy (Proxy (Proxy))
 import Data.String as S
 import Data.Text (Text)
 import qualified Data.Text as Text
 import Data.Text.Encoding (encodeUtf8)
-import Data.Time (NominalDiffTime, UTCTime, addUTCTime, diffUTCTime)
-import Data.Time.LocalTime (LocalTime)
 import Data.Time.Units (Second, toMicroseconds)
-import GHC.Generics (Generic)
 import Language.Haskell.Interpreter (InterpreterError (CompilationErrors), InterpreterResult)
-import Language.Marlowe.Pretty (pretty)
 import Network.HTTP.Client.Conduit (defaultManagerSettings, managerResponseTimeout, responseTimeoutMicro)
 import Network.HTTP.Conduit (newManager)
 import Network.HTTP.Simple (getResponseBody, httpJSON)
-import Network.Wai.Middleware.Cors (cors, corsRequestHeaders, simpleCorsResourcePolicy)
-import Servant (Application, Handler (Handler), Header, Headers, NoContent (NoContent), Server, ServerError,
-                ToHttpApiData, addHeader, err400, errBody, hoistServer, serve, (:<|>) ((:<|>)), (:>))
+import Network.Wai.Middleware.Cors (cors, simpleCorsResourcePolicy)
+import Servant (Application, Handler (Handler), Header, Headers, Server, ServerError, addHeader, err400, errBody,
+                hoistServer, serve, (:<|>) ((:<|>)), (:>))
 import Servant.Client (ClientEnv, mkClientEnv, parseBaseUrl)
 import System.Environment (lookupEnv)
 import System.IO (hPutStrLn, stderr)
-import Web.Cookie (SetCookie (setCookieExpires, setCookieHttpOnly, setCookieMaxAge, setCookieName, setCookiePath, setCookieSecure, setCookieValue),
-                   defaultSetCookie)
+import Web.Cookie (SetCookie (..), defaultSetCookie)
 import qualified Web.JWT as JWT
 import Webghc.Client (runscript)
 import Webghc.Server (CompileRequest)
@@ -102,10 +95,10 @@ type Web = "api" :> (API :<|> Auth.API)
 mkHandlers :: (MonadIO m) => AppConfig -> m (Server Web)
 mkHandlers AppConfig {..} = do
   githubEndpoints <- liftIO Auth.mkGithubEndpoints
-  pure (mhandlers webghcClientEnv :<|> liftedAuthServer githubEndpoints authConfig)
+  pure (mHandlers webghcClientEnv :<|> liftedAuthServer githubEndpoints authConfig)
 
-mhandlers :: ClientEnv -> Server API
-mhandlers webghcClientEnv = oracle :<|> compile webghcClientEnv :<|> logout
+mHandlers :: ClientEnv -> Server API
+mHandlers webghcClientEnv = oracle :<|> compile webghcClientEnv :<|> logout
 
 app :: Server Web -> Application
 app handlers =

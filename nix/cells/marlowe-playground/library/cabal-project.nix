@@ -20,6 +20,8 @@ let
 
     modules = [
       {
+        packages.marlowe-symbolic.ghcOptions = [ "-Werror" ];
+        packages.marlowe-playground-server.ghcOptions = [ "-Werror" ];
         packages.plutus-script-utils.ghcOptions = [ "-Wwarn" "-Wno-unused-packages" ];
         # See https://github.com/input-output-hk/iohk-nix/pull/488
         packages.cardano-crypto-praos.components.library.pkgconfig = pkgs.lib.mkForce [ [ pkgs.libsodium-vrf pkgs.secp256k1 ] ];

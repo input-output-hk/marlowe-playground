@@ -22,6 +22,12 @@ index-state:
 packages: marlowe-playground-server
           marlowe-symbolic
 
+package marlowe-playground-server
+  ghc-options: -Werror
+
+package marlowe-symbolic
+  ghc-options: -Werror
+
 -- We never, ever, want this.
 write-ghc-environment-files: never
 
