@@ -7,6 +7,12 @@ in
 npmlock2nix.v1.build {
   src = inputs.self + "/marlowe-playground-client";
   installPhase = "cp -r dist $out";
+  node_modules_attrs = {
+    githubSourceHashMap = {
+      shmish111.nearly-webpack-loader.939360f9d1bafa9019b6ff8739495c6c9101c4a1 = "1brx669dgsryakf7my00m25xdv7a02snbwzhzgc9ylmys4p8c10x";
+      ankitrohatgi.tarballjs.64ea5eb78f7fc018a223207e67f4f863fcc5d3c5 = "04r9yap0ka4y3yirg0g7xb63mq7jzc2qbgswbixxj8s60k6zdqsm";
+    };
+  };
   buildInputs = [
     spagoPkgs.installSpagoStyle
     spagoPkgs.buildSpagoStyle
@@ -28,9 +34,6 @@ npmlock2nix.v1.build {
     install-spago-style
     cd ..
   '';
-  checkPhase = ''
-
-  '';
   buildCommands = [
     ''
       cd marlowe-playground-client
@@ -46,4 +49,3 @@ npmlock2nix.v1.build {
     ''
   ];
 }
-
