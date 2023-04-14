@@ -58,10 +58,10 @@ let
         help = "Haskell code linter";
       }
       {
-        package = library.hlint;
-        name = "hlint";
+        package = library.haskell-language-server;
+        name = "haskell-language-server";
         category = "haskell";
-        help = "Haskell code linter";
+        help = "Haskell language server";
       }
       {
         package = library.stylish-haskell;
@@ -137,6 +137,7 @@ let
     ];
 
     packages = [
+      library.haskell-language-server-project.hsPkgs.haskell-language-server.components.exes.haskell-language-server-wrapper
       library.hie-bios
       pkgs.jq
       pkgs.yq
