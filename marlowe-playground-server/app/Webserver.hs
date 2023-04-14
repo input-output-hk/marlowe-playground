@@ -10,8 +10,8 @@ import Data.Time.Units (Second)
 import qualified Marlowe.Symbolic.Server as MS
 import Network.Wai.Handler.Warp as Warp
 import Servant (serve, (:<|>) ((:<|>)))
-import qualified Server
 import Server (initializeServerContext)
+import qualified Server
 import qualified Webghc.Server as Webghc
 
 type API = Server.Web :<|> Webghc.API :<|> MS.API
