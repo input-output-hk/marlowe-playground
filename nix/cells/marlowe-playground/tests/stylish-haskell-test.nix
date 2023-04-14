@@ -1,7 +1,6 @@
 { inputs, cell }:
 let
-  inherit (cell.library) pkgs;
-  inherit (cell.scripts) fix-stylish-haskell;
+  inherit (cell.library) pkgs stylish-haskell;
 
   # just haskell sources and the stylish-haskell config file
   src = pkgs.lib.cleanSourceWith {
@@ -16,13 +15,18 @@ let
         );
   };
 in
-pkgs.runCommand "stylish-check" { buildInputs = [ fix-stylish-haskell pkgs.diffutils pkgs.glibcLocales ]; } ''
+pkgs.runCommand "stylish-check" { buildInputs = [ stylish-haskell pkgs.diffutils pkgs.glibcLocales pkgs.fd ]; } ''
   set +e
   cp -a ${src} orig
   cp -a ${src} stylish
   chmod -R +w stylish
   cd stylish
-  fix-stylish-haskell
+  fd \
+    --extension hs \
+    --exclude 'dist-newstyle/*' \
+    --exclude 'dist/*' \
+    --exclude '.stack-work/*' \
+    --exec bash -c "stylish-haskell -i {}"
   cd ..
   diff --brief --recursive orig stylish > /dev/null
   EXIT_CODE=$?
