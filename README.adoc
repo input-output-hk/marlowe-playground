@@ -73,11 +73,24 @@ If you use Nix, these tools are provided for you via `shell.nix`, and you do *no
 * If you want to build our Haskell packages with https://haskellstack.org/[`stack`], then install it.
 
 [[building-with-nix]]
-==== How to build the Haskell packages and other artifacts with Nix
+==== Using Std
 
-Run `nix build .#marlowe-playground-server:exe:marlowe-playground-server` from the root to build the Playground backend service.
+This project is managed by https://github.com/divnix/std[`std`]. It provides a
+CLI and TUI for navigating all buildable artifacts in the project. To use it,
+you must enter the project dev shell. You can do this by running the command
+`nix develop` from the repo root, or if you are a direnv user, run `direnv
+allow` in the repo root and direnv will automatically load the dev shell for
+you when you `cd` into the repo and refresh it when it changes.
 
-Try `nix flake show` to see the packages available to build.
+Upon entering the dev shell, you will be shown a MOD (message of the day) that
+lists the available commands. You can also launch the std TUI with the `std`
+command. It will display a navigable menu of all build actions defined for this
+project. You can invoke any of the commands from the TUI, or directly using the
+`std` CLI. For instance, to build the `marlowe-playground-server`, run the
+command `std //marlowe-playground/packages/marlowe-playground-server:build`.
+
+You can get tab-completion for the `std` CLI by running the command
+`source <(std _carapace)`.
 
 ==== How to build the Haskell packages with `cabal`
 
@@ -121,7 +134,7 @@ To set up the cache:
 +
 ----
 experimental-features = nix-command flakes
-substituters        = "https://cache.nixos.org" "https://cache.iog.io https://marlowe-playground.cachix.org"
+substituters        = "https://cache.nixos.org" "https://cache.iog.io "https://marlowe-playground.cachix.org"
 trusted-public-keys = "hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ= marlowe-playground.cachix.org-1:8TmdbVgcB4QzTmuzLxNdaCxdc8ZVI9S8eeeXsY9stxo="
 ----
 +
@@ -163,30 +176,6 @@ Changes to `/etc/nix/nix.conf` may require a restart of the nix daemon in order 
 sudo launchctl stop org.nixos.nix-daemon
 sudo launchctl start org.nixos.nix-daemon
 ----
-
-[[nix-build-attributes]]
-=== Which attributes to use to build different artifacts
-
-link:./flake.nix[`flake.nix`] defines the packages that you can build from this repository.
-These can be built using `nix build`.
-For example:
-
-----
-nix build .#generate-purs
-----
-
-.Other builds
-To see other packages that can be built or run, execute
-
-----
-nix flake show
-----
-
-[NOTE]
-====
-You might need to comment other build systems inside flake.nix
-====
-
 
 == Licensing
 
