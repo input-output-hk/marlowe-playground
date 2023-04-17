@@ -34,6 +34,8 @@ in
 
       [ -z "''${FRONTEND_URL:-}" ] && echo "FRONTEND_URL env var must be set -- aborting" && exit 1
 
+      mkdir -p /tmp
+
       ${marlowe-playground-server}/bin/marlowe-playground-server webserver
     '';
   };
