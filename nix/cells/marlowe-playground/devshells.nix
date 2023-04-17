@@ -7,7 +7,7 @@ let
   shell = inputs.std.lib.dev.mkShell {
     name = "marlowe-playground-shell";
 
-    imports = [ haskell-devshell ];
+    imports = [ haskell-devshell inputs.std.std.devshellProfiles.default ];
 
     commands = [
       {

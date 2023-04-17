@@ -6,8 +6,6 @@
 
   ghc-compiler-nix-name = import ./ghc-compiler-nix-name.nix block;
 
-  ghc-with-marlowe = import ./ghc-with-marlowe.nix block;
-
   ghc = import ./ghc.nix block;
 
   haskell-language-server-project = import ./haskell-language-server-project.nix block;

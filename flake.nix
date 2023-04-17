@@ -120,6 +120,9 @@
 
         # harvest the ciJobs cell block from the automation cell.
         hydraJobs = inputs.std.harvest inputs.self [ "automation" "ciJobs" ];
+
+        # harvest the oci-images cell block from the marlowe-playground cell.
+        oci-images = inputs.std.harvest inputs.self [ "marlowe-playground" "oci-images" ];
       }
       {
         # harvest the scripts cell block from the marlowe-playground cell.
