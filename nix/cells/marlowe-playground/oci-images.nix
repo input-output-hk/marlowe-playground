@@ -8,6 +8,7 @@ let
   mkImage = { name, description }:
     mkStandardOCI {
       inherit name;
+      tag = "latest";
       operable = operables.${name};
       uid = "0";
       gid = "0";
