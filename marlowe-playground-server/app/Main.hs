@@ -9,7 +9,7 @@ module Main
 where
 
 import Control.Monad.IO.Class (MonadIO, liftIO)
-import Control.Monad.Logger (MonadLogger, logInfoN, runStderrLoggingT)
+import Control.Monad.Logger (logInfoN, runStderrLoggingT)
 import qualified Data.Text as Text
 import Data.Time.Units (Second)
 import Options.Applicative (CommandFields, Mod, Parser, argument, auto, command, customExecParser, disambiguate,
@@ -76,7 +76,7 @@ webserverCommandParser =
           )
       pure Webserver {..}
 
-runCommand :: (MonadIO m, MonadLogger m) => Maybe FilePath -> Command -> m ()
+runCommand :: MonadIO m => Maybe FilePath -> Command -> m ()
 runCommand secrets Webserver {..} = liftIO $ Webserver.run _port _maxInterpretationTime secrets
 runCommand _ PSGenerator {..}     = liftIO $ PSGenerator.generate _outputDir
 

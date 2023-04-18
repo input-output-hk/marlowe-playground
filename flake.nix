@@ -1,191 +1,147 @@
 {
-  inputs.haskellNix.url = "github:input-output-hk/haskell.nix";
-  inputs.iohkNix.url = "github:input-output-hk/iohk-nix";
-  inputs.nixpkgs.follows = "haskellNix/nixpkgs-unstable";
-  inputs.flake-utils.url = "github:numtide/flake-utils";
-  inputs.pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
-
-  inputs.CHaP = {
-    url = "github:input-output-hk/cardano-haskell-packages?ref=repo";
-    flake = false;
+  description = "Marlowe Playground";
+  inputs = {
+    nixpkgs = {
+      url = "github:NixOS/nixpkgs";
+      follows = "haskell-nix/nixpkgs-unstable";
+    };
+    haskell-nix = {
+      url = "github:input-output-hk/haskell.nix";
+      inputs.hackage.follows = "hackage";
+    };
+    haskell-language-server = {
+      url = "github:haskell/haskell-language-server?ref=1.3.0";
+      flake = false;
+    };
+    CHaP = {
+      url = "github:input-output-hk/cardano-haskell-packages?ref=repo";
+      flake = false;
+    };
+    hackage = {
+      url = "github:input-output-hk/hackage.nix";
+      flake = false;
+    };
+    easy-purescript-nix = {
+      url = "github:justinwoo/easy-purescript-nix";
+      flake = false;
+    };
+    iohk-nix = {
+      url = "github:input-output-hk/iohk-nix";
+      inputs.nixpkgs.follows = "haskell-nix/nixpkgs-unstable";
+    };
+    pre-commit-hooks = {
+      url = "github:cachix/pre-commit-hooks.nix";
+      inputs.nixpkgs.follows = "haskell-nix/nixpkgs-unstable";
+    };
+    std = {
+      url = "github:divnix/std";
+      inputs.nixpkgs.follows = "haskell-nix/nixpkgs-unstable";
+    };
+    npmlock2nix = {
+      url = "github:nix-community/npmlock2nix";
+      flake = false;
+    };
   };
 
-  inputs.easy-purescript-nix = {
-    url = "github:justinwoo/easy-purescript-nix";
-    flake = false;
-  };
+  # Managed by std
+  outputs = inputs:
 
-  outputs = { self, nixpkgs, flake-utils, haskellNix, easy-purescript-nix, pre-commit-hooks, iohkNix, CHaP }:
-    let
-      supportedSystems = [
-        "x86_64-linux"
-        "x86_64-darwin"
-      ];
-    in
-    flake-utils.lib.eachSystem supportedSystems (system:
-      let
-        easyPS =
-          let
-            p = pkgs.callPackage (easy-purescript-nix) { };
-          in
-          p // { purs = p.purs-0_15_2; };
+    # Produces the flake outputs.
+    inputs.std.growOn
 
-        fixPngOptimization = pkgs.callPackage ./nix/fix-png-optimization { };
-        fixStylishHaskell = pkgs.callPackage ./nix/fix-stylish-haskell { };
+      # The first argument tells std where to look for "cells", and what type
+      # of cells to grow.
+      {
+        inherit inputs;
 
-        writeShellScriptBinInRepoRoot = name: script: pkgs.writeShellScriptBin name ''
-          cd `${pkgs.git}/bin/git rev-parse --show-toplevel`
-          ${script}
-        '';
+        # All nix files reside in this folder. Each subfolder is a "cell",
+        # which is a logical grouping of functionality.
+        #
+        # Our two cells are:
+        #   automation
+        #     CI jobs and dev shells.
+        #   marlowe-playground
+        #     Backend and frontend for the Marlowe Playground.
+        cellsFrom = ./nix/cells;
 
-        scripts = import ./nix/scripts.nix {
-          inherit pkgs easyPS writeShellScriptBinInRepoRoot;
-          inherit (pkgs.nodePackages) prettier;
-
-        };
-
-        formatting = import ./nix/formatting.nix {
-          inherit writeShellScriptBinInRepoRoot pkgs easyPS;
-        };
-
-        tests = import ./nix/tests/default.nix {
-          inherit pkgs fixPngOptimization fixStylishHaskell;
-          inherit (formatting) fix-prettier;
-          inherit (easyPS) purs-tidy;
-          src = ./.;
-          play-generated = scripts.generated-purescript;
-        };
-        pre-commit-check = pre-commit-hooks.lib.${system}.run {
-          src = (pkgs.lib.cleanSource ./.);
-          hooks = {
-            prettier = {
-              enable = true;
-              types_or = [ "javascript" "css" "html" ];
-            };
-            purs-tidy-hook = {
-              enable = true;
-              name = "purs-tidy";
-              description = "Ensure PureScript files are formatted";
-              entry = "${easyPS.purs-tidy}/bin/purs-tidy format-in-place";
-              files = "\\.purs$";
-              language = "system";
-            };
-            shellcheck.enable = true;
-            stylish-haskell.enable = true;
-            nixpkgs-fmt.enable = true;
-            png-optimization = {
-              enable = true;
-              name = "png-optimization";
-              description = "Ensure that PNG files are optimized";
-              entry = "${pkgs.optipng}/bin/optipng";
-              files = "\\.png$";
-            };
-          };
-        };
-        overlays = [
-          haskellNix.overlay
-          iohkNix.overlays.crypto
-          (final: prev: {
-            playground =
-              final.haskell-nix.cabalProject' {
-                inputMap = {
-                  "https://input-output-hk.github.io/cardano-haskell-packages" = CHaP;
-                };
-                src = ./.;
-                compiler-nix-name = "ghc8107";
-                modules = [
-                  {
-                    packages.plutus-script-utils.ghcOptions = [ "-Wwarn" "-Wno-unused-packages" ];
-                    # See https://github.com/input-output-hk/iohk-nix/pull/488
-                    packages.cardano-crypto-praos.components.library.pkgconfig = pkgs.lib.mkForce [ [ pkgs.libsodium-vrf pkgs.secp256k1 ] ];
-                    packages.cardano-crypto-class.components.library.pkgconfig = pkgs.lib.mkForce [ [ pkgs.libsodium-vrf pkgs.secp256k1 ] ];
-                  }
-                ];
-                shell.tools = {
-                  cabal = { };
-                  haskell-language-server = { };
-                };
-                shell.shellHook = ''
-                  ${pre-commit-check.shellHook}
-
-                  # The green prompt familiar to those used to nix-shell
-                  export PS1="\n\[\033[1;32m\][nix develop:\w]\$\[\033[0m\] "
-                '';
-                shell.buildInputs =
-                  (with pkgs; [
-                    nixpkgs-fmt
-                    nodePackages.prettier
-                    pkgs.nil
-                    pkgs.nodejs-14_x
-                    pkgs.z3
-                  ]
-                  )
-                  ++
-                  (with scripts; [
-                    marlowe-playground-generate-purs
-                    start-backend
-                  ]
-                  )
-                  ++
-                  (with formatting; [
-                    fix-prettier
-                    fix-purs-tidy
-                    fix-nix-fmt
-                  ]
-                  )
-                  ++
-                  (with easyPS; [
-                    purs-tidy
-                    purs
-                    spago
-                    spago2nix
-                    psa
-                    purescript-language-server
-                    pscid
-                  ]
-                  ++ [
-                    fixPngOptimization
-                    fixStylishHaskell
-                  ]
-
-                  )
-                ;
-              };
-          })
+        # Each cell contains "cell blocks".
+        # Block names are arbitrary.
+        # Each block can be thought of as providing a "feature" to its cell.
+        # Cell blocks have types.
+        # Each cell block must be either:
+        #   A nix file named after the cell block
+        #   A directory named after the cell block and containing a default.nix
+        # Not all cells have the same cell blocks.
+        # All cell blocks belong in a cell.
+        #
+        # In this repository we have six cell blocks, listed below with their type:
+        #   devshells :: devshells
+        #     Development shells available via nix develop
+        #   packages :: installables
+        #     Derivations available via nix build
+        #   library :: functions
+        #     Everything that is not a derivation goes here
+        #     Includes functions, attrsets and simple literal values shared across cells
+        #     These are not exposed to the flake
+        #   scripts :: functions
+        #     Scripts that are available in the dev shell
+        #   tests :: functions
+        #     Scripts that are available in the dev shell
+        #   ciJobs :: installables
+        #     Jobsets for our Hydra CI
+        #
+        # std provides a TUI to interact with the cell blocks.
+        # Available interactions are determined by the cell block's type.
+        cellBlocks = [
+          (inputs.std.devshells "devshells")
+          (inputs.std.installables "packages")
+          (inputs.std.functions "library")
+          (inputs.std.installables "scripts")
+          (inputs.std.installables "tests")
+          (inputs.std.installables "ciJobs")
+          (inputs.std.runnables "operables")
+          (inputs.std.containers "oci-images")
         ];
+      }
 
-        pkgs = import nixpkgs { inherit system overlays; inherit (haskellNix) config; };
-        flake = pkgs.playground.flake { };
-        ghc-with-marlowe = pkgs.playground.ghcWithPackages (ps: [ ps.marlowe ]);
-      in
-      pkgs.lib.recursiveUpdate
-        (flake // {
-          legacyPackages = pkgs;
-        })
-        {
-          packages = {
-            inherit ghc-with-marlowe fixPngOptimization fixStylishHaskell;
-            inherit (scripts) marlowe-playground-generate-purs generated-purescript;
-            inherit (formatting) fix-purs-tidy fix-nix-fmt;
-            test-nix-fmt = tests.nixpkgsFmt;
-            test-prettier = tests.prettier;
-            test-generated = tests.generated;
-            test-purs-tidy = tests.pursTidy;
-            test-png = tests.pngOptimization;
-            test-stylish-haskell = tests.stylishHaskell;
-            test-shell = tests.shellcheck;
-          };
-        }
+      # The growOn function takes a variadic number of "soil" arguments, which
+      # provide a compatability layer for standard flake attributes. We
+      # translate (a.k.a. "harvest") the cell blocks into flake attributes.
+      # Successive arguments will be recursively merged.
+      {
+        # harvest the packages cell block from the marlowe-playground cell.
+        packages = inputs.std.harvest inputs.self [ "marlowe-playground" "packages" ];
 
-    );
+        # harvest the devshells cell block from the marlowe-playground cell.
+        devShells = inputs.std.harvest inputs.self [ "marlowe-playground" "devshells" ];
+
+        # harvest the tests cell block from the marlowe-playground cell.
+        checks = inputs.std.harvest inputs.self [ "marlowe-playground" "tests" ];
+
+        # harvest the ciJobs cell block from the automation cell.
+        hydraJobs = inputs.std.harvest inputs.self [ "automation" "ciJobs" ];
+
+        # harvest the oci-images cell block from the marlowe-playground cell.
+        oci-images = inputs.std.harvest inputs.self [ "marlowe-playground" "oci-images" ];
+      }
+      {
+        # harvest the scripts cell block from the marlowe-playground cell.
+        packages = inputs.std.harvest inputs.self [ "marlowe-playground" "scripts" ];
+      };
 
   # --- Flake Local Nix Configuration ----------------------------
   nixConfig = {
     # This sets the flake to use the IOG nix cache.
     # Nix should ask for permission before using it,
     # but remove it here if you do not want it to.
-    extra-substituters = [ "https://cache.iog.io" ];
-    extra-trusted-public-keys = [ "hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ=" ];
-    allow-import-from-derivation = "true";
+    extra-substituters = [
+      "https://cache.iog.io"
+      "https://cache.zw3rk.com"
+    ];
+    extra-trusted-public-keys = [
+      "hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ="
+      "loony-tools:pr9m4BkM/5/eSTZlkQyRt57Jz7OMBxNSUiMC4FkcNfk="
+    ];
+    allow-import-from-derivation = true;
   };
 }

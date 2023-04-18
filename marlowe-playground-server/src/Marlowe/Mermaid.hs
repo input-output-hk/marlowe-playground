@@ -26,7 +26,6 @@ module Marlowe.Mermaid (toMermaid) where
 
 import Data.Hashable (hash)
 import Data.List (nub)
-import GHC.Real (denominator, numerator)
 import Language.Marlowe.Extended.V1
 
 -- | Convert the 'Contract' DSL into a flat list (like converting from a graph
@@ -46,7 +45,7 @@ flatten p@(When [] t c)
   =  (p, c, Just $ show $ "currentSlot >= " ++ timeoutShow t) : flatten c
 -- If we do have cases and the continuation is just a Close contract, we omit that link
 -- TODO: Maybe later on we want to make this configurable.
-flatten p@(When cases t Close)
+flatten p@(When cases _ Close)
   =  concatMap (\(Case a c') -> (p, c', Just $ actionShow a) : flatten c') cases
 flatten p@(When cases t c)
   = [(p, c, Just $ show $ "currentSlot >= " ++ timeoutShow t)]
@@ -65,8 +64,8 @@ escape s = "\"" ++ s' ++ "\""
 actionShow :: Action -> String
 actionShow = escape . showAction
   where
-    showAction (Deposit accountId party tkn val) = show party ++ " deposits " ++ valueShow val ++ " lovelaces into " ++ show accountId ++ " account"
-    showAction (Choice (ChoiceId id party) bnd) = show party ++ " makes a choice in " ++ show id
+    showAction (Deposit accountId party _ val) = show party ++ " deposits " ++ valueShow val ++ " lovelaces into " ++ show accountId ++ " account"
+    showAction (Choice (ChoiceId choiceId party) _) = show party ++ " makes a choice in " ++ show choiceId
     showAction (Notify obs) = "A notification on " ++ observationShow obs
 
 timeoutShow :: Timeout -> String
@@ -80,7 +79,7 @@ observationShow = escape . repr
     repr (AndObs obs1 obs2)                   = observationShow obs1 ++ " && " ++ observationShow obs2
     repr (OrObs obs1 obs2)                    = "(" ++ observationShow obs1 ++ ") || (" ++ observationShow obs2 ++ ")"
     repr (NotObs obs)                         = "!" ++ observationShow obs
-    repr (ChoseSomething (ChoiceId id party)) = show party ++ " choice on " ++ show id
+    repr (ChoseSomething (ChoiceId choiceId party)) = show party ++ " choice on " ++ show choiceId
     repr (ValueGE val1 val2)                  = valueShow val1 ++ " >= " ++ valueShow val2
     repr (ValueGT val1 val2)                  = valueShow val1 ++ " > " ++ valueShow val2
     repr (ValueLT val1 val2)                  = valueShow val1 ++ " < " ++ valueShow val2
@@ -90,16 +89,16 @@ observationShow = escape . repr
     repr FalseObs                             = "false"
 
 
--- | A concise representaiton of an individual 'Contract' for displaying on
+-- | A concise representation of an individual 'Contract' for displaying on
 -- nodes in the mermaid graph.
 contractShow :: Contract -> String
 contractShow = escape . repr
   where
     repr Close        = "Close"
-    repr (Pay from to tok v _) =
+    repr (Pay from to _ v _) =
       "Pay " ++  valueShow v  ++ " from " ++ show from ++ " to " ++ show to
     repr (If obs _ _ )  = observationShow obs
-    repr (When _ _ _) = "When ..."
+    repr When {} = "When ..."
     repr (Let (ValueId valId) val _) = "let " ++ show valId ++ " = " ++ valueShow val
     repr (Assert obs _) = observationShow obs
 
@@ -111,9 +110,9 @@ valueShow (NegValue val1) = "-" ++ valueShow val1
 valueShow (SubValue val1 val2) = "(" ++ valueShow val1 ++ " - " ++ valueShow val2 ++ ")"
 valueShow (MulValue val1 val2) = "(" ++ valueShow val1 ++ " * " ++ valueShow val2 ++ ")"
 valueShow (DivValue val1 val2) = "(" ++ valueShow val1 ++ " / " ++ valueShow val2 ++ ")"
-valueShow (ChoiceValue (ChoiceId id party)) = show party ++ " choice on " ++ show id
+valueShow (ChoiceValue (ChoiceId choiceId party)) = show party ++ " choice on " ++ show choiceId
 valueShow (Cond obs val1 val2) = "(" ++ observationShow obs ++ " ? " ++ valueShow val1 ++ " : " ++ valueShow val2 ++ ")"
-valueShow (UseValue (ValueId id)) = show id
+valueShow (UseValue (ValueId choiceId)) = show choiceId
 valueShow (AvailableMoney party _) = show party ++ "'s available money"
 valueShow TimeIntervalStart  = "time interval start"
 valueShow TimeIntervalEnd  = "time interval end"
@@ -126,12 +125,12 @@ toMermaid c = unlines . nub $ "graph TB" : map f (flatten c)
   -- particular nodes. Maybe this could be cleaned up in another way; it's
   -- perhaps a bit fragile given that it depends on the string representation.
   where
-    brackets Close           = ("((", "))")   -- Circle
-    brackets (Pay _ _ _ _ _) = ("([", "])")   -- Stadium shape
-    brackets (If  _ _ _)     = ("{", "}")     -- Rhombus
-    brackets (When  _ _ _)   = ("{", "}")     -- Rhombus
-    brackets (Let  _ _ _)    = ("[[", "]]")   -- Subrutine shape
-    brackets (Assert  _ _)   = (">", "]")     -- Flag
+    brackets Close         = ("((", "))")   -- Circle
+    brackets Pay {}        = ("([", "])")   -- Stadium shape
+    brackets If {}         = ("{", "}")     -- Rhombus
+    brackets When {}       = ("{", "}")     -- Rhombus
+    brackets Let {}        = ("[[", "]]")   -- Subroutine shape
+    brackets (Assert  _ _) = (">", "]")     -- Flag
     f (a, b, mt) =
       let node n =
             let (bl, br) = brackets n

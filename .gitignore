@@ -94,7 +94,6 @@ TAGS
 *.tfvars
 gh-pages
 .importify/
-.envrc
 .direnv/
 *.db
 *.db-shm
@@ -105,3 +104,4 @@ ghcid.txt
 # profiling output files
 *.timelog
 *.stacks
+.std

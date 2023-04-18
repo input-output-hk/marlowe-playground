@@ -12,23 +12,19 @@
 module Marlowe.Symbolic.Server where
 
 import Control.Exception (evaluate)
-import Control.Monad.IO.Class (MonadIO, liftIO)
+import Control.Monad.IO.Class (liftIO)
 import qualified Data.Aeson as JSON
 import Data.Bifunctor (first)
 import Data.ByteString.Lazy.UTF8 as BSU
-import Data.Maybe (fromMaybe)
 import Data.Proxy (Proxy (Proxy))
 import Formatting (fprint, (%))
 import Formatting.Clock (timeSpecs)
-import Language.Marlowe (Contract, POSIXTime (..), State, TransactionInput, TransactionWarning)
+import Language.Marlowe (POSIXTime (..), TransactionInput, TransactionWarning)
 import Language.Marlowe.Analysis.FSSemantics (warningsTraceCustom)
 import Marlowe.Symbolic.Types.Request (Request (..))
 import Marlowe.Symbolic.Types.Response (Response (..), Result (..))
-import Servant (Application, Handler (Handler), JSON, Post, ReqBody, Server, ServerError, hoistServer, serve,
-                (:<|>) ((:<|>)), (:>))
+import Servant (Application, JSON, Post, ReqBody, Server, serve, (:>))
 import System.Clock (Clock (Monotonic), diffTimeSpec, getTime, toNanoSecs)
-import System.Process (system)
-import Text.PrettyPrint.Leijen (displayS, renderCompact)
 
 type API = "api" :> "marlowe-analysis" :> ReqBody '[JSON] Request :> Post '[JSON] Response
 
@@ -51,7 +47,7 @@ handlers Request {..} =
   liftIO $ do
     start <- getTime Monotonic
     evRes <- warningsTraceCustom onlyAssertions contract (Just state)
-    evaluate evRes
+    _ <- evaluate evRes
     end <- getTime Monotonic
     let res = Response { result = makeResult (first show evRes)
                        , durationMs = (toNanoSecs $ diffTimeSpec start end) `div` 1000000
@@ -68,4 +64,3 @@ initializeContext = pure ()
 
 initializeApplication :: IO Application
 initializeApplication = pure app
-

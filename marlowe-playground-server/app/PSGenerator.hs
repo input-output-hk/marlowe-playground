@@ -35,7 +35,7 @@ import qualified Escrow
 import qualified EscrowWithCollateral
 import qualified Example
 import Gist (Gist, GistFile, NewGist, NewGistFile, Owner)
-import Language.Haskell.Interpreter (CompilationError, InterpreterError, InterpreterResult, SourceCode, Warning)
+import Language.Haskell.Interpreter (CompilationError, InterpreterError, InterpreterResult, Warning)
 import Language.Marlowe.Extended.V1
 import Language.PureScript.Bridge (BridgePart, Language (Haskell, PureScript), PSType, SumType (..), TypeInfo (..),
                                    argonaut, buildBridge, equal, genericShow, mkSumType, order, psTypeParameters,
