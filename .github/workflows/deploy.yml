@@ -8,8 +8,7 @@ on:
   push:
     branches:
       - main
-    tags:
-      - v*
+      - production
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -46,10 +45,10 @@ jobs:
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
           # Strip git ref prefix from version
           TAG=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-          # Strip "v" prefix from tag name
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && TAG=$(echo $TAG | sed -e 's/^v//')
           # Use Docker `latest` tag convention
           [ "$TAG" == "main" ] && TAG=latest
+          # Use date + short hash for production releases
+          [ "$TAG" == "production" ] && TAG="$(date +'%Y-%m-%d')-$(git rev-parse --short "${{ github.ref }}")"
           echo IMAGE_ID=$IMAGE_ID
           echo TAG=$TAG
           docker tag ${{ matrix.image }} $IMAGE_ID:$TAG
