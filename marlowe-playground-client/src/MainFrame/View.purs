@@ -174,20 +174,21 @@ render state =
                   ]
                   [ text "iohk.io" ]
               ]
-          , div_ [ text (copyright <> " 2021 IOHK Ltd") ]
+          , div_ [ text (copyright <> " 2023 IOHK Ltd") ]
           , div [ classNames [ "flex" ] ]
               [ a
-                  [ href "https://discord.gg/p2P27Fcuun"
+                  [ href
+                      "https://discord.com/channels/826816523368005654/936295815926927390"
                   , target "_blank"
                   , classNames [ "pr-small" ]
                   ]
                   [ text "Discord" ]
               , a
-                  [ href "https://twitter.com/hashtag/Marlowe"
+                  [ href "https://iohk.zendesk.com/hc/en-us/requests/new"
                   , target "_blank"
                   , classNames [ "pl-small" ]
                   ]
-                  [ text "Twitter" ]
+                  [ text "ZenDesk" ]
               ]
           ]
       ]

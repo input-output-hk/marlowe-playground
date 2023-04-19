@@ -30,7 +30,7 @@ if rtd_version not in ["stable", "latest"]:
 # -- Project information -----------------------------------------------------
 
 project = 'Marlowe'
-copyright = '2021, IOHK'
+copyright = '2023, IOHK'
 author = 'IOHK'
 
 # The full version, including alpha/beta/rc tags
