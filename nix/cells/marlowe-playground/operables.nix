@@ -2,7 +2,7 @@
 let
   inherit (cell.library) pkgs;
   inherit (cell.packages) marlowe-playground-client marlowe-playground-server ghc-with-marlowe;
-  inherit (pkgs) darkhttpd lib mailcap;
+  inherit (pkgs) darkhttpd lib mailcap coreutils;
   inherit (inputs.std.lib.ops) mkOperable;
 
 in
@@ -16,7 +16,7 @@ in
   };
   marlowe-playground-server = mkOperable {
     package = marlowe-playground-server;
-    runtimeInputs = [ ghc-with-marlowe ];
+    runtimeInputs = [ ghc-with-marlowe coreutils ];
     runtimeScript = ''
       #################
       # REQUIRED VARS #
