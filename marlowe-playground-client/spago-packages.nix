@@ -787,11 +787,11 @@ let
 
     "marlowe" = pkgs.stdenv.mkDerivation {
       name = "marlowe";
-      version = "b1b556905c672ec0ae811fa4e48b367b5e7c5d5d";
+      version = "f97fb0fa7f23bc4631e6acafadd52c3303ea77e9";
       src = pkgs.fetchgit {
         url = "https://github.com/input-output-hk/purescript-marlowe";
-        rev = "b1b556905c672ec0ae811fa4e48b367b5e7c5d5d";
-        sha256 = "0rg8gmns0vavd6izkn3vjmwxdsjv4jvl3vpbyilb1a9mb2888fch";
+        rev = "f97fb0fa7f23bc4631e6acafadd52c3303ea77e9";
+        sha256 = "19zdnsb8h986dgbzliy0z4cvdmm6g2w46cwgqr37kalnvhfx3k8i";
       };
       phases = "installPhase";
       installPhase = "ln -s $src $out";
@@ -1628,11 +1628,12 @@ in
   '';
 
   buildFromNixStore = pkgs.writeShellScriptBin "build-from-store" ''
-    set -e
-    echo building project using sources from nix store...
-    purs compile ${builtins.toString (
-      builtins.map getStoreGlob (builtins.attrValues inputs))} "$@"
-    echo done.
+          set -e
+          echo building project using sources from nix store...
+          purs compile ${builtins.toString (
+            builtins.map getStoreGlob (builtins.attrValues inputs)
+    )} "$@"
+          echo done.
   '';
 
   mkBuildProjectOutput =
