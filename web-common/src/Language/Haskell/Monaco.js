@@ -213,6 +213,8 @@ const black = "#000000";
 export const haskellDaylightTheme_ = {
   base: "vs",
   inherit: true,
+  // This property needs to be present even if it doesn't have any values to avoid a JS runtime error
+  colors: {},
   rules: [
     // { token: '', foreground: red, background: 'fffffe' },
     // normal stuff
