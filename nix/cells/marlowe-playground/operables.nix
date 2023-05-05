@@ -34,6 +34,7 @@ in
 
       [ -z "''${FRONTEND_URL:-}" ] && echo "FRONTEND_URL env var must be set -- aborting" && exit 1
 
+      # shellcheck source=/dev/null
       source ${cacert}/nix-support/setup-hook
 
       mkdir -p /tmp
