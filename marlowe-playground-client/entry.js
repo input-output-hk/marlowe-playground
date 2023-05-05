@@ -9,7 +9,6 @@ import jsonBigInt from "json-bigint";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import { EmacsExtension } from "monaco-emacs";
 import { initVimMode } from "monaco-vim";
-import * as bignumberDTS from "!!raw-loader!bignumber.js/bignumber.d.ts";
 import * as marloweDTS from "!!raw-loader!src/Language/Javascript/MarloweJS.ts";
 import { main } from "./output/Main";
 
@@ -17,7 +16,6 @@ global.monaco = monaco;
 global.EmacsExtension = EmacsExtension;
 global.initVimMode = initVimMode;
 global.monacoExtraTypeScriptLibs = [
-  [bignumberDTS.default, "inmemory://model/bignumber.js.d.ts"],
   [marloweDTS.default, "inmemory://model/marlowe-js.d.ts"],
 ];
 
