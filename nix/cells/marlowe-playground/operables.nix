@@ -2,7 +2,7 @@
 let
   inherit (cell.library) pkgs;
   inherit (cell.packages) marlowe-playground-client marlowe-playground-server ghc-with-marlowe;
-  inherit (pkgs) darkhttpd lib mailcap coreutils;
+  inherit (pkgs) darkhttpd lib mailcap coreutils cacert;
   inherit (inputs.std.lib.ops) mkOperable;
 
 in
@@ -16,7 +16,7 @@ in
   };
   marlowe-playground-server = mkOperable {
     package = marlowe-playground-server;
-    runtimeInputs = [ ghc-with-marlowe coreutils ];
+    runtimeInputs = [ ghc-with-marlowe coreutils cacert ];
     runtimeScript = ''
       #################
       # REQUIRED VARS #
@@ -33,6 +33,8 @@ in
       # WEBGHC_URL: The URL of the WebGHC server.
 
       [ -z "''${FRONTEND_URL:-}" ] && echo "FRONTEND_URL env var must be set -- aborting" && exit 1
+
+      source ${cacert}/nix-support/setup-hook
 
       mkdir -p /tmp
 
