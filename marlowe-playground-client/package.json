@@ -17,6 +17,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.10.2",
     "@popperjs/core": "^2.9.2",
+    "bignumber": "^1.1.0",
     "blockly": "^9.3.3",
     "bootstrap": "^4.3.1",
     "decimal.js": "^10.0.0",
