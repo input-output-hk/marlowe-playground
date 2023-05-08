@@ -218,7 +218,7 @@ type TextEdit =
 
 type WorkspaceTextEdit =
   { resource :: Uri
-  , edit :: TextEdit
+  , textEdit :: TextEdit
   }
 
 type WorkspaceEdit =

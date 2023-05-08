@@ -222,7 +222,7 @@ provideLintCodeActions uri { warnings } =
   codeAction (Warning { warning, refactoring: Just refactoring }) =
     Just
       { title: shortWarning warning
-      , edit: { edits: [ { resource: uri, edit: refactoring } ] }
+      , edit: { edits: [ { resource: uri, textEdit: refactoring } ] }
       , kind: "quickfix"
       }
 
@@ -263,7 +263,7 @@ provideCodeActions uri markers' additionalContext =
                     let
                       text = constructMarloweType constructorName hole m
 
-                      edit = { resource: uri, edit: { range, text } }
+                      edit = { resource: uri, textEdit: { range, text } }
                     in
                       { title: constructorName
                       , edit: { edits: [ edit ] }
