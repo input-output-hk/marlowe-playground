@@ -45,7 +45,6 @@ import qualified Servant.Extra
 import Text.Read (readEither)
 
 type API = Header "Authorization" (Token 'Github) :> "gists" :> GistAPI
--- Puede que la solucion venga por aca, diciendole lo que tiene que devolver un 201
 type GistAPI
      = Get '[ JSON] [Gist]
        :<|> ReqBody '[ JSON] NewGist :> PostCreated '[ JSON] Gist

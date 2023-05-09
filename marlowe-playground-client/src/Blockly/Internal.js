@@ -1,6 +1,6 @@
 import * as internal from "src/Blockly/Internal.ts";
-
-export const createBlocklyInstance_ = internal.createBlocklyInstance_;
+import * as blockly from "src/Blockly/Blockly.ts";
+export const createBlocklyInstance_ = blockly.createBlocklyInstance_;
 export const addBlockType_ = internal.addBlockType_;
 export const addChangeListener = internal.addChangeListener;
 export const centerOnBlock = internal.centerOnBlock;

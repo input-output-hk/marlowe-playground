@@ -1,19 +1,15 @@
 import * as jsonBigInt from "json-bigint";
-// import { registerDateTimeField } from "src/Blockly/DateTimeField.js";
-import { registerDateTimeField } from "./DateTimeField.js";
+import { registerDateTimeField } from "./DateTimeField";
+import {
+  Blockly,
+  WorkspaceSvg,
+  TZInfo,
+  isBlockEvent,
+  isBlockChangeEvent,
+} from "./Blockly";
+import { Block } from "blockly";
+
 const JSONbig = jsonBigInt({ useNativeBigInt: true });
-
-export function createBlocklyInstance_ () {
-  return import("blockly");
-};
-
-type Blockly = Awaited<ReturnType<typeof createBlocklyInstance_>>;
-type Workspace = InstanceType<Blockly["Workspace"]>
-type WorkspaceSvg = InstanceType<Blockly["WorkspaceSvg"]>
-
-// w.constructor
-// type Workspace2 = typeof (Blockly["Workspace"].constructor)
-
 
 export const debugBlockly = (name) => (state) => () => {
   if (typeof (window as any).blockly === "undefined") {
@@ -22,10 +18,13 @@ export const debugBlockly = (name) => (state) => () => {
   (window as any).blockly[name] = state;
 };
 
-type TZInfo = {tzOffset: number, offsetString: string}
+type DateTimeFieldValues = { time?: string; time_param: string };
 export const createWorkspace =
-  (blockly: Blockly) => (workspaceDiv: string) => (config) => (tzInfo: TZInfo) => () => {
-
+  (blockly: Blockly) =>
+  (workspaceDiv: string) =>
+  (config) =>
+  (tzInfo: TZInfo) =>
+  () => {
     /* Disable comments */
     try {
       blockly.ContextMenuRegistry.registry.unregister("blockComment");
@@ -100,7 +99,8 @@ export const createWorkspace =
     // This extension takes care of changing the `timeout field` depending on the value of
     // `timeout_type`. When `timeout_type` is a constant, then we show a datetime picker
     // if it is a parameter we show a text field.
-    blockly.Extensions.register("dynamic_timeout_type", function () {
+    blockly.Extensions.register("dynamic_timeout_type", function (this: Block) {
+      // blockly.Extensions.register("dynamic_timeout_type", function () {
       const timeoutTypeField = this.getField("timeout_type");
       // The timeoutField is mutable as we change it depending of the value of
       // the timeout type.
@@ -116,15 +116,14 @@ export const createWorkspace =
       // We store in this mutable data the values of the timeout field indexed by the different
       // timeout types. We initialize this as undefined as there is no blockly event to get the initial
       // loaded data, so we mark this information to be gathered on a different way.
-      let fieldValues = undefined; // { time :: String | undefined, time_param :: String };
+      let fieldValues: DateTimeFieldValues = undefined; // { time :: String | undefined, time_param :: String };
 
       // The onChange function lets you know about Blockly events of the entire workspace, visual
       // changes, data changes, etc.
       const thisBlock = this;
       this.setOnChange(function (event) {
         // we only care about events for this block.
-        if (event.blockId != thisBlock.id) return;
-
+        if (!isBlockEvent(event) || event.blockId != thisBlock.id) return;
         timeoutField = thisBlock.getField("timeout");
 
         // This function sets the Timeout Field of the correct type
@@ -146,18 +145,16 @@ export const createWorkspace =
             // event results in a bug where if you attach a new When block,
             // change to time_param and convert to marlowe, the old time value
             // is presented.
-            console.log('yea yea2')
-            debugger;
-            blockly.Events.CHANGE
-            blockly.Events.fire(
-              new blockly.Events.Change(
-                thisBlock, // block that changed
-                "field", // type of element that changed
-                "timeout", // name of the element that changed
-                fieldValues["time"], // old value
-                fieldValues["time_param"] // new value
-              )
-            );
+
+            // blockly.Events.fire(
+            //   new blockly.Events.Change(
+            //     thisBlock, // block that changed
+            //     "field", // type of element that changed
+            //     "timeout", // name of the element that changed
+            //     fieldValues["time"], // old value
+            //     fieldValues["time_param"] // new value
+            //   )
+            // );
           }
         };
 
@@ -179,13 +176,14 @@ export const createWorkspace =
           // Set the timeout field to the correct type
           updateTimeoutField(type);
         }
-
-        if (event.element == "field" && event.name == "timeout") {
-          // If the timeout field changes, update the fieldValues "local store"
-          fieldValues[timeoutTypeField.getValue()] = event.newValue;
-        } else if (event.element == "field" && event.name == "timeout_type") {
-          // If the timeout_type field changes, then update the timeout field
-          updateTimeoutField(event.newValue);
+        if (isBlockChangeEvent(event)) {
+          if (event.element == "field" && event.name == "timeout") {
+            // If the timeout field changes, update the fieldValues "local store"
+            fieldValues[timeoutTypeField.getValue()] = event.newValue;
+          } else if (event.element == "field" && event.name == "timeout_type") {
+            // If the timeout_type field changes, then update the timeout field
+            updateTimeoutField(event.newValue);
+          }
         }
       });
     });
@@ -218,20 +216,24 @@ function removeEmptyArrayFields(obj) {
   }
 }
 
-export const addBlockType_ = (blockly: Blockly) => (name: string) => (block) => () => {
-  // we really don't want to be mutating the input object, it is not supposed to be state
-  var clone = JSONbig.parse(JSONbig.stringify(block));
-  removeUndefinedFields(clone);
-  removeEmptyArrayFields(clone);
-  blockly.Blocks[name] = {
-    init: function () {
-      this.jsonInit(clone);
-    },
+export const addBlockType_ =
+  (blockly: Blockly) => (name: string) => (block) => () => {
+    // we really don't want to be mutating the input object, it is not supposed to be state
+    var clone = JSONbig.parse(JSONbig.stringify(block));
+    removeUndefinedFields(clone);
+    removeEmptyArrayFields(clone);
+    blockly.Blocks[name] = {
+      init: function () {
+        this.jsonInit(clone);
+      },
+    };
   };
-};
 
 export const initializeWorkspace_ =
-  (blockly: Blockly) => (workspace: WorkspaceSvg) => (workspaceBlocks) => () => {
+  (blockly: Blockly) =>
+  (workspace: WorkspaceSvg) =>
+  (workspaceBlocks) =>
+  () => {
     blockly.Xml.domToWorkspace(workspaceBlocks, workspace);
     workspace.getAllBlocks(false)[0].setDeletable(false);
   };
@@ -251,7 +253,7 @@ export const getBlockById_ =
   };
 
 // FIXME WorkspaceSvg
-export const workspaceXML = (blockly: Blockly) => (workspace ) => () => {
+export const workspaceXML = (blockly: Blockly) => (workspace) => () => {
   const isEmpty = workspace.getAllBlocks()[0].getChildren().length == 0;
   if (isEmpty) {
     return "";
@@ -261,11 +263,12 @@ export const workspaceXML = (blockly: Blockly) => (workspace ) => () => {
   }
 };
 
-export const loadWorkspace = (blockly: Blockly) => (workspace) => (xml) => () => {
-  var dom = blockly.utils.xml.textToDomDocument(xml) as any; // TODO FIXME
-  blockly.Xml.clearWorkspaceAndLoadFromXml(dom.childNodes[0], workspace);
-  workspace.getAllBlocks(false)[0].setDeletable(false);
-};
+export const loadWorkspace =
+  (blockly: Blockly) => (workspace) => (xml) => () => {
+    var dom = blockly.utils.xml.textToDomDocument(xml) as any; // TODO FIXME
+    blockly.Xml.clearWorkspaceAndLoadFromXml(dom.childNodes[0], workspace);
+    workspace.getAllBlocks(false)[0].setDeletable(false);
+  };
 
 export const addChangeListener = (workspace) => (listener) => () => {
   workspace.addChangeListener(listener);
