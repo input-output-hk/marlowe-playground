@@ -1,0 +1,10 @@
+{
+  "Start in Javascript": { "role": "link", "name": "Start in Javascript" },
+  "Start in Haskell": { "role": "link", "name": "Start in Haskell" },
+  "Start in Marlowe": { "role": "link", "name": "Start in Marlowe" },
+  "Start in Blockly": { "role": "link", "name": "Start in Blockly" },
+  "Open existing project": { "role": "button", "name": "Open existing project" },
+  "Open an example": { "role": "button", "name": "Open an example" },
+  "Login with github": { "role": "header", "name": "Login with github" },
+  "Escrow Javascript": { "role": "button", "name": "Escrow Javascript" }
+}
