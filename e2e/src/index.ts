@@ -9,31 +9,18 @@ import {
   PagesConfig,
   PageElementMappings,
   FixtureMappings,
-  ApplicationId,
-  ApplicationPageElementMappings
 } from './env/global';
 import * as fs from 'fs';
 
 dotenv.config({path: env('COMMON_CONFIG_FILE')})
 const hostsConfig: HostsConfig = getJsonFromFile(env('HOSTS_URLS_PATH'))
 const pagesConfig: PagesConfig = getJsonFromFile(env('PAGE_URLS_PATH'))
-const playgroundPageMappingFiles = fs.readdirSync(`${process.cwd()}${env('PLAYGROUND_PAGE_ELEMENTS_PATH')}`)
-const runPageMappingFiles = fs.readdirSync(`${process.cwd()}${env('RUN_PAGE_ELEMENTS_PATH')}`)
-const applicationId: ApplicationId = '';
+const playgroundPageMappingFiles = fs.readdirSync(`${process.cwd()}${env('PAGE_ELEMENTS_PATH')}`)
 
 const playgroundPageElementMappings: PageElementMappings = playgroundPageMappingFiles.reduce(
   (pageElementConfigAcc, file) => {
     const key = file.replace('.json', '');
-    const elementMappings = getJsonFromFile(`${env('PLAYGROUND_PAGE_ELEMENTS_PATH')}${file}`);
-    return { ...pageElementConfigAcc, [key]: elementMappings}
-  },
-  {}
-);
-
-const runPageElementMappings: PageElementMappings = runPageMappingFiles.reduce(
-  (pageElementConfigAcc, file) => {
-    const key = file.replace('.json', '');
-    const elementMappings = getJsonFromFile(`${env('RUN_PAGE_ELEMENTS_PATH')}${file}`);
+    const elementMappings = getJsonFromFile(`${env('PAGE_ELEMENTS_PATH')}${file}`);
     return { ...pageElementConfigAcc, [key]: elementMappings}
   },
   {}
@@ -49,17 +36,10 @@ const fixtureMappings: FixtureMappings = fixtureMappingFiles.reduce(
   {}
 );
 
-const applicationPageElementMappings: ApplicationPageElementMappings = {
-  "marlowe playground": playgroundPageElementMappings,
-  "marlowe run": runPageElementMappings
-}
-
 const worldParameters: GlobalConfig = {
   hostsConfig,
   pagesConfig,
-  applicationPageElementMappings,
   fixtureMappings,
-  applicationId,
 };
 
 const common = `./src/features/**/*.feature \

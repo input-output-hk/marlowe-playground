@@ -1,5 +1,5 @@
 import { Given } from '@cucumber/cucumber';
-import { PageId, ApplicationId } from '../env/global';
+import { PageId } from '../env/global';
 import {
   navigateToPage,
   currentPathMatchesPageId,
@@ -8,15 +8,14 @@ import { ScenarioWorld } from './setup/world';
 import { waitFor } from '../support/wait-for-behavior'
 
 Given(
-  /^I am on the "([^"]*)" page of the "([^"]*)" application$/,
-  async function(this: ScenarioWorld, pageId: PageId, applicationId: ApplicationId) {
+  /^I am on the "([^"]*)" page$/,
+  async function(this: ScenarioWorld, pageId: PageId) {
     // Anything we pull off from `this` variable is defined in cucumber world
     const {
       screen: { page },
       globalConfig,
     } = this;
-    this.globalConfig.applicationId = applicationId;
-    console.log(`I am on the ${pageId} page of the ${applicationId} application`);
+    console.log(`I am on the ${pageId} page application`);
 
     await navigateToPage(page, pageId, globalConfig);
 

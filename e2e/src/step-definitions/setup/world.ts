@@ -8,7 +8,7 @@ import playwright, {
 } from 'playwright';
 import { env } from '../../env/parseEnv'
 import { World, IWorldOptions, setWorldConstructor } from "@cucumber/cucumber";
-import { ApplicationId, GlobalConfig } from '../../env/global';
+import { GlobalConfig } from '../../env/global';
 
 import { getDocument } from 'playwright-testing-library';
 import { ElementHandle } from 'playwright-testing-library/dist/typedefs';
@@ -25,14 +25,11 @@ export class ScenarioWorld extends World {
     super(options)
 
     this.globalConfig = options.parameters as GlobalConfig;
-    this.applicationId = '';
   }
 
   globalConfig: GlobalConfig;
 
   screen!: Screen;
-
-  applicationId: ApplicationId;
 
   async init(contextOptions?: BrowserContextOptions): Promise<Screen> {
     await this.screen?.page?.close();
