@@ -10,5 +10,6 @@ export const getElementLocator = (
 
   const currentPage = getCurrentPageId(page, globalConfig);
 
-  return page[currentPage]?.[elementKey] || page[currentPage]?.common?.[elementKey]
+  const { pageElementMappings } = globalConfig;
+  return pageElementMappings[currentPage]?.[elementKey] || pageElementMappings[currentPage]?.common?.[elementKey]
 }

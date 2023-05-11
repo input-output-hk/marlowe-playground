@@ -11,5 +11,6 @@ export type FixtureMappings = Record<FixtureId, string>;
 export type GlobalConfig = {
   hostsConfig: HostsConfig;
   pagesConfig: PagesConfig;
+  pageElementMappings: PageElementMappings;
   fixtureMappings: FixtureMappings;
 }

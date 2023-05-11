@@ -14,12 +14,19 @@ Then(
       globalConfig
     } = this;
 
+    console.log("ElementKey: ", elementKey)
     const elementIdentifier = getElementLocator(page, elementKey, globalConfig);
     const { role, name } = elementIdentifier;
 
+    console.log("ROLE: ", role)
+    console.log("NAMEL ", name)
+
     await waitFor(async() => {
+      console.log("INSIDE WAIT BEGIN")
       const locator = await queries.getByRole(document, role, { name })
+      console.log("LOCATOR: ", locator)
       const isElementVisible = await locator.isVisible()
+      console.log("isVISIBLE: ", isElementVisible)
       return isElementVisible;
     })
   }

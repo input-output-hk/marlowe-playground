@@ -22,6 +22,7 @@ import Halogen.Css (classNames)
 import Halogen.HTML (a, button, div, h1, img, span, span_, text)
 import Halogen.HTML.Events (onClick)
 import Halogen.HTML.Properties (href, src, target)
+import Halogen.HTML.Properties.ARIA (label)
 import MainFrame.Types
   ( Action(..)
   , ChildSlots
@@ -71,7 +72,10 @@ render state =
                 (const $ NewProjectAction $ NewProject.CreateProject Javascript)
             ]
             [ img
-                [ src newProjectJavascriptIcon, classNames [ "h-16", "mb-4" ] ]
+                [ src newProjectJavascriptIcon
+                , classNames [ "h-16", "mb-4" ]
+                , label "Start in Javascript"
+                ]
             , text
                 "Start in Javascript"
             ]
@@ -81,7 +85,11 @@ render state =
             , onClick
                 (const $ NewProjectAction $ NewProject.CreateProject Haskell)
             ]
-            [ img [ src newProjectHaskellIcon, classNames [ "h-16", "mb-4" ] ]
+            [ img
+                [ src newProjectHaskellIcon
+                , classNames [ "h-16", "mb-4" ]
+                , label "Start in Haskell"
+                ]
             , text
                 "Start in Haskell"
             ]
@@ -102,7 +110,11 @@ render state =
             , onClick
                 (const $ NewProjectAction $ NewProject.CreateProject Marlowe)
             ]
-            [ img [ src marloweLogo, classNames [ "h-16", "mb-4" ] ]
+            [ img
+                [ src marloweLogo
+                , classNames [ "h-16", "mb-4" ]
+                , label "Start in Marlowe"
+                ]
             , text
                 "Start in Marlowe"
             ]
@@ -116,7 +128,11 @@ render state =
             , onClick
                 (const $ NewProjectAction $ NewProject.CreateProject Blockly)
             ]
-            [ img [ src newProjectBlocklyIcon, classNames [ "h-16", "mb-4" ] ]
+            [ img
+                [ src newProjectBlocklyIcon
+                , classNames [ "h-16", "mb-4" ]
+                , label "Start in Blockly"
+                ]
             , text
                 "Start in Blockly"
             ]

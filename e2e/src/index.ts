@@ -15,12 +15,12 @@ import * as fs from 'fs';
 dotenv.config({path: env('COMMON_CONFIG_FILE')})
 const hostsConfig: HostsConfig = getJsonFromFile(env('HOSTS_URLS_PATH'))
 const pagesConfig: PagesConfig = getJsonFromFile(env('PAGE_URLS_PATH'))
-const playgroundPageMappingFiles = fs.readdirSync(`${process.cwd()}${env('PAGE_ELEMENTS_PATH')}`)
+const pageMappingFiles = fs.readdirSync(`${process.cwd()}${env('PAGE_ELEMENT_MAPPINGS_PATH')}`)
 
-const playgroundPageElementMappings: PageElementMappings = playgroundPageMappingFiles.reduce(
+const pageElementMappings: PageElementMappings = pageMappingFiles.reduce(
   (pageElementConfigAcc, file) => {
     const key = file.replace('.json', '');
-    const elementMappings = getJsonFromFile(`${env('PAGE_ELEMENTS_PATH')}${file}`);
+    const elementMappings = getJsonFromFile(`${env('PAGE_ELEMENT_MAPPINGS_PATH')}${file}`);
     return { ...pageElementConfigAcc, [key]: elementMappings}
   },
   {}
@@ -39,6 +39,7 @@ const fixtureMappings: FixtureMappings = fixtureMappingFiles.reduce(
 const worldParameters: GlobalConfig = {
   hostsConfig,
   pagesConfig,
+  pageElementMappings,
   fixtureMappings,
 };
 
