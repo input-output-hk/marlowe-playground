@@ -36,6 +36,9 @@ in
 
       # shellcheck source=/dev/null
       source ${cacert}/nix-support/setup-hook
+      mkdir -p /etc/ssl/certs/
+      ln -s ${cacert}/etc/ssl/certs/ca-bundle.crt /etc/ssl/certs/ca-bundle.crt
+      ln -s ${cacert}/etc/ssl/certs/ca-bundle.crt /etc/ssl/certs/ca-certificates.crt
 
       mkdir -p /tmp
 
