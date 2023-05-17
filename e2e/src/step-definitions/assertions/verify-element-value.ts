@@ -55,8 +55,8 @@ Then(
       globalConfig
     } = this;
     const document = await getDocument(page);
-    const elementIdentifier = getElementLocator(page, "playground editor", globalConfig);
-    const { role, name } = elementIdentifier;
+    // const elementIdentifier = getElementLocator(page, "playground editor", globalConfig);
+    // const { role, name } = elementIdentifier;
     const fixture = getFixtureText(contractFixtureKey, globalConfig);
     await waitFor(async() => {
 
