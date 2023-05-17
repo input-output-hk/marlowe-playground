@@ -6,6 +6,7 @@ import {
 } from '../support/navigation-behavior';
 import { ScenarioWorld } from './setup/world';
 import { waitFor } from '../support/wait-for-behavior'
+import { queries } from 'playwright-testing-library';
 
 Given(
   /^I am on the "([^"]*)" page$/,
