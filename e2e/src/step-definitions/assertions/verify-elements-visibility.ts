@@ -17,7 +17,7 @@ Then(
     const { role, name } = elementIdentifier;
 
     await waitFor(async() => {
-      const locator = await page.getByRole(role as "link" | "button", { name });
+      const locator = await page.getByRole(role as "link" | "button" | "heading", { name });
       const isElementVisible = await locator.isVisible()
       return isElementVisible;
     })

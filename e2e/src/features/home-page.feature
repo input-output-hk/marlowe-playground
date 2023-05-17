@@ -17,5 +17,5 @@ Feature: As a user I should be able to see the Marlowe Playground home page
       And I should see a button with "Open existing project" text
       And I should see a button with "Open an example" text
 
-      When I click "Open existing project" button
+      When I click the "Open existing project" button
       Then I should see "Login with github" text
