@@ -5,6 +5,8 @@ import Prologue
 
 import Data.Argonaut (class DecodeJson, class EncodeJson, encodeJson)
 import Data.Argonaut.Decode.Aeson as D
+import Data.Argonaut.Decode.Generic (genericDecodeJson)
+import Data.Argonaut.Encode.Generic (genericEncodeJson)
 import Data.Array (foldMap, foldl, mapMaybe)
 import Data.Array as Array
 import Data.BigInt.Argonaut (BigInt)
@@ -43,12 +45,10 @@ import Language.Marlowe.Core.V1.Semantics
   , computeTransaction
   , evalObservation
   , evalValue
+  , fixInterval
   , inBounds
   , reduceContractStep
   ) as S
-import Language.Marlowe.Core.V1.Semantics
-  ( fixInterval
-  )
 import Language.Marlowe.Core.V1.Semantics.Types
   ( class HasTimeout
   , Address
@@ -69,14 +69,16 @@ import Language.Marlowe.Core.V1.Semantics.Types
   , Contract(..)
   , Environment
   , Input(..)
+  , InputContent(..)
   , Observation
   , Party(..)
   , Payment
   , ReduceStepResult(..)
   , State
+  , TimeInterval
   , Token(..)
   , TransactionError(..)
-  , TransactionInput
+  , TransactionInput(..)
   , TransactionOutput(..)
   , TransactionWarning
   , Value
@@ -1380,21 +1382,57 @@ data TransactionOutput
   | SemanticError S.TransactionError
   | InvalidContract
 
+newtype TransactionInputContent = TransactionInputContent
+  { interval :: S.TimeInterval
+  , inputs :: (List S.InputContent)
+  }
+
+derive instance Generic TransactionInputContent _
+
+derive instance Newtype TransactionInputContent _
+
+derive instance Eq TransactionInputContent
+
+derive instance Ord TransactionInputContent
+
+instance EncodeJson TransactionInputContent where
+  encodeJson = genericEncodeJson
+
+instance DecodeJson TransactionInputContent where
+  decodeJson = genericDecodeJson
+
+instance Show TransactionInputContent where
+  show = genericShow
+
+toTransactionInput :: TransactionInputContent -> S.TransactionInput
+toTransactionInput (TransactionInputContent { interval, inputs }) =
+  S.TransactionInput { interval, inputs: (map S.NormalInput inputs) }
+
+fromTransactionInput :: S.TransactionInput -> Maybe TransactionInputContent
+fromTransactionInput (S.TransactionInput { interval, inputs }) = do
+  let
+    fromNormalInput = case _ of
+      S.NormalInput i -> Just i
+      _ -> Nothing
+  inputs' <- traverse fromNormalInput inputs
+  pure $ TransactionInputContent { interval, inputs: inputs' }
+
 -- This function is like Semantics.computeTransaction,
 computeTransaction
-  :: S.TransactionInput -> S.State -> Term Contract -> TransactionOutput
+  :: TransactionInputContent -> S.State -> Term Contract -> TransactionOutput
 computeTransaction tx state contract =
   let
     inputs = (unwrap tx).inputs
 
     mSemanticContract = fromTerm contract
   in
-    case mSemanticContract /\ fixInterval (unwrap tx).interval state of
+    case mSemanticContract /\ S.fixInterval (unwrap tx).interval state of
       Nothing /\ _ -> InvalidContract
       _ /\ IntervalError error -> SemanticError (S.TEIntervalError error)
       Just sContract /\ IntervalTrimmed env fixState ->
         let
-          semanticResult = S.computeTransaction tx state sContract
+          tx' = toTransactionInput tx
+          semanticResult = S.computeTransaction tx' state sContract
 
           termResult = applyAllInputs env fixState contract inputs
         in
@@ -1413,7 +1451,7 @@ applyAllInputs
   :: S.Environment
   -> S.State
   -> Term Contract
-  -> (List S.Input)
+  -> (List S.InputContent)
   -> Maybe (Term Contract)
 applyAllInputs env state startContract inputs = do
   (curState /\ cont) <- reduceContractUntilQuiescent env state startContract
@@ -1422,7 +1460,8 @@ applyAllInputs env state startContract inputs = do
     Nil -> Just cont
     (input : rest) ->
       let
-        semanticApplyResult = S.applyInput env curState input semanticCont
+        semanticApplyResult = S.applyInput env curState (S.NormalInput input)
+          semanticCont
 
         termsApplyResult = applyInput env curState input cont
       in
@@ -1434,7 +1473,11 @@ applyAllInputs env state startContract inputs = do
           _ -> Nothing
 
 applyCases
-  :: S.Environment -> S.State -> S.Input -> List Case -> Maybe (Term Contract)
+  :: S.Environment
+  -> S.State
+  -> S.InputContent
+  -> List Case
+  -> Maybe (Term Contract)
 applyCases env state input cases = case input, cases of
   S.IDeposit accId1 party1 tok1 amount,
   (Case (Term (Deposit accId2 party2 tok2 val) _) cont) : rest ->
@@ -1468,7 +1511,7 @@ applyCases env state input cases = case input, cases of
 applyInput
   :: S.Environment
   -> S.State
-  -> S.Input
+  -> S.InputContent
   -> Term Contract
   -> Maybe (Term Contract)
 applyInput env state input (Term (When cases _ _) _) = applyCases env state

@@ -24,8 +24,10 @@ import Control.Applicative (empty, (<|>))
 import Control.Lens (set, (&))
 import Control.Monad.Reader (MonadReader)
 import qualified CouponBondGuaranteed
+import qualified Data.Aeson as Aeson
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BS8
+import qualified Data.ByteString.Lazy as BSL
 import Data.Monoid ()
 import Data.Proxy (Proxy (Proxy))
 import qualified Data.Set as Set ()
@@ -36,6 +38,8 @@ import qualified EscrowWithCollateral
 import qualified Example
 import Gist (Gist, GistFile, NewGist, NewGistFile, Owner)
 import Language.Haskell.Interpreter (CompilationError, InterpreterError, InterpreterResult, Warning)
+import qualified Language.Marlowe.Core.V1.Semantics.Types as MC
+import qualified Language.Marlowe.Core.V1.Semantics.Types.Address as MC.Address
 import Language.Marlowe.Extended.V1
 import Language.PureScript.Bridge (BridgePart, Language (Haskell, PureScript), PSType, SumType (..), TypeInfo (..),
                                    argonaut, buildBridge, equal, genericShow, mkSumType, order, psTypeParameters,
@@ -48,6 +52,9 @@ import Marlowe.Contracts (contractForDifferences, contractForDifferencesWithOrac
 import qualified Marlowe.Symbolic.Server as MS
 import qualified Marlowe.Symbolic.Types.Request as MSReq
 import qualified Marlowe.Symbolic.Types.Response as MSRes
+import qualified Plutus.V2.Ledger.Api as P
+import qualified PlutusTx.AssocMap as AssocMap
+import qualified PlutusTx.AssocMap as Map
 import Servant ((:<|>), (:>))
 import Servant.PureScript (HasBridge, Settings, addTypes, apiModuleName, defaultBridge, defaultSettings,
                            generateWithSettings, languageBridge)
@@ -235,6 +242,45 @@ multilineString name value =
 psModule :: BS.ByteString -> BS.ByteString -> BS.ByteString
 psModule name body = "module " <> name <> " where" <> body
 
+writePangramJson :: FilePath -> IO ()
+writePangramJson outputDir = do
+     let
+         aliceAddress = Address MC.Address.testnet (P.Address (P.PubKeyCredential "a2c20c77887ace1cd986193e4e75babd8993cfd56995cd5cfce609c2") Nothing)
+         bobRole = MC.Role "Bob"
+         const100 = MC.Constant 100
+         choiceId = MC.ChoiceId "choice" aliceAddress
+         valueExpr = MC.AddValue const100 (MC.SubValue const100 (MC.NegValue const100))
+         token = MC.Token "aa" "name"
+     let pangram =
+             MC.Assert MC.TrueObs
+                 (MC.When
+                     [ MC.Case (MC.Deposit aliceAddress aliceAddress ada valueExpr)
+                         ( MC.Let (MC.ValueId "x") valueExpr
+                             (MC.Pay aliceAddress (MC.Party bobRole) ada (MC.Cond MC.TrueObs (MC.UseValue (MC.ValueId "x")) (MC.UseValue (MC.ValueId "y"))) MC.Close)
+                         )
+                     , MC.Case (MC.Choice choiceId [Bound 0 1, Bound 10 20])
+                         ( MC.If (MC.ChoseSomething choiceId `MC.OrObs` (MC.ChoiceValue choiceId `MC.ValueEQ` const100))
+                             (MC.Pay aliceAddress (MC.Account aliceAddress) token (MC.DivValue (MC.AvailableMoney aliceAddress token) const100) MC.Close)
+                             MC.Close
+                         )
+                     , MC.Case (MC.Notify (MC.AndObs (MC.TimeIntervalStart `MC.ValueLT` MC.TimeIntervalEnd) MC.TrueObs)) MC.Close
+                     ]
+                     (P.POSIXTime 100)
+                     MC.Close
+                 )
+         encodedPangram = Aeson.encode pangram
+         state =
+             MC.State
+             { MC.accounts = AssocMap.singleton (aliceAddress, token) 12
+             , MC.choices = Map.singleton choiceId 42
+             , MC.boundValues = Map.fromList [ (ValueId "x", 1), (ValueId "y", 2) ]
+             , MC.minTime = P.POSIXTime 123
+             }
+         encodedState = Aeson.encode state
+     createDirectoryIfMissing True (outputDir </> "JSON")
+     BSL.writeFile (outputDir </> "JSON" </> "contract.json") encodedPangram
+     BSL.writeFile (outputDir </> "JSON" </> "state.json") encodedState
+
 writeUsecases :: FilePath -> IO ()
 writeUsecases outputDir = do
     let haskellUsecases =
@@ -270,3 +316,4 @@ generate :: FilePath -> IO ()
 generate outputDir = do
     generateWithSettings mySettings outputDir myBridgeProxy (Proxy @Web)
     writeUsecases outputDir
+    writePangramJson outputDir

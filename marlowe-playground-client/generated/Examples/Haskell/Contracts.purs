@@ -115,6 +115,7 @@ import Language.Marlowe.Core.V1.Semantics.Types.Address (testnet)
 import Language.Marlowe.Extended.V1
 import qualified Plutus.V1.Ledger.Address as P
 import qualified Plutus.V1.Ledger.Credential as P
+
 main :: IO ()
 main = printJSON escrowC
 

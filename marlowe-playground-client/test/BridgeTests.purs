@@ -65,7 +65,7 @@ serializationTest =
       ada = Token "" ""
 
       aliceAddr = Address
-        "a2c20c77887ace1cd986193e4e75babd8993cfd56995cd5cfce609c2"
+        "addr_test1vz3vyrrh3pavu8xescvnunn4h27cny70645etn2ulnnqnssrz8utc"
 
       bobRole = Role "Bob"
 

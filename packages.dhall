@@ -209,6 +209,4 @@ in  upstream
         , "unfoldable"
         ]
         "https://github.com/input-output-hk/purescript-marlowe"
-        -- THIS COMMIT IS A BRANCH-OFF MAIN WITHOUT MERKLEIZATION AND WITH SOME DECODING
-        -- FIX. WE NEED TO UPGRADE THE PLAYGROUND TO HANDLE MERKLEIZATION
-        "f97fb0fa7f23bc4631e6acafadd52c3303ea77e9"
+        "710cb2d4024d91c112b5b33763d289b7e86bcf5f"

@@ -111,18 +111,15 @@ import Language.Marlowe.Core.V1.Semantics.Types
   , Assets(..)
   , Bound(..)
   , ChoiceId(..)
-  , Input(..)
+  , InputContent(..)
   , Party(..)
   , Payee(..)
   , Payment(..)
   , TimeInterval(..)
   , Token(..)
-  , TransactionInput(..)
   , timeouts
   )
-import Language.Marlowe.Extended.V1.Metadata
-  ( getChoiceFormat
-  )
+import Language.Marlowe.Extended.V1.Metadata (getChoiceFormat)
 import Language.Marlowe.Extended.V1.Metadata.Types (MetaData, NumberFormat(..))
 import MainFrame.Types
   ( ChildSlots
@@ -130,6 +127,7 @@ import MainFrame.Types
   , _dateTimeInputSlot
   , _simulatorEditorSlot
   )
+import Marlowe.Holes (TransactionInputContent(..))
 import Marlowe.Holes as Holes
 import Marlowe.Monaco as MM
 import Marlowe.Template (TemplateContent(..), orderContentUsingMetadata)
@@ -1021,7 +1019,7 @@ logToLines
   tzOffset
   metadata
   stepNumber
-  (InputEvent (TransactionInput { interval, inputs })) =
+  (InputEvent (TransactionInputContent { interval, inputs })) =
   join $
     mapWithIndex
       ( \subStep input -> inputToLine
@@ -1053,7 +1051,7 @@ inputToLine
   -> MetaData
   -> TimeInterval
   -> (Int /\ Int)
-  -> Input
+  -> InputContent
   -> Array (ComponentHTML a ChildSlots m)
 inputToLine
   tzOffset
