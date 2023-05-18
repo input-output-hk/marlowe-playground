@@ -75,6 +75,11 @@ let
         help = "Nix code formatter";
       }
       {
+        package = packages.scriv;
+        category = "general commands";
+        help = "Changelog generator";
+      }
+      {
         package = pkgs.nodePackages.prettier;
         category = "javascript";
         help = "JS, HTML, CSS code formatter";
@@ -121,7 +126,7 @@ let
       }
       {
         package = scripts.generate-purescript;
-        category = "general commands";
+        category = "purescript";
         help = "Generate all PureScript Bridge code";
       }
       {
@@ -131,8 +136,13 @@ let
       }
       {
         package = scripts.update-client-deps;
-        category = "general commands";
+        category = "purescript";
         help = "Run spago2nix in marlowe-playground-client";
+      }
+      {
+        package = scripts.assemble-changelog;
+        category = "general commands";
+        help = "Assembles the changelog for a given package at version";
       }
     ];
 

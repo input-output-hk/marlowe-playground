@@ -6,7 +6,7 @@ let
 
 in
 
-writeShellScriptInRepoRoot "marlowe-playground-purescript" ''
+writeShellScriptInRepoRoot "update-client-deps" ''
   cd marlowe-playground-client
   ${spago2nix}/bin/spago2nix generate
 ''

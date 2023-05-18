@@ -11,4 +11,6 @@
   marlowe-playground-server = import ./marlowe-playground-server.nix block;
 
   nixpkgs-fmt = import ./nixpkgs-fmt.nix block;
+
+  scriv = import ./scriv.nix block;
 }

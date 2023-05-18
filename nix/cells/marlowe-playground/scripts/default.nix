@@ -1,5 +1,7 @@
 { inputs, cell }@block:
 {
+  assemble-changelog = import ./assemble-changelog.nix block;
+
   fix-nix-fmt = import ./fix-nix-fmt.nix block;
 
   fix-png-optimization = import ./fix-png-optimization.nix block;
