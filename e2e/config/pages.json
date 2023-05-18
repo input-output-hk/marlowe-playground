@@ -3,8 +3,21 @@
     "route": "/",
     "regex": "^/#/$"
   },
-  "marlowe-playground-js": {
+  "javascript editor": {
     "route": "/#/javascript",
     "regex": "^/#/javascript$"
+  },
+  "haskell editor": {
+    "route": "/#/haskell",
+    "regex": "^/#/haskell$"
+  },
+  "marlowe editor": {
+    "route": "/#/marlowe",
+    "regex": "^/#/marlowe$"
+  },
+  "blockly editor": {
+    "route": "/#/blockly",
+    "regex": "^/#/blockly$"
   }
+
 }

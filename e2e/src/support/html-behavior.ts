@@ -1,13 +1,13 @@
-import { ElementHandle } from 'playwright-testing-library/dist/typedefs';
+import { Locator } from 'playwright';
 
 export const clickElement = async(
-  locator: ElementHandle,
+  locator: Locator,
 ): Promise<void> => {
   await locator.click()
 }
 
 export const inputValue = async (
-  locator: ElementHandle,
+  locator: Locator,
   input: string,
 ): Promise<void> => {
   await locator.focus();
@@ -15,7 +15,7 @@ export const inputValue = async (
 }
 
 export const selectValue = async(
-  locator: ElementHandle,
+  locator: Locator,
   option: string,
 ): Promise<void> => {
   await locator.focus();

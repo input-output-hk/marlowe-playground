@@ -1,12 +1,18 @@
 import { Then } from '@cucumber/cucumber';
-import { ElementKey } from '../../env/global';
-import { getElementLocator } from '../../support/web-element-helper';
+import { PageId } from '../../env/global';
 import { ScenarioWorld } from '../setup/world'
 import { waitFor } from '../../support/wait-for-behavior';
+import {
+  currentPathMatchesPageId,
+} from '../../support/navigation-behavior';
 
 Then(
   /^I should be on the "([^"]*)" page$/,
-  async function (string) {
-  // Write code here that turns the phrase above into concrete actions
-  return 'pending';
+  async function(this: ScenarioWorld, pageId: PageId) {
+    const {
+      screen: { page },
+      globalConfig,
+    } = this;
+ 
+  await waitFor(() => currentPathMatchesPageId(page, pageId, globalConfig))
 });

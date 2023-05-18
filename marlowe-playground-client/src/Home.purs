@@ -74,7 +74,6 @@ render state =
             [ img
                 [ src newProjectJavascriptIcon
                 , classNames [ "h-16", "mb-4" ]
-                , label "Start in Javascript"
                 ]
             , text
                 "Start in Javascript"
@@ -88,7 +87,6 @@ render state =
             [ img
                 [ src newProjectHaskellIcon
                 , classNames [ "h-16", "mb-4" ]
-                , label "Start in Haskell"
                 ]
             , text
                 "Start in Haskell"
@@ -113,7 +111,6 @@ render state =
             [ img
                 [ src marloweLogo
                 , classNames [ "h-16", "mb-4" ]
-                , label "Start in Marlowe"
                 ]
             , text
                 "Start in Marlowe"
@@ -131,7 +128,6 @@ render state =
             [ img
                 [ src newProjectBlocklyIcon
                 , classNames [ "h-16", "mb-4" ]
-                , label "Start in Blockly"
                 ]
             , text
                 "Start in Blockly"

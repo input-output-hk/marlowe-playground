@@ -53,5 +53,6 @@ const common = `./src/features/**/*.feature \
 const dev = `${common} --tags '@dev'`;
 const smoke = `${common} --tags '@smoke'`;
 const regression = `${common} --tags '@regression'`;
+const wip = `${common} --tags '@wip'`;
 
-export { dev, smoke, regression }
+export { dev, smoke, regression , wip }
