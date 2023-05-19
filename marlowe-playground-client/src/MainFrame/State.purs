@@ -82,7 +82,7 @@ import MainFrame.Types
 import MainFrame.View (render)
 import Marlowe (Api, getApiGistsByGistId)
 import Marlowe as Server
-import Marlowe.Gists (PlaygroundFiles, mkNewGist, playgroundFiles)
+import Marlowe.Gists (PlaygroundFiles, mkNewGist, mkPatchGist, playgroundFiles)
 import Network.RemoteData (RemoteData(..), _Success, fromEither)
 import Page.BlocklyEditor.State as BlocklyEditor
 import Page.BlocklyEditor.Types (_marloweCode)
@@ -741,8 +741,6 @@ handleGistAction
 handleGistAction PublishOrUpdateGist = do
   description <- use _projectName
   files <- createFiles
-  let
-    newGist = mkNewGist description $ files
   void
     $ runMaybeT do
         mGist <- use _gistId
@@ -751,8 +749,10 @@ handleGistAction PublishOrUpdateGist = do
           lift
             $ lift
             $ case mGist of
-                Nothing -> Server.postApiGists newGist
-                Just gistId -> Server.postApiGistsByGistId newGist gistId
+                Nothing -> Server.postApiGists $ mkNewGist description files
+                Just gistId -> Server.patchApiGistsByGistId
+                  (mkPatchGist description files)
+                  gistId
         assign _createGistResult $ fromEither newResult
         gistId <- hoistMaybe $ preview (_Right <<< gistId) newResult
         modify_

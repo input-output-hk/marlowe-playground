@@ -1,5 +1,6 @@
 module Marlowe.Gists
   ( mkNewGist
+  , mkPatchGist
   , isPlaygroundGist
   , playgroundFiles
   , filenames
@@ -13,12 +14,16 @@ import Blockly.Internal (XML)
 import Data.Array (catMaybes)
 import Data.Lens (has, view)
 import Data.Lens.Index (ix)
+import Data.Map (Map)
+import Data.Map as Map
 import Data.Maybe (fromMaybe)
 import Data.Newtype (unwrap, wrap)
 import Gist
   ( Gist
-  , NewGist(NewGist)
+  , NewGist(..)
   , NewGistFile(..)
+  , PatchGist(..)
+  , PatchGistFile(..)
   , gistFileContent
   , gistFiles
   )
@@ -28,7 +33,7 @@ mkNewGist description files =
   NewGist
     { _newGistDescription: description
     , _newGistPublic: true
-    , _newGistFiles: toArray files
+    , _newGistFiles: playgroundFilesToNewGistFiles files
     }
 
 mkNewGistFile :: String -> String -> NewGistFile
@@ -36,6 +41,20 @@ mkNewGistFile _newGistFilename _newGistFileContent =
   NewGistFile
     { _newGistFilename
     , _newGistFileContent
+    }
+
+mkPatchGist :: String -> PlaygroundFiles -> PatchGist
+mkPatchGist description files =
+  PatchGist
+    { _patchGistDescription: Just description
+    , _patchGistFiles: Just $ playgroundFilesToPatchGistFiles files
+    }
+
+mkPatchGistFile :: String -> String -> Tuple String PatchGistFile
+mkPatchGistFile filename content = Tuple filename $
+  PatchGistFile
+    { _patchGistFilename: Just filename
+    , _patchGistFileContent: Just content
     }
 
 type PlaygroundFiles =
@@ -48,8 +67,9 @@ type PlaygroundFiles =
   , metadata :: Maybe String
   }
 
-toArray :: PlaygroundFiles -> Array NewGistFile
-toArray { playground, marlowe, haskell, blockly, javascript, actus, metadata } =
+playgroundFilesToNewGistFiles :: PlaygroundFiles -> Array NewGistFile
+playgroundFilesToNewGistFiles
+  { playground, marlowe, haskell, blockly, javascript, actus, metadata } =
   [ mkNewGistFile filenames.playground playground
   ]
     <> catMaybes
@@ -60,6 +80,21 @@ toArray { playground, marlowe, haskell, blockly, javascript, actus, metadata } =
       , mkNewGistFile filenames.actus <<< unwrap <$> actus
       , mkNewGistFile filenames.metadata <$> metadata
       ]
+
+playgroundFilesToPatchGistFiles :: PlaygroundFiles -> Map String PatchGistFile
+playgroundFilesToPatchGistFiles
+  { playground, marlowe, haskell, blockly, javascript, actus, metadata } =
+  Map.fromFoldable $
+    [ mkPatchGistFile filenames.playground playground
+    ]
+      <> catMaybes
+        [ mkPatchGistFile filenames.marlowe <$> marlowe
+        , mkPatchGistFile filenames.haskell <$> haskell
+        , mkPatchGistFile filenames.blockly <$> blockly
+        , mkPatchGistFile filenames.javascript <$> javascript
+        , mkPatchGistFile filenames.actus <<< unwrap <$> actus
+        , mkPatchGistFile filenames.metadata <$> metadata
+        ]
 
 filenames
   :: { playground :: String

@@ -17,7 +17,7 @@ import Data.HTTP.Method (Method(..))
 import Data.Maybe (Maybe(..))
 import Data.RawJson (RawJson)
 import Data.Tuple (Tuple)
-import Gist (Gist, NewGist)
+import Gist (Gist, NewGist, PatchGist)
 import Gists.Extra (GistId)
 import Language.Haskell.Interpreter (InterpreterError, InterpreterResult)
 import Marlowe.Symbolic.Types.Request (Request)
@@ -242,17 +242,17 @@ getApiGistsByGistId gistId =
     ]
   query = Nothing
 
-postApiGistsByGistId
+patchApiGistsByGistId
   :: forall m
    . MonadAjax Api m
-  => NewGist
+  => PatchGist
   -> GistId
   -> m (Either (AjaxError JsonDecodeError Json) Gist)
-postApiGistsByGistId reqBody gistId =
+patchApiGistsByGistId reqBody gistId =
   request Api req
   where
   req = { method, uri, headers, content, encode, decode }
-  method = Left POST
+  method = Left PATCH
   uri = RelativeRef relativePart query Nothing
   headers = catMaybes
     [
