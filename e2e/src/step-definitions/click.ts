@@ -1,8 +1,7 @@
 import { When } from '@cucumber/cucumber';
 import { ScenarioWorld } from './setup/world';
-import { clickElement } from '../support/html-behavior';
-import { waitFor } from '../support/wait-for-behavior';
 import { ValidAccessibilityRoles } from '../env/global';
+import { waitFor } from '../support/wait-for-behavior';
 
 When(
   /^I click the "([^"]*)" with "([^"]*)" text$/,
@@ -12,18 +11,22 @@ When(
       globalConfig
     } = this;
 
-    try {
+    const locator = await page.getByRole(role, { name, exact: true });
+    const result = await locator.isVisible();
+    if (result) await locator.click();
+  }
+);
 
-    await waitFor(async() => {
-      // NOTE: This locator uses html accessibility roles and names to find elements.
-      // If your test is not finding an element, please verify that the role and name are correct.
-      const locator = await page.getByRole(role, { name, exact: true });
-      const result = await locator.isVisible();
+When(
+  /^I click the "([^"]*)" (?:button|link)$/,
+  async function(this: ScenarioWorld, name: string, role: ValidAccessibilityRoles) {
+    const {
+      screen: { page },
+      globalConfig
+    } = this;
 
-      if (result) await clickElement(locator);
-    })
-    } catch (e) {
-      console.log("error: ", e);
-    }
+    const locator = await page.getByRole(role, { name, exact: true });
+    const result = await locator.isVisible();
+    if (result) await locator.click();
   }
 )

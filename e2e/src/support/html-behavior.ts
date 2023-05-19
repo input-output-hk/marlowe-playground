@@ -3,7 +3,7 @@ import { Locator } from 'playwright';
 export const clickElement = async(
   locator: Locator,
 ): Promise<void> => {
-  await locator.click()
+  locator.click()
 }
 
 export const inputValue = async (
@@ -11,7 +11,7 @@ export const inputValue = async (
   input: string,
 ): Promise<void> => {
   await locator.focus();
-  await locator.fill(input);
+  locator.fill(input);
 }
 
 export const selectValue = async(
@@ -19,5 +19,5 @@ export const selectValue = async(
   option: string,
 ): Promise<void> => {
   await locator.focus();
-  await locator.selectOption(option);
+  locator.selectOption(option);
 }

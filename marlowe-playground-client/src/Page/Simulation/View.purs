@@ -96,6 +96,7 @@ import Halogen.HTML
   )
 import Halogen.HTML.Events (onClick)
 import Halogen.HTML.Properties (class_, classes, disabled, enabled, id)
+import Halogen.HTML.Properties.ARIA (label, role)
 import Halogen.Monaco (monacoComponent)
 import Humanize
   ( formatInstant

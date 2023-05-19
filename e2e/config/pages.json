@@ -18,6 +18,9 @@
   "blockly editor": {
     "route": "/#/blockly",
     "regex": "^/#/blockly$"
+  },
+  "contract simulation": {
+    "route": "/#/simulation",
+    "regex": "^/#/simulation$"
   }
-
 }

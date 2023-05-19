@@ -2,7 +2,6 @@ Feature: Switching text editors
 
     As a user I expect to be able to switch between text editors
 
-    @wip
     Scenario: As a user I want to switch from Haskell, to Javascript, to Marlowe, to Blockly
 
       Given I am on the "home" page
