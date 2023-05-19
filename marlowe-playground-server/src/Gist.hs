@@ -23,8 +23,9 @@ module Gist
     , Gist(..)
     , GistFile(..)
     , NewGist(..)
-    , PatchGist(..)
     , NewGistFile(..)
+    , PatchGist(..)
+    , PatchGistFile(..)
     ) where
 
 import Auth.Types (Token, TokenProvider (Github))

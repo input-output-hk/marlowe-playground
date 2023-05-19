@@ -317,3 +317,91 @@ ownerLogin = _Newtype <<< prop (Proxy :: _ "_ownerLogin")
 
 ownerHtmlUrl :: Lens' Owner String
 ownerHtmlUrl = _Newtype <<< prop (Proxy :: _ "_ownerHtmlUrl")
+
+--------------------------------------------------------------------------------
+
+newtype PatchGist = PatchGist
+  { _patchGistDescription :: Maybe String
+  , _patchGistFiles :: Maybe (Map String PatchGistFile)
+  }
+
+instance EncodeJson PatchGist where
+  encodeJson = defer \_ -> E.encode $ unwrap >$<
+    ( E.record
+        { _patchGistDescription: (E.maybe E.value) :: _ (Maybe String)
+        , _patchGistFiles:
+            (E.maybe (E.dictionary E.value E.value))
+              :: _ (Maybe (Map String PatchGistFile))
+        }
+    )
+
+instance DecodeJson PatchGist where
+  decodeJson = defer \_ -> D.decode $
+    ( PatchGist <$> D.record "PatchGist"
+        { _patchGistDescription: (D.maybe D.value) :: _ (Maybe String)
+        , _patchGistFiles:
+            (D.maybe (D.dictionary D.value D.value))
+              :: _ (Maybe (Map String PatchGistFile))
+        }
+    )
+
+derive instance Generic PatchGist _
+
+derive instance Newtype PatchGist _
+
+--------------------------------------------------------------------------------
+
+_PatchGist
+  :: Iso' PatchGist
+       { _patchGistDescription :: Maybe String
+       , _patchGistFiles :: Maybe (Map String PatchGistFile)
+       }
+_PatchGist = _Newtype
+
+patchGistDescription :: Lens' PatchGist (Maybe String)
+patchGistDescription = _Newtype <<< prop (Proxy :: _ "_patchGistDescription")
+
+patchGistFiles :: Lens' PatchGist (Maybe (Map String PatchGistFile))
+patchGistFiles = _Newtype <<< prop (Proxy :: _ "_patchGistFiles")
+
+--------------------------------------------------------------------------------
+
+newtype PatchGistFile = PatchGistFile
+  { _patchGistFilename :: Maybe String
+  , _patchGistFileContent :: Maybe String
+  }
+
+instance EncodeJson PatchGistFile where
+  encodeJson = defer \_ -> E.encode $ unwrap >$<
+    ( E.record
+        { _patchGistFilename: (E.maybe E.value) :: _ (Maybe String)
+        , _patchGistFileContent: (E.maybe E.value) :: _ (Maybe String)
+        }
+    )
+
+instance DecodeJson PatchGistFile where
+  decodeJson = defer \_ -> D.decode $
+    ( PatchGistFile <$> D.record "PatchGistFile"
+        { _patchGistFilename: (D.maybe D.value) :: _ (Maybe String)
+        , _patchGistFileContent: (D.maybe D.value) :: _ (Maybe String)
+        }
+    )
+
+derive instance Generic PatchGistFile _
+
+derive instance Newtype PatchGistFile _
+
+--------------------------------------------------------------------------------
+
+_PatchGistFile
+  :: Iso' PatchGistFile
+       { _patchGistFilename :: Maybe String
+       , _patchGistFileContent :: Maybe String
+       }
+_PatchGistFile = _Newtype
+
+patchGistFilename :: Lens' PatchGistFile (Maybe String)
+patchGistFilename = _Newtype <<< prop (Proxy :: _ "_patchGistFilename")
+
+patchGistFileContent :: Lens' PatchGistFile (Maybe String)
+patchGistFileContent = _Newtype <<< prop (Proxy :: _ "_patchGistFileContent")

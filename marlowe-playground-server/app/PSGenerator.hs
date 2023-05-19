@@ -36,7 +36,7 @@ import qualified Data.Text.IO as T ()
 import qualified Escrow
 import qualified EscrowWithCollateral
 import qualified Example
-import Gist (Gist, GistFile, NewGist, NewGistFile, Owner)
+import Gist (Gist, GistFile, NewGist, NewGistFile, Owner, PatchGist, PatchGistFile)
 import Language.Haskell.Interpreter (CompilationError, InterpreterError, InterpreterResult, Warning)
 import qualified Language.Marlowe.Core.V1.Semantics.Types as MC
 import qualified Language.Marlowe.Core.V1.Semantics.Types.Address as MC.Address
@@ -217,6 +217,8 @@ myTypes =
        , equal . genericShow . argonaut $ mkSumType @GistFile
        , argonaut $ mkSumType @NewGist
        , argonaut $ mkSumType @NewGistFile
+       , argonaut $ mkSumType @PatchGist
+       , argonaut $ mkSumType @PatchGistFile
        , equal . genericShow . argonaut $ mkSumType @Owner
        , equal . genericShow . argonaut $ mkSumType @Auth.AuthStatus
        , order . equal . genericShow . argonaut $ mkSumType @Auth.AuthRole
