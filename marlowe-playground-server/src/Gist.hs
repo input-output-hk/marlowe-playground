@@ -38,17 +38,16 @@ import Data.Proxy (Proxy (Proxy))
 import Data.Text (Text)
 import qualified Data.Text as T
 import GHC.Generics (Generic, Rep)
-import Servant.API (Capture, FromHttpApiData (parseQueryParam), Get, Header, JSON, Post, ReqBody,
+import Servant.API (Capture, FromHttpApiData (parseQueryParam), Get, Header, JSON, Post, PostCreated, ReqBody,
                     ToHttpApiData (toQueryParam), (:<|>), (:>))
 import Servant.Client (ClientM, client)
 import qualified Servant.Extra
 import Text.Read (readEither)
 
 type API = Header "Authorization" (Token 'Github) :> "gists" :> GistAPI
-
 type GistAPI
      = Get '[ JSON] [Gist]
-       :<|> ReqBody '[ JSON] NewGist :> Post '[ JSON] Gist
+       :<|> ReqBody '[ JSON] NewGist :> PostCreated '[ JSON] Gist
        :<|> Capture "GistId" GistId :> Get '[ JSON] Gist
        :<|> Capture "GistId" GistId :> ReqBody '[ JSON] NewGist :> Post '[ JSON] Gist
 

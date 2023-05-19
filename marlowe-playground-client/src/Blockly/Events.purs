@@ -37,7 +37,7 @@ foreign import data ChangeEvent :: Type
 
 instance hasEventChangeEvent :: HasEvent ChangeEvent where
   fromEvent :: Event -> Maybe ChangeEvent
-  fromEvent = readBlocklyEventType "change"
+  fromEvent = readBlocklyEventType "BlockChange"
 
 ------------------------------------------------------------
 foreign import data UIEvent :: Type
@@ -61,7 +61,7 @@ foreign import data MoveEvent :: Type
 
 instance hasEventMoveEvent :: HasEvent MoveEvent where
   fromEvent :: Event -> Maybe MoveEvent
-  fromEvent = readBlocklyEventType "move"
+  fromEvent = readBlocklyEventType "BlockMove"
 
 -- UUID of new parent block. Nothing if it is a top level block.
 newParentId :: MoveEvent -> Maybe String

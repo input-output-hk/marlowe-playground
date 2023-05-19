@@ -43,17 +43,15 @@ const devtool = isDevelopment ? "eval-source-map" : false;
 module.exports = {
   devtool,
   devServer: {
-    contentBase: path.join(__dirname, "dist"),
-    compress: true,
+    static: {
+      directory: path.join(__dirname, "dist"),
+    },
     port: 8009,
-    https: !isDevelopment,
+    // HTTPS needs to be available for the GIST login to work
+    https: true,
     proxy: {
-      "/api": {
-        target: "http://localhost:8080",
-      },
-      "/runghc": {
-        target: "http://localhost:8080",
-      },
+      "/api": "http://127.0.0.1:8080",
+      "/runghc": "http://127.0.0.1:8080",
     },
   },
   entry: "./entry.js",
