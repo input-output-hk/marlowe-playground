@@ -58,7 +58,7 @@ import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import Data.Time (NominalDiffTime, UTCTime, addUTCTime)
 import Data.Time.Clock.POSIX (POSIXTime, utcTimeToPOSIXSeconds)
 import GHC.Generics (Generic)
-import Gist (Gist, GistId, NewGist)
+import Gist (Gist, GistId, NewGist, PatchGist)
 import qualified Gist
 import Network.HTTP.Client.Conduit (getUri)
 import Network.HTTP.Conduit (Request, parseRequest, responseBody, responseStatus, setQueryString)
@@ -380,7 +380,7 @@ updateGist ::
        )
     => Maybe Text
     -> GistId
-    -> NewGist
+    -> PatchGist
     -> m Gist
 updateGist header gistId newGist =
     withGithubToken

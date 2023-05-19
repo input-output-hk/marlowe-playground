@@ -23,22 +23,24 @@ module Gist
     , Gist(..)
     , GistFile(..)
     , NewGist(..)
+    , PatchGist(..)
     , NewGistFile(..)
     ) where
 
 import Auth.Types (Token, TokenProvider (Github))
-import Data.Aeson (FromJSON, GFromJSON, ToJSON, Value, Zero, genericParseJSON, object, parseJSON, toJSON, withObject,
-                   (.!=), (.:), (.:?), (.=))
+import Data.Aeson (FromJSON, GFromJSON, KeyValue, ToJSON, Value, Zero, genericParseJSON, object, parseJSON, toJSON,
+                   withObject, (.!=), (.:), (.:?), (.=))
 import Data.Aeson.Casing (aesonPrefix, snakeCase)
 import qualified Data.Aeson.Key as Key
 import Data.Aeson.Types (Parser)
 import Data.Bifunctor (Bifunctor (first), bimap)
 import Data.Map (Map)
+import Data.Maybe (catMaybes)
 import Data.Proxy (Proxy (Proxy))
 import Data.Text (Text)
 import qualified Data.Text as T
 import GHC.Generics (Generic, Rep)
-import Servant.API (Capture, FromHttpApiData (parseQueryParam), Get, Header, JSON, Post, ReqBody,
+import Servant.API (Capture, FromHttpApiData (parseQueryParam), Get, Header, JSON, Patch, PostCreated, ReqBody,
                     ToHttpApiData (toQueryParam), (:<|>), (:>))
 import Servant.Client (ClientM, client)
 import qualified Servant.Extra
@@ -47,17 +49,21 @@ import Text.Read (readEither)
 type API = Header "Authorization" (Token 'Github) :> "gists" :> GistAPI
 
 type GistAPI
+       -- See https://docs.github.com/en/rest/gists/gists?apiVersion=2022-11-28#list-gists-for-the-authenticated-user
      = Get '[ JSON] [Gist]
-       :<|> ReqBody '[ JSON] NewGist :> Post '[ JSON] Gist
+       -- See https://docs.github.com/en/rest/gists/gists?apiVersion=2022-11-28#create-a-gist
+       :<|> ReqBody '[ JSON] NewGist :> PostCreated '[ JSON] Gist
+       -- See https://docs.github.com/en/rest/gists/gists?apiVersion=2022-11-28#get-a-gist
        :<|> Capture "GistId" GistId :> Get '[ JSON] Gist
-       :<|> Capture "GistId" GistId :> ReqBody '[ JSON] NewGist :> Post '[ JSON] Gist
+       -- See https://docs.github.com/en/rest/gists/gists?apiVersion=2022-11-28#update-a-gist
+       :<|> Capture "GistId" GistId :> ReqBody '[ JSON] PatchGist :> Patch '[ JSON] Gist
 
 apiClient ::
        Maybe (Token 'Github)
     -> ClientM [Gist]
        :<|> (NewGist -> ClientM Gist)
        :<|> (GistId -> ClientM Gist)
-       :<|> (GistId -> NewGist -> ClientM Gist)
+       :<|> (GistId -> PatchGist -> ClientM Gist)
 apiClient = client (Proxy @API)
 
 getGists :: Maybe (Token 'Github) -> ClientM [Gist]
@@ -70,7 +76,7 @@ getGist :: Maybe (Token 'Github) -> GistId -> ClientM Gist
 getGist =
     Servant.Extra.left . Servant.Extra.right . Servant.Extra.right . apiClient
 
-updateGist :: Maybe (Token 'Github) -> GistId -> NewGist -> ClientM Gist
+updateGist :: Maybe (Token 'Github) -> GistId -> PatchGist -> ClientM Gist
 updateGist =
     Servant.Extra.right . Servant.Extra.right . Servant.Extra.right . apiClient
 
@@ -110,6 +116,37 @@ data NewGistFile =
         , _newGistFileContent :: !Text
         }
     deriving (Show, Eq, Generic, FromJSON)
+
+data PatchGist =
+    PatchGist
+        { _patchGistDescription :: !(Maybe Text)
+        , _patchGistFiles       :: !(Maybe (Map Text PatchGistFile))
+        }
+    deriving (Show, Eq, Generic, FromJSON)
+
+data PatchGistFile =
+    PatchGistFile
+        { _patchGistFilename    :: !(Maybe Text)
+        , _patchGistFileContent :: !(Maybe Text)
+        }
+    deriving (Show, Eq, Generic, FromJSON)
+
+(?=) :: (KeyValue b, ToJSON v) => Key.Key -> Maybe v -> Maybe b
+k ?= mv = (k .=) <$> mv
+
+instance ToJSON PatchGist where
+    toJSON PatchGist {..} =
+        object $ catMaybes
+            [ "description" ?= _patchGistDescription
+            , "files" ?= _patchGistFiles
+            ]
+
+instance ToJSON PatchGistFile where
+    toJSON PatchGistFile {..} =
+        object $ catMaybes
+            [ "content" ?= _patchGistFileContent
+            , "filename" ?= _patchGistFilename
+            ]
 
 newtype GistId =
     GistId Text
