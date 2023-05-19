@@ -1,11 +1,9 @@
 { inputs, cell }:
 
 let
-  inherit (cell.library) writeShellScriptInRepoRoot purescript;
-  inherit (purescript) spago2nix;
+  inherit (cell.library) writeShellScriptInRepoRoot;
 
 in
-
 writeShellScriptInRepoRoot "assemble-changelog" ''
   usage () {
     echo "$(basename "$0") PACKAGE VERSION
