@@ -46,9 +46,8 @@ import Language.Marlowe.Core.V1.Semantics (inBounds)
 import Language.Marlowe.Core.V1.Semantics.Types
   ( ChoiceId(..)
   , Contract
-  , Input(..)
+  , InputContent(..)
   , Party(..)
-
   )
 import Language.Marlowe.Extended.V1.Metadata.Types (MetaData)
 import MainFrame.Types (ChildSlots, _projectName, _simulatorEditorSlot)

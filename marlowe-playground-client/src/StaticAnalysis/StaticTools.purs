@@ -16,6 +16,7 @@ import Data.Bifunctor (lmap)
 import Data.BigInt.Argonaut (BigInt, toNumber)
 import Data.Lens (assign, use)
 import Data.List (List(..), foldl, fromFoldable, length, snoc, toUnfoldable)
+import Data.List as List
 import Data.List.Types (NonEmptyList(..))
 import Data.NonEmpty ((:|))
 import Data.Traversable (traverse)
@@ -106,11 +107,11 @@ expandChildren zipper (If obs cont1 cont2) = Cons
 
 expandChildren zipper (When cases tim tcont) =
   snoc
-    ( map
-        ( \(before /\ Case act cont /\ after) ->
-            WhenCaseZip before act zipper after tim tcont /\ cont
-        )
-        (splitArray (fromFoldable cases))
+    ( List.catMaybes $ splitArray (fromFoldable cases) <#> case _ of
+        (before /\ Case act cont /\ after) ->
+          Just $ WhenCaseZip before act zipper after tim tcont /\ cont
+        (_ /\ MerkleizedCase _ _ /\ _) ->
+          Nothing
     )
     (WhenTimeoutZip cases tim zipper /\ tcont)
 
@@ -194,9 +195,9 @@ nullifyAsserts (If obs cont1 cont2) = If obs (nullifyAsserts cont1)
 
 nullifyAsserts (When cases timeout timCont) =
   When
-    ( do
-        Case act cont <- cases
-        pure (Case act (nullifyAsserts cont))
+    ( cases <#> case _ of
+        Case act cont -> Case act (nullifyAsserts cont)
+        mc@(MerkleizedCase _ _) -> mc
     )
     timeout
     (nullifyAsserts timCont)

@@ -1,4 +1,4 @@
-import { registerDateTimeField } from "src/Blockly/DateTimeField.js";
+import { registerDateTimeField } from "../../src/Blockly/DateTimeField.js";
 
 export function createBlocklyInstance_() {
   return require("blockly/blockly-node");

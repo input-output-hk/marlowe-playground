@@ -31,17 +31,16 @@ import Language.Marlowe.Core.V1.Semantics.Types
   , Bound
   , ChoiceId
   , ChosenNum
-  , Input
+  , InputContent
   , Party(..)
   , Payment
   , TimeInterval
   , Token
   , TransactionError
-  , TransactionInput
   , TransactionWarning
   )
 import Language.Marlowe.Core.V1.Semantics.Types as S
-import Marlowe.Holes (Holes, Term)
+import Marlowe.Holes (Holes, Term, TransactionInputContent)
 import Marlowe.Holes as T
 import Marlowe.Template (TemplateContent)
 import Monaco (IMarker)
@@ -225,7 +224,7 @@ otherActionsParty = Role "marlowe_other_actions"
 
 data LogEntry
   = StartEvent Instant
-  | InputEvent TransactionInput
+  | InputEvent TransactionInputContent
   | OutputEvent TimeInterval Payment
   | CloseEvent TimeInterval
 
@@ -275,7 +274,7 @@ instance decodeJsonLogEntry :: DecodeJson LogEntry where
 
 type ExecutionStateRecord =
   { possibleActions :: PartiesAction
-  , pendingInputs :: Array Input
+  , pendingInputs :: Array InputContent
   , transactionError :: Maybe TransactionError
   , transactionWarnings :: Array TransactionWarning
   , log :: Array LogEntry

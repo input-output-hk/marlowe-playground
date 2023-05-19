@@ -18,7 +18,7 @@ import Language.Marlowe.Core.V1.Semantics.Types
   ( Bound
   , ChoiceId
   , ChosenNum
-  , Input
+  , InputContent
   )
 import Marlowe.Symbolic.Types.Response (Result)
 import Network.RemoteData (RemoteData)
@@ -46,7 +46,7 @@ data Action
   | StartSimulation
   | DownloadAsJson
   | MoveTime Instant
-  | AddInput Input (Array Bound)
+  | AddInput InputContent (Array Bound)
   | SetChoice ChoiceId ChosenNum
   | ResetSimulator
   | Undo

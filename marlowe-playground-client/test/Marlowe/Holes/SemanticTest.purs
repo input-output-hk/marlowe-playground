@@ -19,21 +19,20 @@ import Language.Marlowe.Core.V1.Semantics (emptyState)
 import Language.Marlowe.Core.V1.Semantics.Types
   ( ChoiceId(..)
   , Contract
-  , Input(..)
+  , InputContent(..)
   , TimeInterval(..)
-  , TransactionInput(..)
   , TransactionOutput(..)
   ) as S
-import Language.Marlowe.Core.V1.Semantics.Types
-  ( Input
-  , Party(..)
-  , Token(..)
-  , TransactionInput
-  )
+import Language.Marlowe.Core.V1.Semantics.Types (Party(..), Token(..))
 import Language.Marlowe.Extended.V1 (toCore)
 import Language.Marlowe.Extended.V1 as EM
 import Language.Marlowe.ToTerm (toTerm)
-import Marlowe.Holes (Term, fromTerm)
+import Marlowe.Holes
+  ( Term
+  , TransactionInputContent(..)
+  , fromTerm
+  , toTransactionInput
+  )
 import Marlowe.Holes as T
 import Marlowe.Template (TemplateContent(..), fillTemplate)
 import Marlowe.Time (unixEpoch, unsafeInstantFromInt)
@@ -41,28 +40,28 @@ import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (fail, shouldEqual)
 
 -- For the purposes of this test all transactions can happen in slot 0
-transaction :: Input -> TransactionInput
+transaction :: S.InputContent -> TransactionInputContent
 transaction input =
-  S.TransactionInput
+  TransactionInputContent
     { interval: S.TimeInterval unixEpoch unixEpoch
     , inputs: List.singleton input
     }
 
-multipleInputs :: List Input -> TransactionInput
+multipleInputs :: List S.InputContent -> TransactionInputContent
 multipleInputs inputs =
-  S.TransactionInput
+  TransactionInputContent
     { interval: S.TimeInterval unixEpoch unixEpoch
     , inputs: inputs
     }
 
-timeout :: Instant -> TransactionInput
+timeout :: Instant -> TransactionInputContent
 timeout instant =
-  S.TransactionInput
+  TransactionInputContent
     { interval: S.TimeInterval instant instant
     , inputs: mempty
     }
 
-type ContractFlows = List (String /\ List TransactionInput)
+type ContractFlows = List (String /\ List TransactionInputContent)
 
 ------------------------------------------------------------------------------------------------------
 seller :: Party
@@ -265,7 +264,7 @@ testTransactionList
   :: forall m
    . MonadError Error m
   => EM.Contract
-  -> List S.TransactionInput
+  -> List TransactionInputContent
   -> m Unit
 testTransactionList extendedContract inputs =
   maybe'
@@ -285,7 +284,8 @@ testTransactionList extendedContract inputs =
 
   testStep (input : rest) state semanticContract termContract = do
     let
-      semanticOutput = S.computeTransaction input state semanticContract
+      input' = toTransactionInput input
+      semanticOutput = S.computeTransaction input' state semanticContract
 
       termOutput = T.computeTransaction input state termContract
     shouldHaveSameOutput semanticOutput termOutput

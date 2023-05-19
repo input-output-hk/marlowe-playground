@@ -37,6 +37,7 @@ import Icons (Icon(..), icon)
 import Language.Marlowe.Core.V1.Semantics.Types
   ( ChoiceId(..)
   , Input(..)
+  , InputContent(..)
   , TransactionInput(..)
   )
 import Language.Marlowe.Extended.V1.Metadata.Types (MetaData)
@@ -437,7 +438,12 @@ displayInputList inputList =
     )
 
 displayInput :: forall p i. Input -> Array (HTML p i)
-displayInput (IDeposit owner party tok money) =
+displayInput (MerkleizedInput inputContent _ _) = displayInputContent
+  inputContent
+displayInput (NormalInput inputContent) = displayInputContent inputContent
+
+displayInputContent :: forall p i. InputContent -> Array (HTML p i)
+displayInputContent (IDeposit owner party tok money) =
   [ b_ [ text "Deposit" ]
   , text " - Party "
   , b_ [ text $ show party ]
@@ -448,7 +454,7 @@ displayInput (IDeposit owner party tok money) =
   , text "."
   ]
 
-displayInput (IChoice (ChoiceId choiceId party) chosenNum) =
+displayInputContent (IChoice (ChoiceId choiceId party) chosenNum) =
   [ b_ [ text "Choice" ]
   , text " - Party "
   , b_ [ text $ show party ]
@@ -459,7 +465,7 @@ displayInput (IChoice (ChoiceId choiceId party) chosenNum) =
   , text "."
   ]
 
-displayInput (INotify) =
+displayInputContent (INotify) =
   [ b_ [ text "Notify" ]
   , text " - The contract is notified that an observation became "
   , b_ [ text "True" ]

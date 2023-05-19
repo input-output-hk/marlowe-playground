@@ -59,7 +59,7 @@ import Language.Marlowe.Core.V1.Semantics.Types
   , ChoiceId(..)
   , ChosenNum
   , Environment(..)
-  , Input
+  , InputContent
   , IntervalResult(..)
   , Observation
   , Party
@@ -67,7 +67,6 @@ import Language.Marlowe.Core.V1.Semantics.Types
   , TimeInterval(..)
   , Timeouts(..)
   , TransactionError(..)
-  , TransactionInput(..)
   , _minTime
   , timeouts
   )
@@ -76,6 +75,7 @@ import Language.Marlowe.Extended.V1.Metadata.Types (MetaData)
 import Marlowe.Holes
   ( Contract(..)
   , Term(..)
+  , TransactionInputContent(..)
   , TransactionOutput(..)
   , computeTransaction
   , fromTerm
@@ -332,12 +332,15 @@ updatePossibleActions
 updatePossibleActions oldState = oldState
 
 extractRequiredActionsWithTxs
-  :: TransactionInput -> State -> Term T.Contract -> Tuple State (Array Action)
+  :: TransactionInputContent
+  -> State
+  -> Term Contract
+  -> Tuple State (Array Action)
 extractRequiredActionsWithTxs txInput state contract
   | TransactionOutput { txOutContract, txOutState } <-
       computeTransaction txInput state contract = Tuple txOutState
       (extractRequiredActions txOutContract)
-  | TransactionInput { inputs: Nil } <- txInput
+  | TransactionInputContent { inputs: Nil } <- txInput
   , IntervalTrimmed env fixState <- fixInterval (unwrap txInput).interval state
   , Just (_ /\ reducedContract) <-
       reduceContractUntilQuiescent env fixState contract = Tuple fixState
@@ -346,18 +349,23 @@ extractRequiredActionsWithTxs txInput state contract
   | otherwise = Tuple state (extractRequiredActions contract)
 
 extractRequiredActions :: Term T.Contract -> Array Action
-extractRequiredActions contract = case contract of
-  Term (When cases _ _) _ -> map (\(S.Case action _) -> action) $ mapMaybe
-    fromTerm
-    cases
-  _ -> mempty
+extractRequiredActions contract = do
+  let
+    extractCaseAction (S.Case action _) = action
+    extractCaseAction (S.MerkleizedCase action _) = action
+  case contract of
+    Term (When cases _ _) _ -> map extractCaseAction $ mapMaybe
+      fromTerm
+      cases
+    _ -> mempty
 
 applyPendingInputs :: MarloweState -> MarloweState
 applyPendingInputs
   oldState@{ executionState: Just (SimulationRunning executionState) } =
   newState
   where
-  txInput@(TransactionInput txIn) = pendingTransactionInputs executionState
+  txInput@(TransactionInputContent txIn) = pendingTransactionInputs
+    executionState
 
   newState =
     case
@@ -414,7 +422,7 @@ applyPendingInputs oldState = oldState
 updateTime :: Instant -> MarloweState -> MarloweState
 updateTime = set (_executionState <<< _SimulationRunning <<< _time)
 
-pendingTransactionInputs :: ExecutionStateRecord -> TransactionInput
+pendingTransactionInputs :: ExecutionStateRecord -> TransactionInputContent
 pendingTransactionInputs executionState =
   let
     time = executionState ^. _time
@@ -423,7 +431,8 @@ pendingTransactionInputs executionState =
 
     inputs = executionState ^. _pendingInputs
   in
-    TransactionInput { interval: interval, inputs: (List.fromFoldable inputs) }
+    TransactionInputContent
+      { interval: interval, inputs: (List.fromFoldable inputs) }
 
 updateMarloweState
   :: forall s m
@@ -436,7 +445,7 @@ updateMarloweState f = modifying _marloweState
 applyInputTransformation
   :: forall s m
    . MonadState { marloweState :: NonEmptyList MarloweState | s } m
-  => (Array Input -> Array Input)
+  => (Array InputContent -> Array InputContent)
   -> m Unit
 applyInputTransformation inputTransformation =
   updateMarloweState
@@ -450,7 +459,7 @@ applyInputTransformation inputTransformation =
 applyInput
   :: forall s m
    . MonadState { marloweState :: NonEmptyList MarloweState | s } m
-  => Input
+  => InputContent
   -> m Unit
 applyInput input = applyInputTransformation $ flip snoc $ input
 
