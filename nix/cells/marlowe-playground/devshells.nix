@@ -9,6 +9,11 @@ let
 
     imports = [ haskell-devshell inputs.std.std.devshellProfiles.default ];
 
+    env = [
+      { name = "PLAYWRIGHT_BROWSERS_PATH"; value = "${packages.playwright}"; }
+      { name = "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD"; value = "true"; }
+    ];
+
     commands = [
       {
         package = scripts.fix-png-optimization;

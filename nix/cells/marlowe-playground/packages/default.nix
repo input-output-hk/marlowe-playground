@@ -12,5 +12,7 @@
 
   nixpkgs-fmt = import ./nixpkgs-fmt.nix block;
 
+  playwright = import ./playwright.nix block;
+
   scriv = import ./scriv.nix block;
 }
