@@ -6,7 +6,7 @@ import Analytics (class IsEvent, defaultEvent, toEvent)
 import Auth (AuthStatus, _GithubUser, authStatusAuthRole)
 import Component.Blockly.Types as Blockly
 import Component.ConfirmUnsavedNavigation.Types as ConfirmUnsavedNavigation
-import Component.CurrencyInput.Types as CurrencyInput
+import Component.CurrencyInput as CurrencyInput
 import Component.DateTimeLocalInput.Types as DateTimeLocalInput
 import Component.Demos.Types as Demos
 import Component.MetadataTab.Types (MetadataAction)
