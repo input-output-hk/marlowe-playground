@@ -2,6 +2,7 @@ module Blockly.Headless where
 
 import Prologue
 
+import Blockly.DateTimeField (registerDateTimeField)
 import Blockly.Types (Block, Blockly, BlocklyState, Workspace)
 import Effect (Effect)
 import Effect.Uncurried (EffectFn1, EffectFn2, runEffectFn1, runEffectFn2)
@@ -15,8 +16,9 @@ foreign import initializeWorkspace_ :: EffectFn2 Blockly Workspace Unit
 foreign import newBlock_ :: EffectFn2 Workspace String Block
 
 initializeWorkspace :: BlocklyState -> Effect Unit
-initializeWorkspace state = runEffectFn2 initializeWorkspace_ state.blockly
-  state.workspace
+initializeWorkspace state = do
+  runEffectFn2 initializeWorkspace_ state.blockly state.workspace
+  void $ registerDateTimeField state.blockly
 
 createBlocklyInstance :: String -> Effect BlocklyState
 createBlocklyInstance rootBlockName = do

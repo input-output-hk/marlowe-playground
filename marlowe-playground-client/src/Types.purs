@@ -2,8 +2,10 @@ module Types where
 
 import Prelude
 
+import Contrib.Data.Decimal (Precision(..))
 import Data.Argonaut (Json, JsonDecodeError)
 import Data.Generic.Rep (class Generic)
+import Data.Numbers.Natural as Natural
 import Data.Show.Generic (genericShow)
 import Network.RemoteData (RemoteData)
 import Servant.PureScript (AjaxError)
@@ -30,3 +32,9 @@ instance Show WebpackBuildMode where
   show = genericShow
 
 type Env = { webpackBuildMode :: WebpackBuildMode }
+
+-- This is default precision which we use accross the application
+decimalPrecision :: Precision
+decimalPrecision = Precision $
+  Natural.unsafeFromInt "Types.decimalPrecision" 100
+
