@@ -4,7 +4,7 @@ import Prologue hiding (div)
 
 import Component.BottomPanel.Types as BottomPanelTypes
 import Component.BottomPanel.View as BottomPanel
-import Component.CurrencyInput.State (component) as CurrencyInput
+import Component.CurrencyInput (component) as CurrencyInput
 import Component.DateTimeLocalInput.State (component) as DateTimeLocalInput
 import Component.DateTimeLocalInput.Types (Message(..)) as DateTimeLocalInput
 import Component.Hint.State (hint)

@@ -87,8 +87,11 @@ mkState contract =
   in
     set
       _marloweState
-      ( NEL.singleton $ initialMarloweState unixEpoch contract
+      ( NEL.singleton $ initialMarloweState
+          unixEpoch
+          contract
           emptyContractMetadata
+          Nothing
       )
       baseState
 

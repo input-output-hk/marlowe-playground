@@ -239,14 +239,20 @@ handleAction metadata Undo = do
 
 handleAction metadata (LoadContract contents) = do
   liftEffect $ SessionStorage.setItem simulatorBufferLocalStorageKey contents
+  currentTime <- liftEffect now
+  prevTemplateContent <- do
+    use _marloweState >>= last >>> case _ of
+      { executionState: Just (SimulationNotStarted { templateContent }) } ->
+        pure $ Just templateContent
+      _ -> pure Nothing
   let
     mTermContract = hush $ parseContract contents
-  currentTime <- liftEffect now
   for_ mTermContract \termContract ->
     assign
       _marloweState
       ( NEL.singleton
           $ initialMarloweState currentTime termContract metadata
+              prevTemplateContent
       )
 
   editorSetValue contents

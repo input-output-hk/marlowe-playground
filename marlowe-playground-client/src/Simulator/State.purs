@@ -29,6 +29,7 @@ import Data.Array
 import Data.DateTime (adjust)
 import Data.DateTime.Instant (Instant, fromDateTime, toDateTime)
 import Data.FoldableWithIndex (foldlWithIndex)
+import Data.FunctorWithIndex (mapWithIndex)
 import Data.Lens (modifying, over, previewOn, set, to, use, (^.))
 import Data.Lens.Extra (peruse)
 import Data.List (List(..))
@@ -83,7 +84,8 @@ import Marlowe.Holes
   )
 import Marlowe.Holes as T
 import Marlowe.Template
-  ( getPlaceholderIds
+  ( TemplateContent(..)
+  , getPlaceholderIds
   , initializeTemplateContentWithIncreasingTime
   )
 import Marlowe.Time (unixEpoch)
@@ -130,15 +132,31 @@ emptyExecutionStateWithTime time cont =
     }
 
 simulationNotStarted
-  :: Instant -> Term T.Contract -> MetaData -> ExecutionState
-simulationNotStarted initialTime termContract metadata =
+  :: Instant
+  -> Term T.Contract
+  -> MetaData
+  -> Maybe TemplateContent
+  -> ExecutionState
+simulationNotStarted initialTime termContract metadata prevTemplateContent =
   let
-    templateContent =
+    tc@(TemplateContent { timeContent, valueContent }) =
       initializeTemplateContentWithIncreasingTime
         initialTime
         (Minutes 5.0)
         (OMap.keys metadata.timeParameterDescriptions)
         (getPlaceholderIds termContract)
+    templateContent = case prevTemplateContent of
+      Just
+        ( TemplateContent
+            { timeContent: prevTimeContent, valueContent: prevValueContent }
+        ) ->
+        TemplateContent
+          { timeContent: flip mapWithIndex timeContent $ \key value ->
+              fromMaybe value (Map.lookup key prevTimeContent)
+          , valueContent: flip mapWithIndex valueContent $ \key value ->
+              fromMaybe value (Map.lookup key prevValueContent)
+          }
+      Nothing -> tc
 
   in
     SimulationNotStarted
@@ -155,12 +173,18 @@ emptyMarloweState =
   , executionState: Nothing
   }
 
-initialMarloweState :: Instant -> Term T.Contract -> MetaData -> MarloweState
-initialMarloweState initialTime contract metadata =
+initialMarloweState
+  :: Instant
+  -> Term T.Contract
+  -> MetaData
+  -> (Maybe TemplateContent)
+  -> MarloweState
+initialMarloweState initialTime contract metadata prevTemplateContent =
   { editorErrors: mempty
   , editorWarnings: mempty
   , holes: mempty
   , executionState: Just $ simulationNotStarted initialTime contract metadata
+      prevTemplateContent
   }
 
 minimumBound :: Array Bound -> ChosenNum
