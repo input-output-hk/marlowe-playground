@@ -1,13 +1,13 @@
 module Blockly.DateTimeField where
 
-import Prelude
-
 import Blockly.Types (Blockly)
 import Effect (Effect)
 import Effect.Uncurried (EffectFn1, runEffectFn1)
 
-foreign import registerDateTimeFieldImpl :: EffectFn1 Blockly Unit
+foreign import data FieldDateTime :: Type
 
-registerDateTimeField :: Blockly -> Effect Unit
+foreign import registerDateTimeFieldImpl :: EffectFn1 Blockly FieldDateTime
+
+registerDateTimeField :: Blockly -> Effect FieldDateTime
 registerDateTimeField = runEffectFn1 registerDateTimeFieldImpl
 

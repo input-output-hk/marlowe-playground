@@ -18,7 +18,7 @@ foreign import newBlock_ :: EffectFn2 Workspace String Block
 initializeWorkspace :: BlocklyState -> Effect Unit
 initializeWorkspace state = do
   runEffectFn2 initializeWorkspace_ state.blockly state.workspace
-  registerDateTimeField state.blockly
+  void $ registerDateTimeField state.blockly
 
 createBlocklyInstance :: String -> Effect BlocklyState
 createBlocklyInstance rootBlockName = do

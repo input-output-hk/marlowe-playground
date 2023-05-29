@@ -210,7 +210,9 @@ export const registerDateTimeFieldImpl = (function () {
       }
     };
 
-    Blockly.fieldRegistry.register("field_datetime", FieldDateTime);
+    try {
+      Blockly.fieldRegistry.register("field_datetime", FieldDateTime);
+    } catch {}
 
     return FieldDateTime;
   };

@@ -27,9 +27,8 @@ instance Eq Rounding where
       r2' = unsafeCoerce r2 :: Int
     r1' == r2'
 
--- Unfortunatelly Decimal.js uses global setup which drives parsing
--- of the values. We should probably wrap every 
--- http://mikemcl.github.io/decimal.js/#constructor-properties
+-- Unfortunatelly Decimal.js uses global setup which drives rounding during parsing
+-- of the values: http://mikemcl.github.io/decimal.js/#constructor-properties
 type Configuration = { precision :: Precision, rounding :: Rounding }
 
 foreign import setConfigurationImpl :: EffectFn1 Configuration Unit
