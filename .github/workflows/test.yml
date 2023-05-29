@@ -1,9 +1,9 @@
 name: "Tests"
 env:
-  CACHE_NAME: marlowe-temp
+  CACHE_NAME: marlowe-playground-temp
   ALLOWED_URIS: "https://github.com https://api.github.com"
-  TRUSTED_PUBLIC_KEYS: "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ= marlowe-temp.cachix.org-1:1gPjVFpu4QjaAT3tRurCioX+BC23V7mjvFwpP5bV0Ec= loony-tools:pr9m4BkM/5/eSTZlkQyRt57Jz7OMBxNSUiMC4FkcNfk="
-  SUBSTITUTERS: "https://cache.nixos.org/ https://cache.iog.io https://marlowe-temp.cachix.org https://cache.zw3rk.com/"
+  TRUSTED_PUBLIC_KEYS: "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ= marlowe-playground-temp.cachix.org-1:1gPjVFpu4QjaAT3tRurCioX+BC23V7mjvFwpP5bV0Ec= loony-tools:pr9m4BkM/5/eSTZlkQyRt57Jz7OMBxNSUiMC4FkcNfk="
+  SUBSTITUTERS: "https://cache.nixos.org/ https://cache.iog.io https://marlowe-playground-temp.cachix.org https://cache.zw3rk.com/"
 on:
   pull_request:
     branches:
@@ -12,7 +12,6 @@ on:
 jobs:
   integration:
     runs-on: ubuntu-latest
-    services:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
@@ -34,4 +33,3 @@ jobs:
       - name: Run tests
         run: |
           nix develop --command bash -c 'cd marlowe-playground-client && npm test'
-        env:
