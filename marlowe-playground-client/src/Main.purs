@@ -3,6 +3,7 @@ module Main where
 import Prologue
 
 import AppM (runAppM)
+import Contrib.Data.Decimal as Decimal
 import Control.Monad.Error.Class (liftEither)
 import Data.Argonaut
   ( Json
@@ -26,6 +27,7 @@ import Router as Router
 import Routing.Duplex as Routing
 import Routing.Hash (matchesWith)
 import Types (WebpackBuildMode(..))
+import Types as Types
 
 decodeMainArgs :: Json -> Either JsonDecodeError WebpackBuildMode
 decodeMainArgs = decodeJson >=> \obj -> obj .: "webpackBuildMode" <#>
@@ -33,6 +35,8 @@ decodeMainArgs = decodeJson >=> \obj -> obj .: "webpackBuildMode" <#>
 
 main :: Json -> Effect Unit
 main args = do
+  { rounding } <- Decimal.getConfiguration
+  Decimal.setConfiguration ({ precision: Types.decimalPrecision, rounding })
   let
     badArgsError e = error $ "Failed to start: bad startup args.\n\n" <>
       printJsonDecodeError e

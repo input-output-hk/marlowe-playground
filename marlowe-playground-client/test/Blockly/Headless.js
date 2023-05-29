@@ -1,5 +1,3 @@
-import { registerDateTimeField } from "../../src/Blockly/DateTimeField.js";
-
 export function createBlocklyInstance_() {
   return require("blockly/blockly-node");
 }
@@ -14,9 +12,6 @@ export function initializeWorkspace_(blockly, workspace) {
   } catch (err) {}
   try {
     blockly.Extensions.register("number_validator", function () {});
-  } catch (err) {}
-  try {
-    registerDateTimeField(blockly);
   } catch (err) {}
   try {
     blockly.Extensions.register("dynamic_timeout_type", function () {});
