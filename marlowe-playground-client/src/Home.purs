@@ -130,7 +130,10 @@ render state =
         , img [ classNames [ "ml-24" ], src arrowLeftDown ]
         ]
     , div [ classNames [ "font-bold", "text-sm" ] ]
-        [ a [ href "./doc/marlowe/tutorials/index.html", target "_blank" ]
+        [ a
+            [ href "https://docs.marlowe.iohk.io/tutorials"
+            , target "_blank"
+            ]
             [ text "Read our Getting Started guide" ]
         ]
     ]

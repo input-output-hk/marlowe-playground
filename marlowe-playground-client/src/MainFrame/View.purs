@@ -89,7 +89,7 @@ render state =
               , div_ $ AB.unsafeBuild $ do
                   let
                     tutorial = a
-                      [ href "./doc/marlowe/tutorials/index.html"
+                      [ href "https://docs.marlowe.iohk.io/tutorials"
                       , target "_blank"
                       , classNames [ "font-semibold" ]
                       ]
