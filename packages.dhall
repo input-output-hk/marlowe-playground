@@ -10,6 +10,7 @@ in  upstream
         [ "aff"
         , "console"
         , "effect"
+        , "heterogeneous"
         , "prelude"
         , "psci-support"
         , "typelevel-prelude"
@@ -100,6 +101,7 @@ in  upstream
       mkPackage
         [ "aff"
         , "affjax"
+        , "affjax-web"
         , "argonaut"
         , "arrays"
         , "bifunctors"
