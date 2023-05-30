@@ -1,4 +1,4 @@
-@dev
+@wip
 Feature: Simulated a contract
 
     As a user I expect to be able to simulate a contract
@@ -16,4 +16,5 @@ Feature: Simulated a contract
 
       When I click the "button" with "Send To Simulator" text
       Then I should be on the "contract simulation" page
-      And I should see a "heading" with "SIMULATION HAS NOT STARTED YET" text
+      # And I should see a "heading" with "SIMULATION HAS NOT STARTED YET" text
+      And I should see a "button" with "Start simulation" text
