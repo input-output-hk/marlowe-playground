@@ -8,4 +8,4 @@
 tag=$1
 offlineFlag=$2
 
-yarn run "$offlineFlag" cucumber --profile "$tag"  || yarn run "$offlineFlag" postcucumber
+yarn run cucumber --profile "$tag"  || yarn run postcucumber

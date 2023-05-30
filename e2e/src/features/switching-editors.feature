@@ -1,3 +1,4 @@
+@dev
 Feature: Switching text editors
 
     As a user I expect to be able to switch between text editors

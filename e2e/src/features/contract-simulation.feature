@@ -1,8 +1,8 @@
+@dev
 Feature: Simulated a contract
 
     As a user I expect to be able to simulate a contract
 
-    @wip
     Scenario: As a user I want to simulate a contract
 
       Given I am on the "home" page
