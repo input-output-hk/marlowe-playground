@@ -1,42 +1,35 @@
-// import { When } from "@cucumber/cucumber";
-// import { waitFor } from "../support/wait-for-behavior";
-// import { queries, getDocument } from 'playwright-testing-library';
-// import { ScenarioWorld } from './setup/world';
-// import { getElementLocator } from '../support/web-element-helper';
-// import { getFixtureText } from '../support/fixture-helper';
-// import { ElementKey, FixtureKey } from '../env/global';
-// import { Locator } from 'playwright';
-// import {
-//   inputValue,
-//   selectValue
-// } from '../support/html-behavior';
+import { When } from "@cucumber/cucumber";
+import { ScenarioWorld } from './setup/world';
+import { getElementLocator } from '../support/web-element-helper';
+import { ElementKey } from '../env/global';
+import { ValidAccessibilityRoles } from '../env/global';
+import {
+  inputValue,
+} from '../support/html-behavior';
 
-// When(
-//   /^I fill in the "([^"]*)" input with "([^"]*)"$/,
-//   async function(this: ScenarioWorld, elementKey: ElementKey, input: string) {
-//     const {
-//       screen: { page },
-//       globalConfig
-//     } = this;
+When(
+  /^I fill in the "([^"]*)" input with "([^"]*)"$/,
+  async function(this: ScenarioWorld, elementKey: ElementKey, input: string) {
+    const {
+      screen: { page },
+      globalConfig
+    } = this;
 
 
-//     console.log(`I fill in the ${elementKey} input with ${input}`);
+    console.log(`I fill in the ${elementKey} input with ${input}`);
 
-//     const elementIdentifier = getElementLocator(page, elementKey, globalConfig);
-//     const { role, name } = elementIdentifier;
-//     const document = await getDocument(page);
+    const elementIdentifier = getElementLocator(page, elementKey, globalConfig);
+    const { role, name } = elementIdentifier;
 
-//     await waitFor(async() => {
-//       const locator = await queries.getByRole(document, role, { name })
-//       const result = await locator.isVisible();
+      const locator = await page.getByRole(role as ValidAccessibilityRoles, { name });
+      const result = await locator.isVisible();
 
-//       if (result) {
-//         await inputValue(locator, input)
-//         return result;
-//       }
-//     });
-//   }
-// )
+      if (result) {
+        await inputValue(locator, input)
+        return result;
+      }
+  }
+)
 
 // When(
 //   /^I fill in the "playground editor" input with "([^"]*)" contract code$/,

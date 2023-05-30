@@ -19,7 +19,7 @@
     "route": "/#/blockly",
     "regex": "^/#/blockly$"
   },
-  "contract simulation": {
+  "contract-simulation": {
     "route": "/#/simulation",
     "regex": "^/#/simulation$"
   }

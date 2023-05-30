@@ -1,7 +1,6 @@
 import { When } from '@cucumber/cucumber';
 import { ScenarioWorld } from './setup/world';
 import { ValidAccessibilityRoles } from '../env/global';
-import { waitFor } from '../support/wait-for-behavior';
 
 When(
   /^I click the "([^"]*)" with "([^"]*)" text$/,
