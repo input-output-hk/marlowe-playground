@@ -1,6 +1,7 @@
 import { When } from '@cucumber/cucumber';
 import { ScenarioWorld } from './setup/world';
 import { ValidAccessibilityRoles } from '../env/global';
+import { waitFor } from "../support/wait-for-behavior";
 
 When(
   /^I click the "([^"]*)" with "([^"]*)" text$/,
@@ -10,9 +11,14 @@ When(
       globalConfig
     } = this;
 
-    const locator = await page.getByRole(role, { name, exact: true });
-    const result = await locator.isVisible();
-    if (result) await locator.click();
+    await waitFor(async() => {
+      const locator = await page.getByRole(role, { name, exact: true });
+      const result = await locator.isVisible();
+      if (result) {
+        await locator.click();
+        return result;
+      }
+    });
   }
 );
 
@@ -24,8 +30,13 @@ When(
       globalConfig
     } = this;
 
-    const locator = await page.getByRole(role, { name, exact: true });
-    const result = await locator.isVisible();
-    if (result) await locator.click();
+    await waitFor(async() => {
+      const locator = await page.getByRole(role, { name, exact: true });
+      const result = await locator.isVisible();
+      if (result) {
+        await locator.click();
+        return result;
+      }
+    });
   }
 )

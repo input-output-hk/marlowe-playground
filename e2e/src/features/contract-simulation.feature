@@ -19,6 +19,10 @@ Feature: Simulated a contract
       # And I should see a "heading" with "SIMULATION HAS NOT STARTED YET" text
       And I should see a "button" with "Start simulation" text
 
-      When I fill in the "Simulation Currency" input with "100"
+      When I fill in the "Currency Amount" input with "100"
       And I click the "button" with "Start simulation" text
       Then I should see a "button" with "Reset" text
+
+      When I click the "button" with "Add deposit" text
+      And I click the "button" with "next minute" text
+      And I click the "button" with "Everything is alright" text

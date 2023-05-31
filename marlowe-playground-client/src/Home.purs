@@ -22,7 +22,6 @@ import Halogen.Css (classNames)
 import Halogen.HTML (a, button, div, h1, img, span, span_, text)
 import Halogen.HTML.Events (onClick)
 import Halogen.HTML.Properties (href, src, target)
-import Halogen.HTML.Properties.ARIA (label)
 import MainFrame.Types
   ( Action(..)
   , ChildSlots

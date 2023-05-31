@@ -13,6 +13,6 @@ Then(
       screen: { page },
       globalConfig,
     } = this;
- 
+
   await waitFor(() => currentPathMatchesPageId(page, pageId, globalConfig))
 });

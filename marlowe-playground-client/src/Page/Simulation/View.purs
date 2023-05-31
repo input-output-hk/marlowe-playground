@@ -713,6 +713,8 @@ inputItem metadata _ (DepositInput accountId party token value) =
     , div [ class_ (ClassName "align-top") ]
         [ button
             [ classes [ plusBtn, smallBtn, btn ]
+            , role "button"
+            , label "Add deposit"
             , onClick $ const $ AddInput (IDeposit accountId party token value)
                 []
             ]
@@ -764,7 +766,7 @@ inputItem
             , div [ class_ (ClassName "choice-error") ] error
             ]
         ]
-          <> addButton
+          <> addButton choiceName
       )
   where
   mChoiceInfo = Map.lookup choiceName metadata.choiceInfo
@@ -774,7 +776,7 @@ inputItem
 
   mExtractDescription _ = Nothing
 
-  addButton =
+  addButton choiceLabel =
     [ button
         [ classes
             [ btn
@@ -783,6 +785,8 @@ inputItem
             , ClassName "align-top"
             , ClassName "flex-noshrink"
             ]
+        , role "button"
+        , label choiceLabel
         , onClick $ const $ AddInput
             (IChoice (ChoiceId choiceName choiceOwner) chosenNum)
             bounds
@@ -822,21 +826,22 @@ inputItem _ state (MoveToTime moveType time) =
           [ p_
               [ text "Move current time to "
               , span [ id ref, classNames [ "font-bold", "underline-dotted" ] ]
-                  [ text $ case moveType of
-                      NextTime -> "next minute"
-                      NextTimeout -> "next timeout"
-                      ExpirationTime -> "expiration time"
-                  ]
+                  [ text $ moveTypeLabel moveType ]
               ]
           , p [ class_ (ClassName "choice-error") ] error
           , tooltip fullTime (RefId ref) Bottom
           ]
       ]
-        <> addButton
+        <> (addButton $ moveTypeLabel moveType)
     )
   where
   currentTime = fromMaybe unixEpoch $ state ^?
     _currentMarloweState <<< _executionState <<< _SimulationRunning <<< _time
+
+  moveTypeLabel mType = case mType of
+    NextTime -> "next minute"
+    NextTimeout -> "next timeout"
+    ExpirationTime -> "expiration time"
 
   ref = "move-to-" <> show moveType
   fullTime =
@@ -847,7 +852,7 @@ inputItem _ state (MoveToTime moveType time) =
           intercalate " " [ dateStr, timeStr, humanizeOffset state.tzOffset ]
   isForward = currentTime < time
 
-  addButton =
+  addButton labelName =
     if isForward then
       [ button
           [ classes
@@ -857,6 +862,8 @@ inputItem _ state (MoveToTime moveType time) =
               , ClassName "flex-noshrink"
               , btn
               ]
+          , role "button"
+          , label labelName
           , onClick $ const $ MoveTime time
           ]
           [ text "+" ]

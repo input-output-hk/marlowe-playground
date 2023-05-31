@@ -3,6 +3,7 @@ import { ScenarioWorld } from './setup/world';
 import { getElementLocator } from '../support/web-element-helper';
 import { ElementKey } from '../env/global';
 import { ValidAccessibilityRoles } from '../env/global';
+import { waitFor } from "../support/wait-for-behavior";
 import {
   inputValue,
 } from '../support/html-behavior';
@@ -15,19 +16,19 @@ When(
       globalConfig
     } = this;
 
-
-    console.log(`I fill in the ${elementKey} input with ${input}`);
-
     const elementIdentifier = getElementLocator(page, elementKey, globalConfig);
     const { role, name } = elementIdentifier;
 
-      const locator = await page.getByRole(role as ValidAccessibilityRoles, { name });
+    await waitFor(async() => {
+      const locator = await page.getByRole(role as ValidAccessibilityRoles, { name })
       const result = await locator.isVisible();
 
       if (result) {
-        await inputValue(locator, input)
+        await inputValue(locator, input);
+        await page.pause();
         return result;
       }
+    });
   }
 )
 
