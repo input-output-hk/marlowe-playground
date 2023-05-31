@@ -3,7 +3,7 @@
     "route": "/",
     "regex": "^/#/$"
   },
-  "javascript editor": {
+  "javascript-editor": {
     "route": "/#/javascript",
     "regex": "^/#/javascript$"
   },
