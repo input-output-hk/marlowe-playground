@@ -1,9 +1,10 @@
 @wip
-Feature: Simulated a contract
+Feature: Custom text box for currency value inputs
 
-    As a user I expect to be able to simulate a contract
+    As a user I should be able to enter currency values
+    that round appropriately
 
-    Scenario: As a user I want to simulate a contract
+    Scenario: As a user I to enter valid currency values
 
       Given I am on the "home" page
 
