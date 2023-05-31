@@ -1,4 +1,6 @@
-@wip
+@dev
+@regression
+@smoke
 Feature: Compile an invalid contract
     As a user I expect not to be able to compile an invalid contract
     Scenario: As a user I want to not compile invalid contracts

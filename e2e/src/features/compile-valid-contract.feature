@@ -10,7 +10,7 @@ Feature: Compile a valid contract
 
       When I click the "button" with "Open an example" text
       When I click the "button" with "Escrow Javascript" text
-      Then I should be on the "javascript editor" page
+      Then I should be on the "javascript-editor" page
 
       When I click the "button" with "Compile" text
       Then I should see a "button" with "Compiled" text
