@@ -54,3 +54,23 @@ Then(
     })
   }
 );
+
+Then(
+  /^the "([^"]*)" with "([^"]*)" text should have "([^"]*)" class$/, 
+  async function (this: ScenarioWorld, role: ValidAccessibilityRoles, name: string, expectedClass: string) {
+    const {
+      screen: { page },
+      globalConfig
+    } = this;
+    await waitFor(async() => {
+      const locator = await page.getByRole(role, { name, exact: true });
+      const result = await locator.isVisible();
+      if (result) {
+        const classNames = await locator.getAttribute('class');
+        if (classNames) {
+          const classNamesArray = classNames.split(' ');
+          return classNamesArray.includes(expectedClass);
+        }
+      }
+    })
+});

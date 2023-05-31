@@ -12,6 +12,7 @@ Feature: Compile a valid contract
 
       When I click the "button" with "Compile" text
       Then I should see a "button" with "Compiled" text
+      And the "button" with "Compiled" text should have "success" class
       And I should see a "link" with "Generated code" text
 
       When I click the "link" with "Generated code" text
