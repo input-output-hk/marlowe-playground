@@ -17,7 +17,7 @@ Feature: Custom text box for currency value inputs
 
       When I click the "button" with "Send To Simulator" text
       Then I should be on the "contract-simulation" page
-      # And I should see a "heading" with "SIMULATION HAS NOT STARTED YET" text
+      And I should see a "heading" with "Simulation has not started yet" text
       And I should see a "button" with "Start simulation" text
 
       When I fill in the "Currency Amount" input with "100"

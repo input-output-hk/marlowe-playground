@@ -1146,7 +1146,10 @@ cardWidget :: forall p a. String -> HTML p a -> HTML p a
 cardWidget name body =
   let
     title' = h6
-      [ classes [ noMargins, textSecondaryColor, bold, uppercase, textXs ] ]
+      [ classes [ noMargins, textSecondaryColor, bold, uppercase, textXs ]
+      , role "heading"
+      , label name
+      ]
       [ text name ]
   in
     div
