@@ -1,4 +1,6 @@
-@wip
+@dev
+@smoke
+@regression
 Feature: Analyze a contract
 
     As a user I want to analyze a contract for warnings, reachability and refunds on close
