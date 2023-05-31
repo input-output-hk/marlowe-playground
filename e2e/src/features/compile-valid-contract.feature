@@ -1,4 +1,4 @@
-@dev
+@wip
 Feature: Compile a valid contract
 
     As a user I expect to be able to compile a valid contract and see the generated code
@@ -12,7 +12,7 @@ Feature: Compile a valid contract
 
       When I click the "button" with "Compile" text
       Then I should see a "button" with "Compiled" text
-      # And I should see a "link" with "Generated code" text within the "javascript-editor-container" "heading"
+      And I should see a "link" with "Generated code" text
 
-      # When I click the "link" with "Generated code" text
-      # Then I should see a "heading" with "Generated code content" text
+      When I click the "link" with "Generated code" text
+      Then I should see a "heading" with "Generated code content" text

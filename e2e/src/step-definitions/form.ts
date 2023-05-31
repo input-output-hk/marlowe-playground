@@ -54,6 +54,17 @@ When(
   }
 )
 
+When(
+  /^I pause the page$/,
+  async function(this: ScenarioWorld) {
+    const {
+      screen: { page },
+    } = this;
+    await page.pause();
+  }
+)
+
+
 
 // When(
 //   /^I fill in the "playground editor" input with "([^"]*)" contract code$/,

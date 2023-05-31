@@ -1,4 +1,3 @@
-@wip
 Feature: Custom text box for currency value inputs
 
     As a user I should be able to enter currency values
