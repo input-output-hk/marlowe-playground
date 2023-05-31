@@ -10,8 +10,7 @@ export const inputValue = async (
   locator: Locator,
   input: string,
 ): Promise<void> => {
-  await locator.focus();
-  locator.fill(input);
+  await locator.fill(input);
 }
 
 export const selectValue = async(

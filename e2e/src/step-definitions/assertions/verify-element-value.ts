@@ -1,7 +1,8 @@
 import { Then } from '@cucumber/cucumber';
-import { ValidAccessibilityRoles } from '../../env/global';
+import { ElementKey, ValidAccessibilityRoles } from '../../env/global';
 import { ScenarioWorld } from '../setup/world'
 import { waitFor } from '../../support/wait-for-behavior';
+import { getElementLocator } from '../../support/web-element-helper';
 
 Then(
   /^the "([^"]*)" should contain "([^"]*)" text$/,
@@ -17,6 +18,27 @@ Then(
     })
   }
 );
+
+Then(
+  /^the "([^"]*)" input should contain "([^"]*)" value$/,
+  async function(this: ScenarioWorld, elementKey: ElementKey, expectedValue: string) {
+    const {
+      screen: { page },
+      globalConfig
+    } = this;
+
+    const elementIdentifier = getElementLocator(page, elementKey, globalConfig);
+    const { role, name } = elementIdentifier;
+
+    await waitFor(async() => {
+      const locator = await page.getByRole(role as ValidAccessibilityRoles, { name, exact: true });
+      const actualValue = await locator.inputValue();
+      return actualValue == expectedValue;
+    })
+  }
+);
+
+
 
 Then(
   /^the "([^"]*)" for "([^"]*)" should contain "([^"]*)" text$/,

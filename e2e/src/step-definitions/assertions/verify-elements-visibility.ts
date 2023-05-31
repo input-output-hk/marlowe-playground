@@ -32,7 +32,6 @@ Then(
     // NOTE: This locator uses html accessibility roles and names to find elements.
     // If your test is not finding an element, please verify that the role and name are correct.
     await waitFor(async () => {
-      await page.pause();
       const locator = await page.getByRole(parentRole, {name: parentName, exact: true}).getByRole(role, { name, exact: true });
       const isElementVisible = await locator.isVisible();
       return isElementVisible;

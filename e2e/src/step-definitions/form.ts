@@ -25,12 +25,35 @@ When(
 
       if (result) {
         await inputValue(locator, input);
-        await page.pause();
         return result;
       }
     });
   }
 )
+
+When(
+  /^I unblur the "([^"]*)" input$/,
+  async function(this: ScenarioWorld, elementKey: ElementKey) {
+    const {
+      screen: { page },
+      globalConfig
+    } = this;
+
+    const elementIdentifier = getElementLocator(page, elementKey, globalConfig);
+    const { role, name } = elementIdentifier;
+
+    await waitFor(async() => {
+      const locator = await page.getByRole(role as ValidAccessibilityRoles, { name })
+      const result = await locator.isVisible();
+
+      if (result) {
+        await locator.blur();
+        return result;
+      }
+    });
+  }
+)
+
 
 // When(
 //   /^I fill in the "playground editor" input with "([^"]*)" contract code$/,

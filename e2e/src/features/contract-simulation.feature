@@ -20,9 +20,13 @@ Feature: Simulated a contract
       And I should see a "button" with "Start simulation" text
 
       When I fill in the "Currency Amount" input with "100"
-      And I click the "button" with "Start simulation" text
-      Then I should see a "button" with "Reset" text
+      And I unblur the "Currency Amount" input
+      Then the "Currency Amount" input should contain "100.000000" value
 
-      When I click the "button" with "Add deposit" text
-      And I click the "button" with "next minute" text
-      And I click the "button" with "Everything is alright" text
+      When I fill in the "Currency Amount" input with "0.000006789"
+      And I unblur the "Currency Amount" input
+      Then the "Currency Amount" input should contain "0.000007" value
+
+      When I fill in the "Currency Amount" input with "123456789012345678901234567890"
+      And I unblur the "Currency Amount" input
+      When I fill in the "Currency Amount" input with "123456789012345678901234567890.000000"
