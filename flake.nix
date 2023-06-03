@@ -5,6 +5,7 @@
       url = "github:NixOS/nixpkgs";
       follows = "haskell-nix/nixpkgs-unstable";
     };
+    nixpkgs-babel.url = "github:NixOS/nixpkgs?rev=39addc620d1585c4d95246f4e47c83467ae3e62a";
     haskell-nix = {
       url = "github:input-output-hk/haskell.nix";
       inputs.hackage.follows = "hackage";
