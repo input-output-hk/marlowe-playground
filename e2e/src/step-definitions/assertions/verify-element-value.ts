@@ -3,13 +3,13 @@ import { ElementKey, ValidAccessibilityRoles } from '../../env/global';
 import { ScenarioWorld } from '../setup/world'
 import { waitFor } from '../../support/wait-for-behavior';
 import { getElementLocator } from '../../support/web-element-helper';
+import moment from 'moment';
 
 Then(
   /^the "([^"]*)" should contain "([^"]*)" text$/,
   async function(this: ScenarioWorld, role: ValidAccessibilityRoles, name: string) {
     const {
-      screen: { page },
-      globalConfig
+      screen: { page }
     } = this;
     await waitFor(async() => {
       const locator = await page.getByRole(role, { name, exact: true });
@@ -60,7 +60,6 @@ Then(
   async function (this: ScenarioWorld, role: ValidAccessibilityRoles, name: string, expectedClass: string) {
     const {
       screen: { page },
-      globalConfig
     } = this;
     await waitFor(async() => {
       const locator = await page.getByRole(role, { name, exact: true });
@@ -74,3 +73,67 @@ Then(
       }
     })
 });
+
+Then(
+  /^the "([^"]*)" time should be (greater\s+than|less\s+than|equal\s+to) the "([^"]*)" time$/, 
+  async function (this: ScenarioWorld, firstTimeLabel: string, operator: string, secondTimeLabel: string) {
+    const {
+      screen: { page },
+      globalConfig: { simulatorDateFormat },
+      globalStateManager
+    } = this;
+    const firstTimeName = `${firstTimeLabel} time`;
+    const secondTimeName = `${secondTimeLabel} time`;
+    await waitFor(async() => {
+      const firstTime = globalStateManager.getValue(firstTimeName);
+      const secondTime = globalStateManager.getValue(secondTimeName);
+      if(operator === "greater than") {
+        return firstTime > secondTime;
+      } else if(operator === "less than") {
+        return firstTime < secondTime;
+      } else if(operator === "equal to") {
+        return firstTime.getTime() === secondTime.getTime();
+      }
+      return false;
+    });
+});
+
+Then(
+  /^I expect the "([^"]*)" time to (increase|decrease) by "([^"]*)" minutes$/, 
+  async function (this: ScenarioWorld, timeLabel: string, operation: string, increment: string) {
+    const {
+      globalStateManager
+    } = this;
+
+    const timeName = `${timeLabel} time`;
+    await waitFor(async() => {
+      const timeValues = globalStateManager.get(timeName);
+      const valuesLength = timeValues.length;
+      const oldTime = timeValues[valuesLength - 2];
+      const newTime = timeValues[valuesLength - 1];
+      const diffMinutes = moment(newTime).diff(moment(oldTime), 'minutes');
+      if (operation === "increase") {
+        return diffMinutes === parseInt(increment);
+      } else if (operation === "decrease") {
+        return diffMinutes === -parseInt(increment);
+      }
+    });
+});
+
+Then(
+  /^I expect the "([^"]*)" time to match it's previous value$/, 
+  async function (this: ScenarioWorld, timeLabel: string) {
+    const {
+      globalStateManager
+    } = this;
+
+    const timeName = `${timeLabel} time`;
+    await waitFor(async() => {
+      const timeValues = globalStateManager.get(timeName);
+      const valuesLength = timeValues.length;
+      const oldTime = timeValues[valuesLength - 2];
+      const newTime = timeValues[valuesLength - 1];
+      return oldTime.getTime() === newTime.getTime();
+    });
+});
+

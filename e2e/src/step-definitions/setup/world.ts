@@ -9,6 +9,7 @@ import playwright, {
 import { env } from '../../env/parseEnv'
 import { World, IWorldOptions, setWorldConstructor } from "@cucumber/cucumber";
 import { GlobalConfig } from '../../env/global';
+import GlobalStateManager from "../../support/globalStateManager";
 
 export type Screen = {
   browser: Browser;
@@ -26,6 +27,7 @@ export class ScenarioWorld extends World {
   globalConfig: GlobalConfig;
 
   screen!: Screen;
+  globalStateManager = new GlobalStateManager();
 
   async init(contextOptions?: BrowserContextOptions): Promise<Screen> {
     await this.screen?.page?.close();

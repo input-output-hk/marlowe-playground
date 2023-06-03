@@ -1,4 +1,4 @@
-import { Before, After, ITestCaseHookParameter, setDefaultTimeout } from '@cucumber/cucumber';
+import { Before, After, setDefaultTimeout } from '@cucumber/cucumber';
 import { ScenarioWorld } from './world';
 import { env, envNumber } from '../../env/parseEnv'
 

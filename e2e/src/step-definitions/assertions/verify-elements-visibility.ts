@@ -2,20 +2,26 @@ import { Then } from '@cucumber/cucumber';
 import { ValidAccessibilityRoles } from '../../env/global';
 import { ScenarioWorld } from '../setup/world'
 import { waitFor } from '../../support/wait-for-behavior';
+import { expect } from '@playwright/test';
 
 
 Then(
-  /^I should see a "([^"]*)" with "([^"]*)" text$/,
-  async function(this: ScenarioWorld, role: ValidAccessibilityRoles, name: string) {
+  /^I should (not |)see a "([^"]*)" with "([^"]*)" text$/,
+  async function(this: ScenarioWorld, negate: string, role: ValidAccessibilityRoles, name: string) {
 
     const {
       screen: { page },
     } = this;
 
     await waitFor(async () => {
-      const locator = await page.getByRole(role, { name, exact: true });
-      const isElementVisible = await locator.isVisible();
-      return isElementVisible;
+        const locator = await page.getByRole(role, { name, exact: true });
+      if (negate === "not") {
+        // TODO: need to figure out how to assert that an element is not visible
+        return expect(locator.count()).toEqual(0);
+      } else {
+        const isElementVisible = await locator.isVisible();
+        return isElementVisible;
+      }
     });
   }
 );

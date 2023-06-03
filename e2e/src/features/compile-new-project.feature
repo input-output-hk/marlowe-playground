@@ -1,7 +1,6 @@
 @dev
 @smoke
 @regression
-@wip
 Feature: Open a new project and comiple
 
     As a user I should be able to open a new project

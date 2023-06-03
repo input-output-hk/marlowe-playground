@@ -585,7 +585,7 @@ simulationStateWidget state =
         [ span
             [ class_ bold ]
             [ text $ name <> ": " ]
-        , span_ [ text value ]
+        , span [ role "heading", label name ] [ text value ]
         ]
   in
     div
@@ -1018,7 +1018,8 @@ logToLines
   -> LogEntry
   -> Array (ComponentHTML a ChildSlots m)
 logToLines tzOffset _ stepNumber (StartEvent time) =
-  [ span_ [ text "Contract started" ]
+  [ span [ role "heading", label "Contract started" ]
+      [ text "Contract started" ]
   , logTime (stepNumber /\ 0) tzOffset interval
   ]
   where
@@ -1048,7 +1049,7 @@ logToLines tzOffset metadata stepNumber (OutputEvent interval payment) =
     payment
 
 logToLines tzOffset _ stepNumber (CloseEvent timeInterval) =
-  [ span_ [ text $ "Contract ended" ]
+  [ span [ role "heading", label "Contract ended" ] [ text $ "Contract ended" ]
   , logTime (stepNumber /\ 0) tzOffset timeInterval
   ]
 
@@ -1067,7 +1068,8 @@ inputToLine
   timeInterval
   stepNumber
   (IDeposit accountOwner party token money) =
-  [ span_
+  [ span
+      [ role "heading", label "deposit transaction" ]
       [ strong_ [ renderPrettyParty metadata party ]
       , text " deposited "
       , strong_ [ text (humanizeValue token money) ]
@@ -1084,7 +1086,8 @@ inputToLine
   timeInterval
   stepNumber
   (IChoice (ChoiceId choiceName choiceOwner) chosenNum) =
-  [ span_
+  [ span
+      [ role "heading", label "choice transaction" ]
       [ strong_ [ renderPrettyParty metadata choiceOwner ]
       , text " choosed the value "
       , strong_
@@ -1098,8 +1101,11 @@ inputToLine
   ]
 
 inputToLine tzOffset _ timeInterval stepNumber INotify =
-  [ text "Notify"
-  , logTime stepNumber tzOffset timeInterval
+  [ span
+      [ role "heading", label "notify transaction" ]
+      [ text "Notify"
+      , logTime stepNumber tzOffset timeInterval
+      ]
   ]
 
 paymentToLines

@@ -9,6 +9,7 @@ import {
   PagesConfig,
   PageElementMappings,
   FixtureMappings,
+  DateTimeFormat,
 } from './env/global';
 import * as fs from 'fs';
 
@@ -36,11 +37,14 @@ const fixtureMappings: FixtureMappings = fixtureMappingFiles.reduce(
   {}
 );
 
+const simulatorDateFormat: DateTimeFormat = "D MMM YYYY HH:mm [GMT]Z";
+
 const worldParameters: GlobalConfig = {
   hostsConfig,
   pagesConfig,
   pageElementMappings,
   fixtureMappings,
+  simulatorDateFormat,
 };
 
 const common = `./src/features/**/*.feature \
