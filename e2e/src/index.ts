@@ -8,7 +8,6 @@ import {
   HostsConfig,
   PagesConfig,
   PageElementMappings,
-  FixtureMappings,
   DateTimeFormat,
 } from './env/global';
 import * as fs from 'fs';
@@ -27,23 +26,12 @@ const pageElementMappings: PageElementMappings = pageMappingFiles.reduce(
   {}
 );
 
-const fixtureMappingFiles = fs.readdirSync(`${process.cwd()}${env('FIXTURES_PATH')}`)
-const fixtureMappings: FixtureMappings = fixtureMappingFiles.reduce(
-  (fixtureConfigAcc, file) => {
-    const key = file.replace('.json', '');
-    const fixturesMappings = getJsonFromFile(`${env('FIXTURES_PATH')}${file}`);
-    return { ...fixtureConfigAcc, [key]: fixturesMappings}
-  },
-  {}
-);
-
 const simulatorDateFormat: DateTimeFormat = "D MMM YYYY HH:mm [GMT]Z";
 
 const worldParameters: GlobalConfig = {
   hostsConfig,
   pagesConfig,
   pageElementMappings,
-  fixtureMappings,
   simulatorDateFormat,
 };
 
