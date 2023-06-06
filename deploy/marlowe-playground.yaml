@@ -82,6 +82,66 @@ spec:
       - local
       namespace: marlowe-staging
     type: topology
+
+  - name: local-marlowe-production
+    properties:
+      clusters:
+      - local
+      namespace: marlowe-production
+    type: topology
+
+  - name: override-marlowe-production
+    type: override
+    properties:
+      components:
+      - name: marlowe-playground
+        properties:
+          env:
+          - name: FRONTEND_URL
+            value: https://play.marlowe.iohk.io
+          - name: WEBGHC_URL
+            value: http://localhost:8080
+          - name: JWT_SIGNATURE
+            valueFrom:
+              secretKeyRef:
+                key: JWT_SIGNATURE
+                name: jwt-signature
+          - name: GITHUB_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                key: clientID
+                name: gh-oauth-production
+          - name: GITHUB_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                key: clientSecret
+                name: gh-oauth-production
+          - name: GITHUB_CALLBACK_PATH
+            valueFrom:
+              secretKeyRef:
+                key: callbackPath
+                name: gh-oauth-production
+          image: ghcr.io/input-output-hk/marlowe-playground-server:2023-05-30-e2d5fd6
+        traits:
+        - properties:
+            domains:
+            - play.marlowe.iohk.io
+            rules:
+            - path:
+                type: PathPrefix
+                value: /api
+              port: 8080
+          type: https-route
+      - name: marlowe-playground-client
+        properties:
+          image: ghcr.io/input-output-hk/marlowe-playground-client:2023-05-30-e2d5fd6
+        traits:
+        - properties:
+            domains:
+            - play.marlowe.iohk.io
+            rules:
+            - port: 8080
+          type: https-route
   workflow:
     mode:
       steps: DAG
@@ -92,4 +152,12 @@ spec:
       properties:
         policies:
         - local-marlowe-staging
+      type: deploy
+    - meta:
+        alias: Deploy To local-marlowe-production
+      name: local-marlowe-production
+      properties:
+        policies:
+        - local-marlowe-production
+        - override-marlowe-production
       type: deploy
