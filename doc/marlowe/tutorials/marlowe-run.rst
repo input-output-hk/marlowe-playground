@@ -14,7 +14,7 @@ Accessing the Marlowe Run Demo
 
 To access and view the dashboard, follow these steps:
 
-1.  Visit the `Marlowe website <https://marlowe-finance.io/>`_ and click **Marlowe Run** on the main menu.
+1.  Visit the `Marlowe website <https://marlowe.iohk.io/>`_ and click **Marlowe Run** on the main menu.
 
 2.  Click **Try demo**.
 
