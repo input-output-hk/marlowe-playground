@@ -39,7 +39,6 @@ Feature: As a user I should be able to see the Marlowe Playground home page
       | Contract For Differences             |
       | Contract For Differences with Oracle |
 
-    @wip
     Scenario: As a user, I would like to see links to a tutorial
 
       Given I am on the "home" page

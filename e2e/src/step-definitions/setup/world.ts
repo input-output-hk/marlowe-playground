@@ -37,6 +37,9 @@ export class ScenarioWorld extends World {
     const browser = await this.newBrowser();
     const context = await browser.newContext(contextOptions);
     const page = await context.newPage();
+    page.on('console', message => {
+      console.log(`BROWSER CONSOLE: ${message.text()}`);
+    });
 
     this.screen = { browser, context, page };
 

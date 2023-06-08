@@ -12,8 +12,11 @@ When(
       globalStateManager
     } = this;
 
-    // Set up a promise that resolves when the new page opens
-    const newPagePromise = new Promise(resolve => page.context().once('page', resolve));
+    let newPagePromise;
+    if (role == "link") {
+      // Set up a promise that resolves when the new page opens
+      newPagePromise = new Promise(resolve => page.context().once('page', resolve));
+    }
 
     await waitFor(async() => {
       const locator = await page.getByRole(role, { name, exact: true });
@@ -24,9 +27,11 @@ When(
       }
     });
 
-    // Await for new page to popup and store it in global state manager
-    const newPage = await newPagePromise as playwright.Page;
-    globalStateManager.appendValue(name, newPage);
+    if (newPagePromise) {
+      // Await for new page to popup and store it in global state manager
+      const newPage = await newPagePromise as playwright.Page;
+      globalStateManager.appendValue(name, newPage);
+    }
   }
 );
 
@@ -35,7 +40,6 @@ When(
   async function(this: ScenarioWorld, name: string, role: ValidAccessibilityRoles) {
     const {
       screen: { page },
-      globalConfig
     } = this;
 
     await waitFor(async() => {
