@@ -7,15 +7,15 @@
     "route": "/#/javascript",
     "regex": "^/#/javascript$"
   },
-  "haskell editor": {
+  "haskell-editor": {
     "route": "/#/haskell",
     "regex": "^/#/haskell$"
   },
-  "marlowe editor": {
+  "marlowe-editor": {
     "route": "/#/marlowe",
     "regex": "^/#/marlowe$"
   },
-  "blockly editor": {
+  "blockly-editor": {
     "route": "/#/blockly",
     "regex": "^/#/blockly$"
   },

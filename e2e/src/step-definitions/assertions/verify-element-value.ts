@@ -74,6 +74,21 @@ Then(
     })
 });
 
+Then('the {string} with {string} text should contain {string} text',
+  async function (this: ScenarioWorld, role: ValidAccessibilityRoles, name: string, expectedText: string) {
+    const {
+      screen: { page },
+    } = this;
+    await waitFor(async() => {
+      const locator = await page.getByRole(role, { name, exact: true });
+      const result = await locator.isVisible();
+      if (result) {
+        const elementText = await locator.textContent();
+        return elementText?.includes(expectedText);
+      }
+    })
+});
+
 Then(
   /^the "([^"]*)" time should be (greater\s+than|less\s+than|equal\s+to) the "([^"]*)" time$/, 
   async function (this: ScenarioWorld, firstTimeLabel: string, operator: string, secondTimeLabel: string) {

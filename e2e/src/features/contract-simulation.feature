@@ -85,3 +85,51 @@ Feature: Contract Simulation
       And I observe the "current" time
       Then I expect the "current" time to match it's previous value
 
+      When I click the "button" with "Add deposit" text
+      And the "heading" with 'deposit transaction - (Role "Buyer")' text should contain "Buyer deposited ₳ 100 from his/her wallet into Seller account" text
+      And I should see a "button" with "Everything is alright" text
+      And I should see a "button" with "Report problem" text
+
+      When I click the "button" with "Everything is alright" text
+      And the "heading" with 'deposit transaction - (Role "Buyer")' text should contain "Buyer deposited ₳ 100 from his/her wallet into Seller account" text
+      And the 'heading' with 'choice transaction - Everything is alright' text should contain 'Buyer choosed the value 0 for choice with id "Everything is alright"' text
+      And the "heading" with 'payment transaction - (Party (Role "Seller"))' text should contain "The contract pays ₳ 100 from account of Seller to Seller" text
+
+      When I click the "button" with "Undo" text
+      Then the "heading" with 'deposit transaction - (Role "Buyer")' text should contain "Buyer deposited ₳ 100 from his/her wallet into Seller account" text
+      And I should see a "button" with "Everything is alright" text
+      And I should see a "button" with "Report problem" text
+
+      When I click the "button" with "Report problem" text
+      Then the "heading" with 'deposit transaction - (Role "Buyer")' text should contain "Buyer deposited ₳ 100 from his/her wallet into Seller account" text
+      And the 'heading' with 'choice transaction - Report problem' text should contain 'Buyer choosed the value 1 for choice with id "Report problem"' text
+      And I should see a "button" with "Confirm problem" text
+      And I should see a "button" with "Dispute problem" text
+
+      When I click the "button" with "Confirm problem" text
+      Then the 'heading' with 'choice transaction - Confirm problem' text should contain 'Seller choosed the value 1 for choice with id "Confirm problem"' text
+      And the 'heading' with 'payment transaction - (Party (Role "Buyer"))' text should contain 'The contract pays ₳ 100 from account of Buyer to Buyer wallet' text
+      And I should see a "heading" with "Contract ended" text
+
+      When I click the "button" with "Undo" text
+      Then the "heading" with 'deposit transaction - (Role "Buyer")' text should contain "Buyer deposited ₳ 100 from his/her wallet into Seller account" text
+      And the 'heading' with 'choice transaction - Report problem' text should contain 'Buyer choosed the value 1 for choice with id "Report problem"' text
+      And I should see a "button" with "Confirm problem" text
+      And I should see a "button" with "Dispute problem" text
+
+      When I click the "button" with "Dispute problem" text
+      # Then I should see a "heading" with "Participant Mediatorhelp_outline" text
+      And the 'heading' with 'choice transaction - Dispute problem' text should contain 'Seller choosed the value 0 for choice with id "Dispute problem"' text
+      And I should see a "button" with "Confirm problem" text
+      And I should see a "button" with "Dismiss claim" text
+
+      When I click the "button" with "Confirm problem" text
+      Then the 'heading' with 'choice transaction - Confirm problem' text should contain 'Mediator choosed the value 1 for choice with id "Confirm problem"' text
+      And the "heading" with 'payment transaction - (Party (Role "Buyer"))' text should contain "The contract pays ₳ 100 from account of Buyer to Buyer wallet" text
+      And I should see a "heading" with "Contract ended" text
+
+      When I click the "button" with "Undo" text
+      And I click the "button" with "Dismiss claim" text
+      Then the 'heading' with 'choice transaction - Dismiss claim' text should contain 'Mediator choosed the value 0 for choice with id "Dismiss claim"' text
+      And the 'heading' with 'payment transaction - (Party (Role "Seller"))' text should contain 'The contract pays ₳ 100 from account of Buyer to Seller wallet' text
+      And I should see a "heading" with "Contract ended" text

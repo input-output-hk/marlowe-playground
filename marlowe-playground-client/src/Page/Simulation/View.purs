@@ -1069,7 +1069,9 @@ inputToLine
   stepNumber
   (IDeposit accountOwner party token money) =
   [ span
-      [ role "heading", label "deposit transaction" ]
+      [ role "heading"
+      , label $ "deposit transaction - " <> show party
+      ]
       [ strong_ [ renderPrettyParty metadata party ]
       , text " deposited "
       , strong_ [ text (humanizeValue token money) ]
@@ -1087,7 +1089,7 @@ inputToLine
   stepNumber
   (IChoice (ChoiceId choiceName choiceOwner) chosenNum) =
   [ span
-      [ role "heading", label "choice transaction" ]
+      [ role "heading", label $ "choice transaction - " <> choiceName ]
       [ strong_ [ renderPrettyParty metadata choiceOwner ]
       , text " choosed the value "
       , strong_
@@ -1123,7 +1125,10 @@ paymentToLines
   timeInterval
   stepNumber
   (Payment accountId payee token amount) =
-  [ span_
+  [ span
+      [ role "heading"
+      , label $ "payment transaction - " <> show payee
+      ]
       [ text "The contract pays "
       , strong_ [ text (humanizeValue token amount) ]
       , text " from "
