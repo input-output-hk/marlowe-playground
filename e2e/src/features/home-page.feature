@@ -38,3 +38,29 @@ Feature: As a user I should be able to see the Marlowe Playground home page
       | Swap                                 |
       | Contract For Differences             |
       | Contract For Differences with Oracle |
+
+    @wip
+    Scenario: As a user, I would like to see links to a tutorial
+
+      Given I am on the "home" page
+      Then I should see a "link" with "Tutorial" text
+      And I should see a "link" with "cardano.org" text
+      And I should see a "link" with "iohk.io" text
+      And I should see a "link" with "Discord" text
+      And I should see a "link" with "ZenDesk" text
+
+      When I click the "link" with "Tutorial" text
+      Then a new browser tab should open for "Tutorial" at "https://docs.marlowe.iohk.io/tutorials" url
+
+      When I click the "link" with "cardano.org" text
+      Then a new browser tab should open for "cardano.org" at "https://cardano.org/" url
+
+      When I click the "link" with "iohk.io" text
+      Then a new browser tab should open for "iohk.io" at "https://iohk.io/" url
+
+      When I click the "link" with "Discord" text
+      Then a new browser tab should open for "Discord" at "https://discord.com/" url
+
+      When I click the "link" with "ZenDesk" text
+      Then a new browser tab should open for "ZenDesk" at "https://iohk.zendesk.com/hc/en-us/requests/new" url
+

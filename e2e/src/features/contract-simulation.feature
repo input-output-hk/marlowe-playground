@@ -34,7 +34,6 @@ Feature: Contract Simulation
       And I unblur the "Currency Amount" input
       When I fill in the "Currency Amount" input with "123456789012345678901234567890.000000"
 
-@wip
     Scenario: As a user who is simulating a contract, I would like to see a transaction log
 
       Given I am on the "home" page
