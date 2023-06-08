@@ -40,7 +40,9 @@ let
   };
 
   final-jobset =
-    if system == "x86_64-linux" || system == "x86_64-darwin" then
+    # TODO: Fix issue with darwin builds described here: https://ci.zw3rk.com/eval/37438#tabs-errors
+    # if system == "x86_64-linux" || system == "x86_64-darwin" then
+    if system == "x86_64-linux" then
       filtered-jobs // { required = required-job; }
     else { };
 
