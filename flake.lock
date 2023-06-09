@@ -1032,6 +1032,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-babel": {
+      "locked": {
+        "lastModified": 1685792587,
+        "narHash": "sha256-SJZySQ1eblQWeNxCU0R7Ly1ZTQOW9A942eNNo/hQq2I=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "39addc620d1585c4d95246f4e47c83467ae3e62a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "39addc620d1585c4d95246f4e47c83467ae3e62a",
+        "type": "github"
+      }
+    },
     "nixpkgs-regression": {
       "locked": {
         "lastModified": 1643052045,
@@ -1342,6 +1358,7 @@
           "haskell-nix",
           "nixpkgs-unstable"
         ],
+        "nixpkgs-babel": "nixpkgs-babel",
         "npmlock2nix": "npmlock2nix",
         "pre-commit-hooks": "pre-commit-hooks",
         "std": "std_2"

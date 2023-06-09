@@ -2,6 +2,14 @@
 let
   inherit (cell) library packages scripts;
   inherit (library) pkgs haskell-nix cabal-project;
+  pkgs-babel =
+    if pkgs.nodePackages ? "@babel/cli"
+    then
+      throw "The main nixpkgs input now contains the babel command.\nPlease remove nixpkgs-babel from flake.nix, delete the pkgs-babel definition in devshells.nix, and replace the reference to pkgs-babel.nodePackages.\"@babel-cli\" with pkgs.nodePackages.\"@babel-cli\""
+    else
+      import inputs.nixpkgs-babel {
+        system = pkgs.system;
+      };
   haskell-devshell = haskell-nix.haskellLib.devshellFor cabal-project.shell;
 
   shell = inputs.std.lib.dev.mkShell {
@@ -162,6 +170,15 @@ let
       pkgs.gawk
       pkgs.nil
       pkgs.z3
+    ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
+      # None of these browsers build on Darwin, so limit e2e test-specific deps to Linux
+      pkgs.chromium
+      pkgs.firefox
+      pkgs.webkitgtk
+      pkgs.yarn
+      pkgs.nodePackages.rimraf
+      pkgs-babel.nodePackages."@babel/cli"
+      pkgs.nodePackages.ts-node
     ];
 
     devshell.startup."pre-commit-check".text = cell.library.pre-commit-check.shellHook;
