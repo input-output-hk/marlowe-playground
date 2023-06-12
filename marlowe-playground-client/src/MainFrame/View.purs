@@ -299,7 +299,11 @@ menuBar state =
         :> mempty
   where
   menuButton action name =
-    a [ onClick $ const action ]
+    a
+      [ onClick $ const action
+      , role "link"
+      , label name
+      ]
       [ span [] [ text name ]
       ]
 

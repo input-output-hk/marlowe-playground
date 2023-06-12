@@ -71,7 +71,9 @@ render state =
                 (const $ NewProjectAction $ NewProject.CreateProject Javascript)
             ]
             [ img
-                [ src newProjectJavascriptIcon, classNames [ "h-16", "mb-4" ] ]
+                [ src newProjectJavascriptIcon
+                , classNames [ "h-16", "mb-4" ]
+                ]
             , text
                 "Start in Javascript"
             ]
@@ -81,7 +83,10 @@ render state =
             , onClick
                 (const $ NewProjectAction $ NewProject.CreateProject Haskell)
             ]
-            [ img [ src newProjectHaskellIcon, classNames [ "h-16", "mb-4" ] ]
+            [ img
+                [ src newProjectHaskellIcon
+                , classNames [ "h-16", "mb-4" ]
+                ]
             , text
                 "Start in Haskell"
             ]
@@ -102,7 +107,10 @@ render state =
             , onClick
                 (const $ NewProjectAction $ NewProject.CreateProject Marlowe)
             ]
-            [ img [ src marloweLogo, classNames [ "h-16", "mb-4" ] ]
+            [ img
+                [ src marloweLogo
+                , classNames [ "h-16", "mb-4" ]
+                ]
             , text
                 "Start in Marlowe"
             ]
@@ -116,7 +124,10 @@ render state =
             , onClick
                 (const $ NewProjectAction $ NewProject.CreateProject Blockly)
             ]
-            [ img [ src newProjectBlocklyIcon, classNames [ "h-16", "mb-4" ] ]
+            [ img
+                [ src newProjectBlocklyIcon
+                , classNames [ "h-16", "mb-4" ]
+                ]
             , text
                 "Start in Blockly"
             ]

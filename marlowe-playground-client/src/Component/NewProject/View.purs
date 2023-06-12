@@ -21,6 +21,7 @@ import Halogen.Classes
 import Halogen.HTML (div, div_, h3, img, span, text)
 import Halogen.HTML.Events (onClick)
 import Halogen.HTML.Properties (class_, classes, src)
+import Halogen.HTML.Properties.ARIA (label, role)
 import MainFrame.Types (ChildSlots)
 
 render
@@ -48,6 +49,8 @@ render state =
     div
       [ classes [ ClassName "environment-selector" ]
       , onClick (const $ CreateProject lang)
+      , role "button"
+      , label $ langTitle lang
       ]
       [ img [ src $ langIcon lang ]
       , span [ classes [ textSm, fontSemibold ] ]

@@ -9,6 +9,7 @@ import Halogen.Classes (btn, btnSecondary, modalContent, spaceRight, uppercase)
 import Halogen.HTML (ClassName(..), ComponentHTML, button, div, div_, p_, text)
 import Halogen.HTML.Events (onClick)
 import Halogen.HTML.Properties (classes)
+import Halogen.HTML.Properties.ARIA (label, role)
 import MainFrame.Types (Action(..), ChildSlots, State, _projectName)
 
 render
@@ -40,6 +41,8 @@ render intendedAction state =
             [ button
                 [ classes [ btn, btnSecondary, uppercase, spaceRight ]
                 , onConfirm CN.DontSaveProject
+                , role "button"
+                , label "Don't Save"
                 ]
                 [ text "Don't Save" ]
             , button [ classes [ btn, uppercase ], onConfirm CN.SaveProject ]

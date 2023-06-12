@@ -96,6 +96,7 @@ import Halogen.HTML
   )
 import Halogen.HTML.Events (onClick)
 import Halogen.HTML.Properties (class_, classes, disabled, enabled, id)
+import Halogen.HTML.Properties.ARIA (label, role)
 import Halogen.Monaco (monacoComponent)
 import Humanize
   ( formatInstant
@@ -584,7 +585,7 @@ simulationStateWidget state =
         [ span
             [ class_ bold ]
             [ text $ name <> ": " ]
-        , span_ [ text value ]
+        , span [ role "heading", label name ] [ text value ]
         ]
   in
     div
@@ -712,6 +713,8 @@ inputItem metadata _ (DepositInput accountId party token value) =
     , div [ class_ (ClassName "align-top") ]
         [ button
             [ classes [ plusBtn, smallBtn, btn ]
+            , role "button"
+            , label "Add deposit"
             , onClick $ const $ AddInput (IDeposit accountId party token value)
                 []
             ]
@@ -763,7 +766,7 @@ inputItem
             , div [ class_ (ClassName "choice-error") ] error
             ]
         ]
-          <> addButton
+          <> addButton choiceName
       )
   where
   mChoiceInfo = Map.lookup choiceName metadata.choiceInfo
@@ -773,7 +776,7 @@ inputItem
 
   mExtractDescription _ = Nothing
 
-  addButton =
+  addButton choiceLabel =
     [ button
         [ classes
             [ btn
@@ -782,6 +785,8 @@ inputItem
             , ClassName "align-top"
             , ClassName "flex-noshrink"
             ]
+        , role "button"
+        , label choiceLabel
         , onClick $ const $ AddInput
             (IChoice (ChoiceId choiceName choiceOwner) chosenNum)
             bounds
@@ -821,21 +826,22 @@ inputItem _ state (MoveToTime moveType time) =
           [ p_
               [ text "Move current time to "
               , span [ id ref, classNames [ "font-bold", "underline-dotted" ] ]
-                  [ text $ case moveType of
-                      NextTime -> "next minute"
-                      NextTimeout -> "next timeout"
-                      ExpirationTime -> "expiration time"
-                  ]
+                  [ text $ moveTypeLabel moveType ]
               ]
           , p [ class_ (ClassName "choice-error") ] error
           , tooltip fullTime (RefId ref) Bottom
           ]
       ]
-        <> addButton
+        <> (addButton $ moveTypeLabel moveType)
     )
   where
   currentTime = fromMaybe unixEpoch $ state ^?
     _currentMarloweState <<< _executionState <<< _SimulationRunning <<< _time
+
+  moveTypeLabel mType = case mType of
+    NextTime -> "next minute"
+    NextTimeout -> "next timeout"
+    ExpirationTime -> "expiration time"
 
   ref = "move-to-" <> show moveType
   fullTime =
@@ -846,7 +852,7 @@ inputItem _ state (MoveToTime moveType time) =
           intercalate " " [ dateStr, timeStr, humanizeOffset state.tzOffset ]
   isForward = currentTime < time
 
-  addButton =
+  addButton labelName =
     if isForward then
       [ button
           [ classes
@@ -856,6 +862,8 @@ inputItem _ state (MoveToTime moveType time) =
               , ClassName "flex-noshrink"
               , btn
               ]
+          , role "button"
+          , label labelName
           , onClick $ const $ MoveTime time
           ]
           [ text "+" ]
@@ -1010,7 +1018,8 @@ logToLines
   -> LogEntry
   -> Array (ComponentHTML a ChildSlots m)
 logToLines tzOffset _ stepNumber (StartEvent time) =
-  [ span_ [ text "Contract started" ]
+  [ span [ role "heading", label "Contract started" ]
+      [ text "Contract started" ]
   , logTime (stepNumber /\ 0) tzOffset interval
   ]
   where
@@ -1040,7 +1049,7 @@ logToLines tzOffset metadata stepNumber (OutputEvent interval payment) =
     payment
 
 logToLines tzOffset _ stepNumber (CloseEvent timeInterval) =
-  [ span_ [ text $ "Contract ended" ]
+  [ span [ role "heading", label "Contract ended" ] [ text $ "Contract ended" ]
   , logTime (stepNumber /\ 0) tzOffset timeInterval
   ]
 
@@ -1059,7 +1068,10 @@ inputToLine
   timeInterval
   stepNumber
   (IDeposit accountOwner party token money) =
-  [ span_
+  [ span
+      [ role "heading"
+      , label $ "deposit transaction - " <> show party
+      ]
       [ strong_ [ renderPrettyParty metadata party ]
       , text " deposited "
       , strong_ [ text (humanizeValue token money) ]
@@ -1076,7 +1088,8 @@ inputToLine
   timeInterval
   stepNumber
   (IChoice (ChoiceId choiceName choiceOwner) chosenNum) =
-  [ span_
+  [ span
+      [ role "heading", label $ "choice transaction - " <> choiceName ]
       [ strong_ [ renderPrettyParty metadata choiceOwner ]
       , text " choosed the value "
       , strong_
@@ -1090,8 +1103,11 @@ inputToLine
   ]
 
 inputToLine tzOffset _ timeInterval stepNumber INotify =
-  [ text "Notify"
-  , logTime stepNumber tzOffset timeInterval
+  [ span
+      [ role "heading", label "notify transaction" ]
+      [ text "Notify"
+      , logTime stepNumber tzOffset timeInterval
+      ]
   ]
 
 paymentToLines
@@ -1109,7 +1125,10 @@ paymentToLines
   timeInterval
   stepNumber
   (Payment accountId payee token amount) =
-  [ span_
+  [ span
+      [ role "heading"
+      , label $ "payment transaction - " <> show payee
+      ]
       [ text "The contract pays "
       , strong_ [ text (humanizeValue token amount) ]
       , text " from "
@@ -1138,7 +1157,10 @@ cardWidget :: forall p a. String -> HTML p a -> HTML p a
 cardWidget name body =
   let
     title' = h6
-      [ classes [ noMargins, textSecondaryColor, bold, uppercase, textXs ] ]
+      [ classes [ noMargins, textSecondaryColor, bold, uppercase, textXs ]
+      , role "heading"
+      , label name
+      ]
       [ text name ]
   in
     div

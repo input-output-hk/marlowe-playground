@@ -78,14 +78,22 @@ render
   -> State
   -> ComponentHTML Action ChildSlots m
 render metadata state =
-  div [ HP.classes [ flex, flexCol, fullHeight ] ]
+  div
+    [ HP.classes [ flex, flexCol, fullHeight ]
+    , role "heading"
+    , label "javascript-editor-container"
+    ]
     [ section
         [ HP.classes [ paddingX, minH0, flexGrow, overflowHidden ]
         , role "heading"
         , label "javascript-editor"
         ]
         [ jsEditor ]
-    , section [ HP.classes [ paddingX, maxH70p ] ]
+    , section
+        [ HP.classes [ paddingX, maxH70p ]
+        , role "heading"
+        , label "bottom-panel"
+        ]
         [ renderSubmodule
             _bottomPanelState
             BottomPanelAction
@@ -185,16 +193,21 @@ panelContents
   -> BottomPanelView
   -> ComponentHTML Action ChildSlots m
 panelContents state _ GeneratedOutputView =
-  section [ classNames [ "py-4" ] ] case view _compilationResult state of
-    JS.CompiledSuccessfully (InterpreterResult result) ->
-      [ div [ HP.classes [ bgWhite, spaceBottom, ClassName "code" ] ]
-          numberedText
-      ]
-      where
-      numberedText = (code_ <<< Array.singleton <<< text) <$> split
-        (Pattern "\n")
-        (show $ pretty (toTerm result.result :: T.Term T.Contract))
-    _ -> [ text "There is no generated code" ]
+  section
+    [ classNames [ "py-4" ]
+    , role "heading"
+    , label "Generated code content"
+    ]
+    case view _compilationResult state of
+      JS.CompiledSuccessfully (InterpreterResult result) ->
+        [ div [ HP.classes [ bgWhite, spaceBottom, ClassName "code" ] ]
+            numberedText
+        ]
+        where
+        numberedText = (code_ <<< Array.singleton <<< text) <$> split
+          (Pattern "\n")
+          (show $ pretty (toTerm result.result :: T.Term T.Contract))
+      _ -> [ text "There is no generated code" ]
 
 panelContents state metadata StaticAnalysisView =
   section_
