@@ -190,17 +190,14 @@ Finding out more
 
 Systems 
 
--  `The Marlowe Playground <https://play.marlowe-finance.io>`_ an
+-  `The Marlowe Playground <https://play.marlowe.iohk.io>`_ an
    in-browser development, analysis and simulation environment.
-
--  `Marlowe Run <https://run.marlowe-finance.io>`_ the end-user client for downloading and running
-   Marlowe contracts on the Cardano blockchain; currently in prototype.
 
 -  `The Marlowe github
    repository <https://github.com/input-output-hk/marlowe>`_ from which
    you can download Marlowe.
 
--  `The Marlowe Website <https://marlowe-finance.io>`_ landing page for all things Marlowe.
+-  `The Marlowe Website <https://marlowe.iohk.io>`_ landing page for all things Marlowe.
 
 
 Videos
