@@ -48,17 +48,17 @@ Feature: As a user I should be able to see the Marlowe Playground home page
       And I should see a "link" with "Discord" text
       And I should see a "link" with "ZenDesk" text
 
-      When I click the "link" with "Tutorial" text
+      When I click the new tab "link" with "Tutorial" text
       Then a new browser tab should open for "Tutorial" at "https://docs.marlowe.iohk.io/tutorials" url
 
-      When I click the "link" with "cardano.org" text
+      When I click the new tab "link" with "cardano.org" text
       Then a new browser tab should open for "cardano.org" at "https://cardano.org/" url
 
-      When I click the "link" with "iohk.io" text
+      When I click the new tab "link" with "iohk.io" text
       Then a new browser tab should open for "iohk.io" at "https://iohk.io/" url
 
-      When I click the "link" with "Discord" text
+      When I click the new tab "link" with "Discord" text
       Then a new browser tab should open for "Discord" at "https://discord.com/" url
 
-      When I click the "link" with "ZenDesk" text
+      When I click the new tab "link" with "ZenDesk" text
       Then a new browser tab should open for "ZenDesk" at "https://iohk.zendesk.com/hc/en-us/requests/new" url
