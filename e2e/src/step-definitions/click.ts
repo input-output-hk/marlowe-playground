@@ -1,3 +1,4 @@
+import playwright from 'playwright';
 import { When } from '@cucumber/cucumber';
 import { ScenarioWorld } from './setup/world';
 import { ValidAccessibilityRoles } from '../env/global';
@@ -8,8 +9,15 @@ When(
   async function(this: ScenarioWorld, role: ValidAccessibilityRoles, name: string) {
     const {
       screen: { page },
-      globalConfig
+      globalStateManager
     } = this;
+
+    let newPagePromise;
+
+    if (role == "link") {
+      // Set up a promise that resolves when the new page opens
+      newPagePromise = new Promise(resolve => page.context().once('page', resolve));
+    }
 
     await waitFor(async() => {
       const locator = await page.getByRole(role, { name, exact: true });
@@ -19,6 +27,12 @@ When(
         return result;
       }
     });
+
+    if (newPagePromise) {
+      // Await for new page to popup and store it in the global state manager
+      const newPage = await newPagePromise as playwright.Page;
+      globalStateManager.appendValue(name, newPage);
+    }
   }
 );
 
@@ -27,7 +41,6 @@ When(
   async function(this: ScenarioWorld, name: string, role: ValidAccessibilityRoles) {
     const {
       screen: { page },
-      globalConfig
     } = this;
 
     await waitFor(async() => {
