@@ -19,13 +19,3 @@ Feature: Compile an invalid contract
       When I click the "button" with "Compile" text
       Then I should see a "button" with "Compiled" text
       And the "button" with "Compiled" text should have "error" class
-
-    # Scenario: As a I user I should not be able to compile invalid contracts in blockly editor
-
-    #   Given I am on the "blockly-editor" page
-
-    #   When I drag the "Close" block to the "Blocks" area
-    #   When I drag the "Open" block to the "Blocks" area
-
-    #   When I click the "button" with "Compile" text
-    #   Then I should see a "button" with "Compiled" text
