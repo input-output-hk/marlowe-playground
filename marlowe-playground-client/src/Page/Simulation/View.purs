@@ -1091,7 +1091,7 @@ inputToLine
   [ span
       [ role "heading", label $ "choice transaction - " <> choiceName ]
       [ strong_ [ renderPrettyParty metadata choiceOwner ]
-      , text " choosed the value "
+      , text " chose the value "
       , strong_
           [ text
               (showPrettyChoice (getChoiceFormat metadata choiceName) chosenNum)
