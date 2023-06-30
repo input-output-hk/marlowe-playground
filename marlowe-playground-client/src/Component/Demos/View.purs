@@ -22,7 +22,7 @@ render =
     [ modalHeader "Demo Files" (Just Cancel)
     , div [ classes [ modalContent, ClassName "projects-container" ] ]
         [ demoFile (wrap "Escrow") "Escrow"
-            "Regulates a money exchange between a \"Buyer\" and a \"Seller\". If there is a disagreement, an \"Mediator\" will decide whether the money is refunded or paid to the \"Seller\"."
+            "Regulates a money exchange between a \"Buyer\" and a \"Seller\". If there is a disagreement, a \"Mediator\" will decide whether the money is refunded or paid to the \"Seller\"."
         , demoFile (wrap "EscrowWithCollateral") "Escrow With Collateral"
             "Regulates a money exchange between a \"Buyer\" and a \"Seller\" using a collateral from both parties to incentivize collaboration. If there is a disagreement the collateral is burned."
         , demoFile (wrap "ZeroCouponBond") "Zero Coupon Bond"
