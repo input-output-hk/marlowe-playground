@@ -32,8 +32,7 @@ jobs:
 
       - name: Build image and copy to local Docker registry
         run: |
-          nix build .\#__std.actions.x86_64-linux.marlowe-playground.oci-images.${{ matrix.image }}.load
-          ./result
+          nix develop --command std //marlowe-playground/oci-images/${{ matrix.image }}:load
 
       - name: Authenticate with container registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
