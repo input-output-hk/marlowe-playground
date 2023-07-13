@@ -36,7 +36,11 @@
     std = {
       url = "github:divnix/std";
       inputs.nixpkgs.follows = "haskell-nix/nixpkgs-unstable";
+      inputs.devshell.follows = "devshell";
+      inputs.n2c.follows = "n2c";
     };
+    devshell.url = "github:numtide/devshell";
+    n2c.url = "github:nlewo/nix2container";
     npmlock2nix = {
       url = "github:nix-community/npmlock2nix";
       flake = false;
@@ -93,14 +97,14 @@
         # std provides a TUI to interact with the cell blocks.
         # Available interactions are determined by the cell block's type.
         cellBlocks = [
-          (inputs.std.devshells "devshells")
-          (inputs.std.installables "packages")
-          (inputs.std.functions "library")
-          (inputs.std.installables "scripts")
-          (inputs.std.installables "tests")
-          (inputs.std.installables "ciJobs")
-          (inputs.std.runnables "operables")
-          (inputs.std.containers "oci-images")
+          (inputs.std.blockTypes.devshells "devshells")
+          (inputs.std.blockTypes.installables "packages")
+          (inputs.std.blockTypes.functions "library")
+          (inputs.std.blockTypes.installables "scripts")
+          (inputs.std.blockTypes.installables "tests")
+          (inputs.std.blockTypes.installables "ciJobs")
+          (inputs.std.blockTypes.runnables "operables")
+          (inputs.std.blockTypes.containers "oci-images")
         ];
       }
 
