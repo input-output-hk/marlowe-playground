@@ -1,11 +1,11 @@
 apiVersion: core.oam.dev/v1beta1
 kind: Application
 metadata:
-  name: marlowe-playground
+  name: marlowe-playground-test
   namespace: marlowe-staging
 spec:
   components:
-  - name: marlowe-playground-client
+  - name: marlowe-playground-test
     type: webservice
     properties:
       cpu: "0.5"
@@ -56,7 +56,7 @@ spec:
             value: /api
           port: 8080
       type: https-route
-  - name: marlowe-playground-client
+  - name: marlowe-playground-client-test
     type: webservice
     properties:
       cpu: "0.5"
@@ -112,7 +112,7 @@ spec:
     type: override
     properties:
       components:
-      - name: marlowe-playground
+      - name: marlowe-playground-test
         properties:
           env:
           - name: FRONTEND_URL
@@ -150,7 +150,7 @@ spec:
                 value: /api
               port: 8080
           type: https-route
-      - name: marlowe-playground-client
+      - name: marlowe-playground-client-test
         properties:
           image: ghcr.io/input-output-hk/marlowe-playground-client:2023-05-30-e2d5fd6
         traits:
