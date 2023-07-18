@@ -167,6 +167,7 @@ spec:
     - meta:
         alias: Push server image
       name: push-server-image
+      type: build-push-image
       properties:
         context:
           git: github.com/input-output-hk/sc-dev-platform
