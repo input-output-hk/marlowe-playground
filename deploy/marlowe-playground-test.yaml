@@ -47,7 +47,7 @@ spec:
     - properties:
         replicas: 1
       type: scaler
-        - properties:
+    - properties:
         domains:
         - marlowe-playground-test.scdev.aws.iohkdev.io
         rules:
