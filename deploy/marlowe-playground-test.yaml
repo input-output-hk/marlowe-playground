@@ -3,13 +3,15 @@ kind: Application
 metadata:
   name: marlowe-playground-test
   namespace: marlowe-staging
+  annotations:
+    app.oam.dev/publishVersion: 0.0.1
 spec:
   components:
   - name: marlowe-playground-test
     type: webservice
     properties:
       cpu: "0.5"
-      image: ghcr.io/input-output-hk/marlowe-playground-server
+      image: ghcr.io/input-output-hk/marlowe-playground-server:latest
       args:
       - webserver
       env:
