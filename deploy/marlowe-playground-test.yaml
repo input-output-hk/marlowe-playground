@@ -4,7 +4,7 @@ metadata:
   name: marlowe-playground-test
   namespace: marlowe-staging
   annotations:
-    app.oam.dev/publishVersion: 0.0.3
+    app.oam.dev/publishVersion: 0.0.7
 spec:
   components:
   - name: marlowe-playground-test
@@ -169,7 +169,7 @@ spec:
     - meta:
         alias: Push server image
       name: push-server-image
-      type: build-push-image
+      type: build-push-image-configurable
       properties:
         context:
           git: github.com/input-output-hk/sc-dev-platform
@@ -179,6 +179,8 @@ spec:
         credentials:
           image:
             name: iohk-ghcr-creds
+        requests:
+          ephemeralStorage: 20Gi
         buildArgs:
         - "INCLUDED_FLAKE_URIS=github:input-output-hk/marlowe-playground#marlowe-playground-server github:input-output-hk/marlowe-playground#ghc-with-marlowe nixpkgs#coreutils nixpkgs#cacert"
         - "ENTRYPOINT_BIN_NAME=marlowe-playground-server"
