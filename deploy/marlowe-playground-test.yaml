@@ -4,7 +4,7 @@ metadata:
   name: marlowe-playground-test
   namespace: marlowe-staging
   annotations:
-    app.oam.dev/publishVersion: 0.0.14
+    app.oam.dev/publishVersion: 0.0.15
 spec:
   components:
   - name: marlowe-playground-test
@@ -180,7 +180,7 @@ spec:
           image:
             name: iohk-ghcr-creds
         requests:
-          ephemeralStorage: 30Gi
+          ephemeralStorage: 25Gi
         singleSnapshot: true
         snapshotMode: "redo"
         buildArgs:
