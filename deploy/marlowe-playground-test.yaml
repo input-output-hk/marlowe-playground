@@ -4,7 +4,7 @@ metadata:
   name: marlowe-playground-test
   namespace: marlowe-staging
   annotations:
-    app.oam.dev/publishVersion: 0.0.18
+    app.oam.dev/publishVersion: 0.0.19
 spec:
   components:
   - name: marlowe-playground-test
@@ -88,6 +88,12 @@ spec:
         image: nixos/nix
         cmd:
         - nix
+        - --extra-experimental-features
+        - nix-command flakes
+        - --option
+        - filter-syscalls
+        - false
+        - --accept-flake-config
         - build
         - "github:input-output-hk/marlowe-playground/#marlowe-playground-client"
         - -o /client-www
