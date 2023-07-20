@@ -4,7 +4,7 @@ metadata:
   name: marlowe-playground-test
   namespace: marlowe-staging
   annotations:
-    app.oam.dev/publishVersion: 0.0.20
+    app.oam.dev/publishVersion: 0.0.21
 spec:
   components:
   - name: marlowe-playground-test
@@ -169,6 +169,26 @@ spec:
     mode:
       steps: StepByStep
     steps:
+    - meta:
+        alias: Push server image
+      name: push-server-image
+      type: build-push-image-configurable
+      properties:
+        context:
+          git: github.com/input-output-hk/sc-dev-platform
+          branch: bpi-resource-config
+        image: ghcr.io/input-output-hk/marlowe-playground-server:latest
+        dockerfile: infra/nix-docker-builder/Dockerfile
+        credentials:
+          image:
+            name: iohk-ghcr-creds
+        requests:
+          ephemeralStorage: 25Gi
+        singleSnapshot: true
+        snapshotMode: "redo"
+        buildArgs:
+        - "INCLUDED_FLAKE_URIS=github:input-output-hk/marlowe-playground#marlowe-playground-server github:input-output-hk/marlowe-playground#ghc-with-marlowe nixpkgs#coreutils nixpkgs#cacert"
+        - "ENTRYPOINT_BIN_NAME=marlowe-playground-server"
     - meta:
         alias: Deploy To local-marlowe-staging
       name: local-marlowe-staging
