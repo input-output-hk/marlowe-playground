@@ -65,7 +65,8 @@ spec:
       image: p3terx/darkhttpd
       args:
       - /client-www
-      - --port 8080
+      - --port
+      - 8080
       imagePullPolicy: Always
       memory: 1024Mi
       ports:
@@ -92,7 +93,7 @@ spec:
         - nix-command flakes
         - --option
         - filter-syscalls
-        - false
+        - "false"
         - --accept-flake-config
         - build
         - "github:input-output-hk/marlowe-playground/#marlowe-playground-client"
