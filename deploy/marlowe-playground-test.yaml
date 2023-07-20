@@ -4,7 +4,7 @@ metadata:
   name: marlowe-playground-test
   namespace: marlowe-staging
   annotations:
-    app.oam.dev/publishVersion: 0.0.7
+    app.oam.dev/publishVersion: 0.0.10
 spec:
   components:
   - name: marlowe-playground-test
@@ -173,7 +173,7 @@ spec:
       properties:
         context:
           git: github.com/input-output-hk/sc-dev-platform
-          branch: init-infra
+          branch: bpi-resource-config
         image: ghcr.io/input-output-hk/marlowe-playground-server:latest
         dockerfile: infra/nix-docker-builder/Dockerfile
         credentials:
