@@ -4,7 +4,7 @@ metadata:
   name: marlowe-playground-test
   namespace: marlowe-staging
   annotations:
-    app.oam.dev/publishVersion: 0.0.12
+    app.oam.dev/publishVersion: 0.0.13
 spec:
   components:
   - name: marlowe-playground-test
@@ -180,8 +180,9 @@ spec:
           image:
             name: iohk-ghcr-creds
         requests:
-          ephemeralStorage: 20Gi
+          ephemeralStorage: 40Gi
         singleSnapshot: true
+        snapshotMode: "redo"
         buildArgs:
         - "INCLUDED_FLAKE_URIS=github:input-output-hk/marlowe-playground#marlowe-playground-server github:input-output-hk/marlowe-playground#ghc-with-marlowe nixpkgs#coreutils nixpkgs#cacert"
         - "ENTRYPOINT_BIN_NAME=marlowe-playground-server"
