@@ -164,6 +164,8 @@ spec:
             - port: 8080
           type: https-route
   workflow:
+    mode:
+      steps: DAG
     steps:
     - meta:
         alias: Push staging server image
