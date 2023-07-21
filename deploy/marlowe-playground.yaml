@@ -6,6 +6,7 @@ metadata:
 spec:
   components:
   - name: marlowe-playground
+    type: webservice
     properties:
       cpu: "0.5"
       image: ghcr.io/input-output-hk/marlowe-playground-server:latest
@@ -55,8 +56,8 @@ spec:
             value: /api
           port: 8080
       type: https-route
-    type: webservice
   - name: marlowe-playground-client
+    type: webservice
     properties:
       cpu: "0.5"
       image: p3terx/darkhttpd
@@ -80,7 +81,6 @@ spec:
         rules:
         - port: 8080
       type: https-route
-    type: webservice
     - type: init-container
       properties:
         name: build-client
