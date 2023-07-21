@@ -142,7 +142,7 @@ spec:
               secretKeyRef:
                 key: callbackPath
                 name: gh-oauth-production
-          image: ghcr.io/input-output-hk/marlowe-playground-server:2023-05-30-e2d5fd6
+          image: ghcr.io/input-output-hk/marlowe-playground-server:latest
         traits:
         - properties:
             domains:
@@ -154,8 +154,6 @@ spec:
               port: 8080
           type: https-route
       - name: marlowe-playground-client
-        properties:
-          image: ghcr.io/input-output-hk/marlowe-playground-client:2023-05-30-e2d5fd6
         traits:
         - properties:
             domains:
@@ -163,6 +161,20 @@ spec:
             rules:
             - port: 8080
           type: https-route
+        - type: init-container
+          properties:
+            name: build-client
+            image: nixos/nix
+            cmd:
+            - bash
+            - -c
+            - |
+                nix --experimental-features "nix-command flakes" --option filter-syscalls false --accept-flake-config build github:input-output-hk/marlowe-playground/production#marlowe-playground-client
+                mkdir -p /client-www
+                cp -a result/* /client-www
+            mountName: client-www
+            initMountPath: /client-www
+            appMountPath: /client-www
   workflow:
     mode:
       steps: DAG
