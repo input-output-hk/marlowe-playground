@@ -8,6 +8,9 @@ spec:
   - name: marlowe-playground
     properties:
       cpu: "0.5"
+      image: ghcr.io/input-output-hk/marlowe-playground-server:latest
+      args:
+      - webserver
       env:
       - name: FRONTEND_URL
         value: https://marlowe-playground.scdev.aws.iohkdev.io
@@ -33,7 +36,6 @@ spec:
           secretKeyRef:
             key: callbackPath
             name: gh-oauth
-      image: ghcr.io/input-output-hk/marlowe-playground-server:latest
       imagePullPolicy: Always
       memory: 1024Mi
       ports:
@@ -57,7 +59,11 @@ spec:
   - name: marlowe-playground-client
     properties:
       cpu: "0.5"
-      image: ghcr.io/input-output-hk/marlowe-playground-client:latest
+      image: p3terx/darkhttpd
+      args:
+      - /client-www
+      - --port
+      - "8080"
       imagePullPolicy: Always
       memory: 1024Mi
       ports:
@@ -75,6 +81,21 @@ spec:
         - port: 8080
       type: https-route
     type: webservice
+    - type: init-container
+      properties:
+        name: build-client
+        image: nixos/nix
+        cmd:
+        - bash
+        - -c
+        - |
+            nix --experimental-features "nix-command flakes" --option filter-syscalls false --accept-flake-config build github:input-output-hk/marlowe-playground/#marlowe-playground-client
+            mkdir -p /client-www
+            cp -a result/* /client-www
+        mountName: client-www
+        initMountPath: /client-www
+        appMountPath: /client-www
+
   policies:
   - name: local-marlowe-staging
     properties:
@@ -143,11 +164,31 @@ spec:
             - port: 8080
           type: https-route
   workflow:
-    mode:
-      steps: DAG
     steps:
     - meta:
+        alias: Push staging server image
+      name: push-server-image-staging
+      type: build-push-image-configurable
+      properties:
+        context:
+          git: github.com/input-output-hk/sc-dev-platform
+          branch: bpi-resource-config
+        image: ghcr.io/input-output-hk/marlowe-playground-server:latest
+        dockerfile: infra/nix-docker-builder/Dockerfile
+        credentials:
+          image:
+            name: iohk-ghcr-creds
+        requests:
+          ephemeralStorage: 25Gi
+        singleSnapshot: true
+        snapshotMode: "redo"
+        buildArgs:
+        - "INCLUDED_FLAKE_URIS=github:input-output-hk/marlowe-playground#marlowe-playground-server github:input-output-hk/marlowe-playground#ghc-with-marlowe nixpkgs#z3 nixpkgs#cacert"
+        - "ENTRYPOINT_BIN_NAME=marlowe-playground-server"
+    - meta:
         alias: Deploy To local-marlowe-staging
+      dependsOn:
+        - push-server-image-staging
       name: local-marlowe-staging
       properties:
         policies:
