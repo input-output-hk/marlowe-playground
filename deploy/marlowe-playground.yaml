@@ -154,6 +154,8 @@ spec:
               port: 8080
           type: https-route
       - name: marlowe-playground-client
+        properties:
+          image: p3terx/darkhttpd
         traits:
         - properties:
             domains:
