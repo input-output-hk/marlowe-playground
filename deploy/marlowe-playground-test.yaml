@@ -4,7 +4,7 @@ metadata:
   name: marlowe-playground-test
   namespace: marlowe-staging
   annotations:
-    app.oam.dev/publishVersion: 0.0.21
+    app.oam.dev/publishVersion: 0.0.22
 spec:
   components:
   - name: marlowe-playground-test
@@ -187,7 +187,7 @@ spec:
         singleSnapshot: true
         snapshotMode: "redo"
         buildArgs:
-        - "INCLUDED_FLAKE_URIS=github:input-output-hk/marlowe-playground#marlowe-playground-server github:input-output-hk/marlowe-playground#ghc-with-marlowe nixpkgs#coreutils nixpkgs#cacert"
+        - "INCLUDED_FLAKE_URIS=github:input-output-hk/marlowe-playground#marlowe-playground-server github:input-output-hk/marlowe-playground#ghc-with-marlowe nixpkgs#z3 nixpkgs#cacert"
         - "ENTRYPOINT_BIN_NAME=marlowe-playground-server"
     - meta:
         alias: Deploy To local-marlowe-staging
