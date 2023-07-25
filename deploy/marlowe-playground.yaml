@@ -4,7 +4,7 @@ metadata:
   name: marlowe-playground
   namespace: marlowe-staging
   annotations:
-    app.oam.dev/publishVersion: 0.0.2
+    app.oam.dev/publishVersion: 0.0.3
 spec:
   components:
   - name: marlowe-playground
