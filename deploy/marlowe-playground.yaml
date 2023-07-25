@@ -142,7 +142,7 @@ spec:
               secretKeyRef:
                 key: callbackPath
                 name: gh-oauth-production
-          image: ghcr.io/input-output-hk/marlowe-playground-server:latest
+          image: ghcr.io/input-output-hk/marlowe-playground-server:production
         traits:
         - properties:
             domains:
@@ -202,6 +202,26 @@ spec:
         - "INCLUDED_FLAKE_URIS=github:input-output-hk/marlowe-playground#marlowe-playground-server github:input-output-hk/marlowe-playground#ghc-with-marlowe nixpkgs#z3 nixpkgs#cacert"
         - "ENTRYPOINT_BIN_NAME=marlowe-playground-server"
     - meta:
+        alias: Push production server image
+      name: push-server-image-production
+      type: build-push-image-configurable
+      properties:
+        context:
+          git: github.com/input-output-hk/sc-dev-platform
+          branch: bpi-resource-config
+        image: ghcr.io/input-output-hk/marlowe-playground-server:production
+        dockerfile: infra/nix-docker-builder/Dockerfile
+        credentials:
+          image:
+            name: iohk-ghcr-creds
+        requests:
+          ephemeralStorage: 25Gi
+        singleSnapshot: true
+        snapshotMode: "redo"
+        buildArgs:
+        - "INCLUDED_FLAKE_URIS=github:input-output-hk/marlowe-playground/production#marlowe-playground-server github:input-output-hk/marlowe-playground/production#ghc-with-marlowe nixpkgs#z3 nixpkgs#cacert"
+        - "ENTRYPOINT_BIN_NAME=marlowe-playground-server"
+    - meta:
         alias: Deploy To local-marlowe-staging
       dependsOn:
         - push-server-image-staging
@@ -212,6 +232,8 @@ spec:
       type: deploy
     - meta:
         alias: Deploy To local-marlowe-production
+      dependsOn:
+        - push-server-image-production
       name: local-marlowe-production
       properties:
         policies:
