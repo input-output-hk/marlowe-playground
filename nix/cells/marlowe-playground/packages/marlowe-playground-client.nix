@@ -6,7 +6,10 @@ let
 in
 npmlock2nix.v1.build {
   src = inputs.self + "/marlowe-playground-client";
-  installPhase = "cp -r dist $out";
+  installPhase = ''
+    mkdir -p $out/share/marlowe-playground-client/
+    cp -r dist $out/share/marlowe-playground-client/static
+  '';
   node_modules_attrs = {
     githubSourceHashMap = {
       shmish111.nearley-webpack-loader."939360f9d1bafa9019b6ff8739495c6c9101c4a1" = "1brx669dgsryakf7my00m25xdv7a02snbwzhzgc9ylmys4p8c10x";

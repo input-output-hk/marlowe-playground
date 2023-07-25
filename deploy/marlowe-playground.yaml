@@ -4,7 +4,7 @@ metadata:
   name: marlowe-playground
   namespace: marlowe-staging
   annotations:
-    app.oam.dev/publishVersion: 0.0.1
+    app.oam.dev/publishVersion: 0.0.2
 spec:
   components:
   - name: marlowe-playground
@@ -85,17 +85,10 @@ spec:
       type: https-route
     - type: init-container
       properties:
-        name: build-client
-        image: nixos/nix
-        cmd:
-        - bash
-        - -c
-        - |
-            nix --experimental-features "nix-command flakes" --option filter-syscalls false --accept-flake-config build github:input-output-hk/marlowe-playground/#marlowe-playground-client
-            mkdir -p /client-www
-            cp -a result/* /client-www
+        name: playground-client
+        image: ghcr.io/input-output-hk/marlowe-playground-client:latest
         mountName: client-www
-        initMountPath: /client-www
+        initMountPath: /share/marlowe-playground-client/static
         appMountPath: /client-www
 
   policies:
@@ -168,16 +161,9 @@ spec:
         - type: init-container
           properties:
             name: build-client
-            image: nixos/nix
-            cmd:
-            - bash
-            - -c
-            - |
-                nix --experimental-features "nix-command flakes" --option filter-syscalls false --accept-flake-config build github:input-output-hk/marlowe-playground/production#marlowe-playground-client
-                mkdir -p /client-www
-                cp -a result/* /client-www
+            image: ghcr.io/input-output-hk/marlowe-playground-client:production
             mountName: client-www
-            initMountPath: /client-www
+            initMountPath: /share/marlowe-playground-client/static
             appMountPath: /client-www
   workflow:
     mode:
@@ -186,43 +172,51 @@ spec:
     - meta:
         alias: Push staging server image
       name: push-server-image-staging
-      type: build-push-image-configurable
+      type: build-nix-image
       properties:
-        context:
-          git: github.com/input-output-hk/sc-dev-platform
-          branch: bpi-resource-config
         image: ghcr.io/input-output-hk/marlowe-playground-server:latest
-        dockerfile: infra/nix-docker-builder/Dockerfile
-        credentials:
-          image:
-            name: iohk-ghcr-creds
         requests:
-          ephemeralStorage: 25Gi
-        singleSnapshot: true
-        snapshotMode: "redo"
-        buildArgs:
-        - "INCLUDED_FLAKE_URIS=github:input-output-hk/marlowe-playground#marlowe-playground-server github:input-output-hk/marlowe-playground#ghc-with-marlowe nixpkgs#z3 nixpkgs#cacert"
-        - "ENTRYPOINT_BIN_NAME=marlowe-playground-server"
+          ephemeralStorage: 50Gi
+        includedFlakeURIs:
+          - "github:input-output-hk/marlowe-playground#marlowe-playground-server"
+          - "github:input-output-hk/marlowe-playground#ghc-with-marlowe"
+          - "nixpkgs#z3"
+          - "nixpkgs#cacert"
+        entrypointBinName: "marlowe-playground-server"
     - meta:
         alias: Push production server image
       name: push-server-image-production
-      type: build-push-image-configurable
+      type: build-nix-image
       properties:
-        context:
-          git: github.com/input-output-hk/sc-dev-platform
-          branch: bpi-resource-config
         image: ghcr.io/input-output-hk/marlowe-playground-server:production
-        dockerfile: infra/nix-docker-builder/Dockerfile
-        credentials:
-          image:
-            name: iohk-ghcr-creds
         requests:
-          ephemeralStorage: 25Gi
-        singleSnapshot: true
-        snapshotMode: "redo"
-        buildArgs:
-        - "INCLUDED_FLAKE_URIS=github:input-output-hk/marlowe-playground/production#marlowe-playground-server github:input-output-hk/marlowe-playground/production#ghc-with-marlowe nixpkgs#z3 nixpkgs#cacert"
-        - "ENTRYPOINT_BIN_NAME=marlowe-playground-server"
+          ephemeralStorage: 50Gi
+        includedFlakeURIs:
+        - "github:input-output-hk/marlowe-playground/production#marlowe-playground-server"
+        - "github:input-output-hk/marlowe-playground/production#ghc-with-marlowe"
+        - "nixpkgs#z3"
+        - "nixpkgs#cacert"
+        entrypointBinName: "marlowe-playground-server"
+    - meta:
+        alias: Push staging client image
+      name: push-client-image-staging
+      type: build-nix-image
+      properties:
+        image: ghcr.io/input-output-hk/marlowe-playground-client:latest
+        requests:
+          ephemeralStorage: 50Gi
+        includedFlakeURIs:
+        - "github:input-output-hk/marlowe-playground#marlowe-playground-client"
+    - meta:
+        alias: Push production client image
+      name: push-client-image-production
+      type: build-nix-image
+      properties:
+        image: ghcr.io/input-output-hk/marlowe-playground-client:production
+        requests:
+          ephemeralStorage: 50Gi
+        includedFlakeURIs:
+        - "github:input-output-hk/marlowe-playground/production#marlowe-playground-client"
     - meta:
         alias: Deploy To local-marlowe-staging
       dependsOn:
