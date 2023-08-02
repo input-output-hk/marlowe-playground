@@ -1,0 +1,33 @@
+name: Auto Commit
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  run:
+    name: Auto Commit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Update publish version
+        id: update
+        run: |
+          VERSION=${GITHUB_SHA::8}
+          echo ::set-output name=VERSION::${VERSION}
+          # replace app.yaml with your app file name
+          sed -i "s|app.oam.dev/publishVersion: .*|app.oam.dev/publishVersion: $VERSION|" deploy/marlowe-playground.yaml
+          sed -i "s|ghcr.io/input-output-hk/marlowe-playground-server:.*|ghcr.io/input-output-hk/marlowe-playground-server:$VERSION|g" deploy/marlowe-playground.yaml
+          sed -i "s|ghcr.io/input-output-hk/marlowe-playground-client:.*|ghcr.io/input-output-hk/marlowe-playground-client:$VERSION|g" deploy/marlowe-playground.yaml
+
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v7
+        with:
+          default_author: github_actions
+          add: '.'
+          message: "[ci skip] deploy from ${{ steps.update.outputs.VERSION }}"
+          signoff: true
+          # specify the branch you want to commit if need
+          # branch: main
