@@ -58,7 +58,7 @@ spec:
             value: /api
           port: 8080
       type: https-route
-  - name: marlowe-playground-client
+  - name: marlowe-playground-client-test
     type: webservice
     properties:
       cpu: "0.5"
@@ -148,7 +148,7 @@ spec:
                 value: /api
               port: 8080
           type: https-route
-      - name: marlowe-playground-client
+      - name: marlowe-playground-client-test
         properties:
           image: p3terx/darkhttpd
         traits:
