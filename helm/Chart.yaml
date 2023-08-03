@@ -1,0 +1,7 @@
+apiVersion: v2
+name: marlowe-playground
+version: v0.0.1
+description: a development tool that helps build and simulate Marlowe Contracts
+home: https://play.marlowe.iohk.io
+sources:
+  - https://github.com/input-output-hk/marlowe-playground

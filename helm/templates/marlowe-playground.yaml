@@ -1,0 +1,238 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: marlowe-playground-test
+  namespace: marlowe-staging
+  annotations:
+    app.oam.dev/publishVersion: {{ $.Values.images.stagingTag }}
+spec:
+  components:
+  - name: marlowe-playground-test
+    type: webservice
+    properties:
+      cpu: "0.5"
+      image: ghcr.io/input-output-hk/marlowe-playground-server:{{ $.Values.images.stagingTag }}
+      args:
+      - webserver
+      env:
+      - name: FRONTEND_URL
+        value: https://marlowe-playground-test.scdev.aws.iohkdev.io
+      - name: WEBGHC_URL
+        value: http://localhost:8080
+      - name: JWT_SIGNATURE
+        valueFrom:
+          secretKeyRef:
+            key: JWT_SIGNATURE
+            name: jwt-signature
+      - name: GITHUB_CLIENT_ID
+        valueFrom:
+          secretKeyRef:
+            key: clientID
+            name: gh-oauth
+      - name: GITHUB_CLIENT_SECRET
+        valueFrom:
+          secretKeyRef:
+            key: clientSecret
+            name: gh-oauth
+      - name: GITHUB_CALLBACK_PATH
+        valueFrom:
+          secretKeyRef:
+            key: callbackPath
+            name: gh-oauth
+      imagePullPolicy: Always
+      memory: 1024Mi
+      ports:
+      - expose: true
+        port: 8080
+        protocol: TCP
+    traits:
+    - properties:
+        replicas: 1
+      type: scaler
+    - properties:
+        domains:
+        - marlowe-playground-test.scdev.aws.iohkdev.io
+        rules:
+        - path:
+            type: PathPrefix
+            value: /api
+          port: 8080
+      type: https-route
+  - name: marlowe-playground-client
+    type: webservice
+    properties:
+      cpu: "0.5"
+      image: p3terx/darkhttpd
+      args:
+      - /client-www
+      - --port
+      - "8080"
+      imagePullPolicy: Always
+      memory: 1024Mi
+      ports:
+      - expose: true
+        port: 8080
+        protocol: TCP
+    traits:
+    - properties:
+        replicas: 1
+      type: scaler
+    - properties:
+        domains:
+        - marlowe-playground-test.scdev.aws.iohkdev.io
+        rules:
+        - port: 8080
+      type: https-route
+    - type: init-container
+      properties:
+        name: playground-client
+        image: ghcr.io/input-output-hk/marlowe-playground-client:{{ $.Values.images.stagingTag }}
+        mountName: client-www
+        initMountPath: /share/marlowe-playground-client/static
+        appMountPath: /client-www
+
+  policies:
+  - name: local-marlowe-staging
+    properties:
+      clusters:
+      - local
+      namespace: marlowe-staging
+    type: topology
+
+  - name: local-marlowe-production
+    properties:
+      clusters:
+      - local
+      namespace: marlowe-production
+    type: topology
+
+  - name: override-marlowe-production
+    type: override
+    properties:
+      components:
+      - name: marlowe-playground
+        properties:
+          env:
+          - name: FRONTEND_URL
+            value: https://playtest.marlowe.iohk.io
+          - name: WEBGHC_URL
+            value: http://localhost:8080
+          - name: JWT_SIGNATURE
+            valueFrom:
+              secretKeyRef:
+                key: JWT_SIGNATURE
+                name: jwt-signature
+          - name: GITHUB_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                key: clientID
+                name: gh-oauth-production
+          - name: GITHUB_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                key: clientSecret
+                name: gh-oauth-production
+          - name: GITHUB_CALLBACK_PATH
+            valueFrom:
+              secretKeyRef:
+                key: callbackPath
+                name: gh-oauth-production
+          image: ghcr.io/input-output-hk/marlowe-playground-server:{{ $.Values.images.productionTag }}
+        traits:
+        - properties:
+            domains:
+            - playtest.marlowe.iohk.io
+            rules:
+            - path:
+                type: PathPrefix
+                value: /api
+              port: 8080
+          type: https-route
+      - name: marlowe-playground-client
+        properties:
+          image: p3terx/darkhttpd
+        traits:
+        - properties:
+            domains:
+            - playtest.marlowe.iohk.io
+            rules:
+            - port: 8080
+          type: https-route
+        - type: init-container
+          properties:
+            name: build-client
+            image: ghcr.io/input-output-hk/marlowe-playground-client:{{ $.Values.images.productionTag }}
+            mountName: client-www
+            initMountPath: /share/marlowe-playground-client/static
+            appMountPath: /client-www
+  workflow:
+    mode:
+      steps: DAG
+    steps:
+    - meta:
+        alias: Push staging server image
+      name: push-server-image-staging
+      type: build-nix-image
+      properties:
+        image: ghcr.io/input-output-hk/marlowe-playground-server:{{ $.Values.images.stagingTag }}
+        requests:
+          ephemeralStorage: 50Gi
+        includedFlakeURIs:
+          - "github:input-output-hk/marlowe-playground#marlowe-playground-server"
+          - "github:input-output-hk/marlowe-playground#ghc-with-marlowe"
+          - "nixpkgs#z3"
+          - "nixpkgs#cacert"
+        entrypointBinName: "marlowe-playground-server"
+    - meta:
+        alias: Push production server image
+      name: push-server-image-production
+      type: build-nix-image
+      properties:
+        image: ghcr.io/input-output-hk/marlowe-playground-server:{{ $.Values.images.productionTag }}
+        requests:
+          ephemeralStorage: 50Gi
+        includedFlakeURIs:
+        - "github:input-output-hk/marlowe-playground/production#marlowe-playground-server"
+        - "github:input-output-hk/marlowe-playground/production#ghc-with-marlowe"
+        - "nixpkgs#z3"
+        - "nixpkgs#cacert"
+        entrypointBinName: "marlowe-playground-server"
+    - meta:
+        alias: Push staging client image
+      name: push-client-image-staging
+      type: build-nix-image
+      properties:
+        image: ghcr.io/input-output-hk/marlowe-playground-client:{{ $.Values.images.stagingTag }}
+        requests:
+          ephemeralStorage: 50Gi
+        includedFlakeURIs:
+        - "github:input-output-hk/marlowe-playground#marlowe-playground-client"
+    - meta:
+        alias: Push production client image
+      name: push-client-image-production
+      type: build-nix-image
+      properties:
+        image: ghcr.io/input-output-hk/marlowe-playground-client:{{ $.Values.images.productionTag }}
+        requests:
+          ephemeralStorage: 50Gi
+        includedFlakeURIs:
+        - "github:input-output-hk/marlowe-playground/production#marlowe-playground-client"
+    - meta:
+        alias: Deploy To local-marlowe-staging
+      dependsOn:
+        - push-server-image-staging
+      name: local-marlowe-staging
+      properties:
+        policies:
+        - local-marlowe-staging
+      type: deploy
+    - meta:
+        alias: Deploy To local-marlowe-production
+      dependsOn:
+        - push-server-image-production
+      name: local-marlowe-production
+      properties:
+        policies:
+        - local-marlowe-production
+        - override-marlowe-production
+      type: deploy
