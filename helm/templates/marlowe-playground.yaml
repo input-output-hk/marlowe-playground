@@ -174,7 +174,7 @@ spec:
       properties:
         image: ghcr.io/input-output-hk/marlowe-playground-server:{{ $.Values.images.stagingTag }}
         requests:
-          ephemeralStorage: 50Gi
+          ephemeralStorage: 25Gi
         includedFlakeURIs:
           - "github:input-output-hk/marlowe-playground#marlowe-playground-server"
           - "github:input-output-hk/marlowe-playground#ghc-with-marlowe"
@@ -188,7 +188,7 @@ spec:
       properties:
         image: ghcr.io/input-output-hk/marlowe-playground-server:{{ $.Values.images.productionTag }}
         requests:
-          ephemeralStorage: 50Gi
+          ephemeralStorage: 25Gi
         includedFlakeURIs:
         - "github:input-output-hk/marlowe-playground/production#marlowe-playground-server"
         - "github:input-output-hk/marlowe-playground/production#ghc-with-marlowe"
@@ -202,7 +202,7 @@ spec:
       properties:
         image: ghcr.io/input-output-hk/marlowe-playground-client:{{ $.Values.images.stagingTag }}
         requests:
-          ephemeralStorage: 50Gi
+          ephemeralStorage: 25Gi
         includedFlakeURIs:
         - "github:input-output-hk/marlowe-playground#marlowe-playground-client"
     - meta:
@@ -212,7 +212,7 @@ spec:
       properties:
         image: ghcr.io/input-output-hk/marlowe-playground-client:{{ $.Values.images.productionTag }}
         requests:
-          ephemeralStorage: 50Gi
+          ephemeralStorage: 25Gi
         includedFlakeURIs:
         - "github:input-output-hk/marlowe-playground/production#marlowe-playground-client"
     - meta:
