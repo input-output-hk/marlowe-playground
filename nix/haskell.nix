@@ -1,0 +1,3 @@
+{
+  supportedCompilers = ["ghc8107"];
+}

@@ -1,0 +1,7 @@
+{
+  includedPaths = [
+    "operables"
+    "oci-images"
+  ];
+
+}
