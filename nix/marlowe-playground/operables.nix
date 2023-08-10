@@ -4,7 +4,6 @@ project:
 
 let
 
-  inherit (inputs'.self.apps) marlowe-playground-client marlowe-playground-server;
   inherit (pkgs) darkhttpd lib mailcap coreutils cacert z3;
   inherit (inputs.std.lib.ops) mkOperable;
 
@@ -16,11 +15,11 @@ in
     package = marlowe-playground-client;
     runtimeInputs = [ darkhttpd ];
     runtimeScript = ''
-      exec darkhttpd "''${CONFIG_HTML_ROOT:-${inputs'.self.apps.marlowe-playground-client}}" --port 8080 --mimetypes ${mailcap}/etc/mime.types
+      exec darkhttpd "''${CONFIG_HTML_ROOT:-${inputs'.self.packages.marlowe-playground-client}}" --port 8080 --mimetypes ${mailcap}/etc/mime.types
     '';
   };
   marlowe-playground-server = mkOperable {
-    package = inputs.self'.packages.marlowe-playground-server-exe-marlowe-playground-server-ghc8107;
+    package = inputs.self'.packages.marlowe-playground-server;
     runtimeInputs = [ ghc-with-marlowe coreutils cacert z3 ];
     runtimeScript = ''
       #################
@@ -47,7 +46,7 @@ in
 
       mkdir -p /tmp
 
-      ${marlowe-playground-server}/bin/marlowe-playground-server webserver
+      ${inputs'.self.packages.marlowe-playground-server}/bin/marlowe-playground-server webserver
     '';
   };
 }

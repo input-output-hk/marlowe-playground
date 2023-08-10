@@ -7,12 +7,10 @@
 
   inputs = {
 
-    iogx.url = "github:input-output-hk/haskell.nix";
+    iogx.url = "github:input-output-hk/iogx";
+    iogx.inputs.nixpkgs.follows = "nixpkgs";
 
-    easy-purescript-nix = {
-      url = "github:justinwoo/easy-purescript-nix";
-      flake = false;
-    };
+    nixpkgs.url = "github:NixOS/nixpkgs/9952d6bc395f5841262b006fbace8dd7e143b634";
 
     n2c.url = "github:nlewo/nix2container";
 
