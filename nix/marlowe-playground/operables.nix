@@ -1,9 +1,14 @@
 { inputs, inputs', pkgs, ... }:
+
+project: 
+
 let
+
   inherit (inputs'.self.apps) marlowe-playground-client marlowe-playground-server;
-  # TODO ghc-with-marlowe;
   inherit (pkgs) darkhttpd lib mailcap coreutils cacert z3;
   inherit (inputs.std.lib.ops) mkOperable;
+
+  ghc-with-marlowe = project.ghcWithPackages (pkgs: [ pkgs.marlowe-cardano ]);
 
 in
 {
@@ -15,7 +20,7 @@ in
     '';
   };
   marlowe-playground-server = mkOperable {
-    package = inputs.self'.apps.marlowe-playground-server;
+    package = inputs.self'.packages.marlowe-playground-server-exe-marlowe-playground-server-ghc8107;
     runtimeInputs = [ ghc-with-marlowe coreutils cacert z3 ];
     runtimeScript = ''
       #################

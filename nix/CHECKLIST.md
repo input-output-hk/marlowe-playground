@@ -6,5 +6,3 @@
       permittedInsecurePackages = [ "python-2.7.18.6" ];
     };
 
-# purs-tidy
-write-formatter "purs-tidy" "${purs-tidy}/bin/purs-tidy format-in-place" [ "purs" ]

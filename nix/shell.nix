@@ -1,4 +1,7 @@
-{ inputs, pkgs, ... }:
+# This file is part of the IOGX template and is documented at the link below:
+# https://www.github.com/input-output-hk/iogx#34-nixshellnix
+
+{ nix, pkgs, ... }:
 
 {
   name = "marlowe-playground";
@@ -30,13 +33,13 @@
 
 
   packages = [
-    nix.marlowe-playground.purescript.purs-tidy
-    nix.marlowe-playground.purescript.purs
-    nix.marlowe-playground.purescript.spago
-    nix.marlowe-playground.purescript.spago2nix
-    nix.marlowe-playground.purescript.psa
-    nix.marlowe-playground.purescript.purescript-language-server
-    nix.marlowe-playground.purescript.pscid
+    inputs.iogx.inputs.easy-purescript-nix.purs-tidy
+    inputs.iogx.inputs.easy-purescript-nix.purs
+    inputs.iogx.inputs.easy-purescript-nix.spago
+    inputs.iogx.inputs.easy-purescript-nix.spago2nix
+    inputs.iogx.inputs.easy-purescript-nix.psa
+    inputs.iogx.inputs.easy-purescript-nix.purescript-language-server
+    inputs.iogx.inputs.easy-purescript-nix.pscid
 
     pkgs.jq
     pkgs.yq

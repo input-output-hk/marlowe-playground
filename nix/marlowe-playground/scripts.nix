@@ -31,7 +31,7 @@
 
     cd marlowe-playground-client
 
-    ${nix.marlowe-playground.purescript.spago2nix}/bin/spago2nix generate
+    ${inputs.iogx.inputs.easy-purescript-nix.spago2nix}/bin/spago2nix generate
   '';
 
 }
