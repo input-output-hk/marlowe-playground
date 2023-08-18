@@ -12,3 +12,4 @@ pkgs.runCommand "playwright-browsers" { } ''
   mkdir -p $out/ffmpeg-${ffmpegRevision}
   ln -sv ${pkgs.ffmpeg}/bin/ffmpeg $out/ffmpeg-${ffmpegRevision}/ffmpeg-linux
 ''
+

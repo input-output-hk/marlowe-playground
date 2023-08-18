@@ -8,11 +8,11 @@
 
 
   env = {
-    PLAYWRIGHT_BROWSERS_PATH = 
-      lib.optionalString (system == "x86_64-linux") 
-        "${repoRoot.nix.marlowe-playground.playwright}"; 
+    PLAYWRIGHT_BROWSERS_PATH =
+      lib.optionalString (system == "x86_64-linux")
+        "${repoRoot.nix.marlowe-playground.playwright}";
 
-    PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "true"; 
+    PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "true";
   };
 
 
@@ -51,7 +51,7 @@
     pkgs.gawk
     pkgs.nil
     pkgs.z3
-    pkgs.nodejs-14_x
+    pkgs.nodejs-18_x
   ];
 
 }
