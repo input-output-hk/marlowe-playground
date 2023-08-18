@@ -19,7 +19,7 @@ in
     '';
   };
   marlowe-playground-server = mkOperable {
-    package = inputs.self'.packages.marlowe-playground-server;
+    package = inputs'.self.packages.marlowe-playground-server;
     runtimeInputs = [ ghc-with-marlowe coreutils cacert z3 ];
     runtimeScript = ''
       #################

@@ -20,8 +20,8 @@ npmlock2nix.v1.build {
     spagoPkgs.installSpagoStyle
     spagoPkgs.buildSpagoStyle
     pkgs.nodejs_14x.pkgs.npm
-    nix.marlowe-cardano.purescript.spago2nix
-    nix.marlowe-cardano.purescript.purs
+    nix.marlowe-playground.easy-purescript-nix.purs
+    nix.marlowe-playground.easy-purescript-nix.spago2nix
   ];
   unpackPhase = ''
     mkdir -p marlowe-playground-client

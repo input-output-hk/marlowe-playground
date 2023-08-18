@@ -1,14 +1,17 @@
 # This file is part of the IOGX template and is documented at the link below:
 # https://www.github.com/input-output-hk/iogx#34-nixshellnix
 
-{ nix, inputs', pkgs, ... }:
+{ nix, inputs', pkgs, system, l, ... }:
 
 {
   name = "marlowe-playground";
 
 
   env = {
-    PLAYWRIGHT_BROWSERS_PATH = "${nix.marlowe-playground.playwright}"; 
+    PLAYWRIGHT_BROWSERS_PATH = 
+      l.optionalString (system == "x86_64-linux") 
+        "${nix.marlowe-playground.playwright}"; 
+
     PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "true"; 
   };
 
@@ -33,13 +36,13 @@
 
 
   packages = [
-    inputs'.iogx.inputs.easy-purescript-nix.purs-tidy
-    inputs'.iogx.inputs.easy-purescript-nix.purs
-    inputs'.iogx.inputs.easy-purescript-nix.spago
-    inputs'.iogx.inputs.easy-purescript-nix.spago2nix
-    inputs'.iogx.inputs.easy-purescript-nix.psa
-    inputs'.iogx.inputs.easy-purescript-nix.purescript-language-server
-    inputs'.iogx.inputs.easy-purescript-nix.pscid
+    nix.marlowe-playground.easy-purescript-nix.purs-tidy
+    nix.marlowe-playground.easy-purescript-nix.purs
+    nix.marlowe-playground.easy-purescript-nix.spago
+    nix.marlowe-playground.easy-purescript-nix.spago2nix
+    nix.marlowe-playground.easy-purescript-nix.psa
+    nix.marlowe-playground.easy-purescript-nix.purescript-language-server
+    nix.marlowe-playground.easy-purescript-nix.pscid
 
     pkgs.jq
     pkgs.yq

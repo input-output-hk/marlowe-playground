@@ -7,7 +7,7 @@ let
     mkStandardOCI {
       inherit name;
       # meta.tags = [ "latest" ];
-      operable = inputs.self'.operables.${name};
+      operable = inputs'.self.operables.${name};
       uid = "0";
       gid = "0";
       labels = {

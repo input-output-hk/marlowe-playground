@@ -455,18 +455,18 @@
         "haskell-nix": "haskell-nix",
         "iohk-nix": "iohk-nix",
         "nixpkgs": [
-          "nixpkgs"
+          "iogx",
+          "haskell-nix",
+          "nixpkgs-2305"
         ],
         "pre-commit-hooks-nix": "pre-commit-hooks-nix",
         "sphinxcontrib-haddock": "sphinxcontrib-haddock"
       },
       "locked": {
-        "lastModified": 1691673963,
-        "narHash": "sha256-ysa3pHrA2CTqsO7nXGU6PaOipbq+P2YIjRAcVZSpYtk=",
-        "owner": "input-output-hk",
-        "repo": "iogx",
-        "rev": "84eb718a3560c6dec18edb86eb56c4acc48c6d9e",
-        "type": "github"
+        "lastModified": 1691694349,
+        "narHash": "sha256-yv1IO5/3rgTcA0uGzfhEcODEbYPAyR/BZ00LlPx+UnY=",
+        "type": "git",
+        "url": "file:///Users/zeme/Repos/iogx"
       },
       "original": {
         "owner": "input-output-hk",
@@ -762,22 +762,6 @@
         "type": "github"
       }
     },
-    "nixpkgs_4": {
-      "locked": {
-        "lastModified": 1677383253,
-        "narHash": "sha256-UfpzWfSxkfXHnb4boXZNaKsAcUrZT9Hw+tao1oZxd08=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "9952d6bc395f5841262b006fbace8dd7e143b634",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "9952d6bc395f5841262b006fbace8dd7e143b634",
-        "type": "github"
-      }
-    },
     "npmlock2nix": {
       "flake": false,
       "locked": {
@@ -837,7 +821,6 @@
       "inputs": {
         "iogx": "iogx",
         "n2c": "n2c",
-        "nixpkgs": "nixpkgs_4",
         "npmlock2nix": "npmlock2nix"
       }
     },
