@@ -1,4 +1,4 @@
-{ inputs', ... }:
+{ repoRoot, ... }:
 
 {
 
@@ -31,7 +31,7 @@
 
     cd marlowe-playground-client
 
-    ${nix.marlowe-playground.easy-purescript-nix.spago2nix}/bin/spago2nix generate
+    ${repoRoot.nix.marlowe-playground.easy-purescript-nix.spago2nix}/bin/spago2nix generate
   '';
 
 }

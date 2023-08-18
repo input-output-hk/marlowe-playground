@@ -1,11 +1,11 @@
-{ inputs, inputs', pkgs, ... }:
+{ inputs', pkgs, ... }:
 
 project: 
 
 let
 
   inherit (pkgs) darkhttpd lib mailcap coreutils cacert z3;
-  inherit (inputs.std.lib.ops) mkOperable;
+  inherit (inputs'.std.lib.ops) mkOperable;
 
   ghc-with-marlowe = project.ghcWithPackages (pkgs: [ pkgs.marlowe-cardano ]);
 

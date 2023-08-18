@@ -1,6 +1,5 @@
-{ inputs, cell, pkgs, l, ... }:
+{ inputs', pkgs, lib, ... }:
 let
-  inherit (pkgs) lib stdenv;
   inherit (inputs.std.lib.ops) mkStandardOCI;
 
   mkImage = { name, description }:
@@ -18,7 +17,7 @@ let
     };
 
 in
-l.optionalAttrs stdenv.isLinux {
+lib.optionalAttrs pkgs.stdenv.isLinux {
   marlowe-playground-server = mkImage {
     name = "marlowe-playground-server";
     description = "The backend of the Marlowe playground.";

@@ -1,4 +1,4 @@
-{ inputs, pkgs, ... }:
+{ repoRoot, inputs, pkgs, ... }:
 
 let
   npmlock2nix = inputs.npmlock2nix { inherit pkgs; };
@@ -20,8 +20,8 @@ npmlock2nix.v1.build {
     spagoPkgs.installSpagoStyle
     spagoPkgs.buildSpagoStyle
     pkgs.nodejs_14x.pkgs.npm
-    nix.marlowe-playground.easy-purescript-nix.purs
-    nix.marlowe-playground.easy-purescript-nix.spago2nix
+    repoRoot.nix.marlowe-playground.easy-purescript-nix.purs
+    repoRoot.nix.marlowe-playground.easy-purescript-nix.spago2nix
   ];
   unpackPhase = ''
     mkdir -p marlowe-playground-client
