@@ -19,19 +19,19 @@
   scripts.generate-purescript = {
     exec = repoRoot.nix.marlowe-playground.scripts.generate-purescript;
     description = "Generate all PureScript Bridge code";
-    group = "purescript";
+    group = "marlowe-playground";
   };
 
   scripts.update-client-deps = {
     exec = repoRoot.nix.marlowe-playground.scripts.update-client-deps;
     description = "Run spago2nix in marlowe-playground-client";
-    group = "purescript";
+    group = "marlowe-playground";
   };
 
   scripts.start-backend = {
     exec = repoRoot.nix.marlowe-playground.scripts.start-backend;
     description = "Start the Marlowe Playground server";
-    group = "general";
+    group = "marlowe-playground";
   };
 
 

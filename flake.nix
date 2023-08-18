@@ -21,6 +21,13 @@
   outputs = inputs: inputs.iogx.lib.mkFlake {
     inherit inputs;
     repoRoot = ./.;
+    nixpkgsConfig = {
+      permittedInsecurePackages = [
+        "python-2.7.18.6"
+        "nodejs-14.21.3"
+        "openssl-1.1.1t"
+      ];
+    };
   };
 
 
