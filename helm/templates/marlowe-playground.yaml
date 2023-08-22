@@ -85,6 +85,11 @@ spec:
       properties:
         name: playground-client
         image: ghcr.io/input-output-hk/marlowe-playground-client:{{ $.Values.images.stagingTag }}
+        args:
+          - -c
+          - |
+              root="$(dirname $(readlink -f /profile/index.html))"
+              cp -a $root/* /share/marlowe-playground-client/static
         mountName: client-www
         initMountPath: /share/marlowe-playground-client/static
         appMountPath: /client-www
