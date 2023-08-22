@@ -3,8 +3,8 @@
 
 {
   shellcheck.enable = true;
-  stylish-haskell.enable = true;
+  stylish-haskell.enable = false;
   nixpkgs-fmt.enable = true;
-  prettier.enable = true; 
+  prettier.enable = true;
   purs-tidy.enable = true;
 }
