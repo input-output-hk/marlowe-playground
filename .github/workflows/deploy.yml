@@ -12,9 +12,6 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        image: [marlowe-playground-server, marlowe-playground-client]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -32,23 +29,33 @@ jobs:
 
       - name: Build image and copy to local Docker registry
         run: |
-          nix develop --command std //marlowe-playground/oci-images/${{ matrix.image }}:load
+          nix build .#oci-images.x86_64-linux.all.copyToDockerDaemon
+          ./result/bin/copy-to-docker-daemon
 
       - name: Authenticate with container registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
 
       - name: Tag and push images
         run: |
-          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/${{ matrix.image }}
-          # Change all uppercase to lowercase
-          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-          # Strip git ref prefix from version
-          TAG=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-          # Use Docker `latest` tag convention
-          [ "$TAG" == "main" ] && TAG=latest
-          # Use date + short hash for production releases
-          [ "$TAG" == "production" ] && TAG="$(date +'%Y-%m-%d')-$(git rev-parse --short "${{ github.ref }}")"
-          echo IMAGE_ID=$IMAGE_ID
-          echo TAG=$TAG
-          docker tag ${{ matrix.image }} $IMAGE_ID:$TAG
-          docker push $IMAGE_ID:$TAG
+          tagAndPush() {
+            IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$1
+            # Change all uppercase to lowercase
+            IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+            # Strip git ref prefix from version
+            TAG=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+            # Strip "runtime@v" prefix from tag name
+            [[ "${{ github.ref }}" == "refs/tags/"* ]] && TAG=$(echo $TAG | sed -e 's/^runtime@v//')
+
+            # Use Docker `latest` tag convention
+            [ "$TAG" == "main" ] && TAG=latest
+
+            # Use date + short hash for production releases
+            [ "$TAG" == "production" ] && TAG="$(date +'%Y-%m-%d')-$(git rev-parse --short "${{ github.ref }}")"
+
+            echo IMAGE_ID=$IMAGE_ID
+            echo TAG=$TAG
+            docker tag $1:latest $IMAGE_ID:$TAG
+            docker push $IMAGE_ID:$TAG
+          }
+          tagAndPush "marlowe-playground-server"
+          tagAndPush "marlowe-playground-client"

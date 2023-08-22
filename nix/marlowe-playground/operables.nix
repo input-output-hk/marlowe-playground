@@ -1,6 +1,6 @@
 { inputs', pkgs, ... }:
 
-project: 
+project:
 
 let
 
@@ -12,7 +12,7 @@ let
 in
 {
   marlowe-playground-client = mkOperable {
-    package = marlowe-playground-client;
+    package = inputs'.self.packages.marlowe-playground-client;
     runtimeInputs = [ darkhttpd ];
     runtimeScript = ''
       exec darkhttpd "''${CONFIG_HTML_ROOT:-${inputs'.self.packages.marlowe-playground-client}}" --port 8080 --mimetypes ${mailcap}/etc/mime.types

@@ -16,14 +16,27 @@ let
       };
     };
 
-in
-lib.optionalAttrs pkgs.stdenv.isLinux {
-  marlowe-playground-server = mkImage {
-    name = "marlowe-playground-server";
-    description = "The backend of the Marlowe playground.";
+  images = {
+    marlowe-playground-server = mkImage {
+      name = "marlowe-playground-server";
+      description = "The backend of the Marlowe playground.";
+    };
+    marlowe-playground-client = mkImage {
+      name = "marlowe-playground-client";
+      description = "An HTTP server that serves the client for the Marlowe Playground.";
+    };
   };
-  marlowe-playground-client = mkImage {
-    name = "marlowe-playground-client";
-    description = "An HTTP server that serves the client for the Marlowe Playground.";
+
+  forAllImages = f: concatMapStrings (s: s + "\n") (mapAttrsToList f images);
+
+in
+images // {
+  all = {
+    copyToDockerDaemon = std.lib.ops.writeScript {
+      name = "copy-to-docker-daemon";
+      text = forAllImages (name: img:
+        "${n2c.packages.skopeo-nix2container}/bin/skopeo --insecure-policy copy nix:${img} docker-daemon:${name}:latest"
+      );
+    };
   };
 }
