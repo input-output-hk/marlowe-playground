@@ -193,7 +193,6 @@ spec:
         - "github:input-output-hk/marlowe-playground/production#marlowe-playground-server"
         - "github:input-output-hk/marlowe-playground/production#ghc-with-marlowe"
         - "nixpkgs#z3"
-        - "nixpkgs#cacert"
         entrypointBinName: "marlowe-playground-server"
     - meta:
         alias: Push staging client image
