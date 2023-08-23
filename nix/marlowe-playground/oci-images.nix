@@ -1,6 +1,6 @@
 { inputs', pkgs, lib, ... }:
 let
-  inherit (inputs.std.lib.ops) mkStandardOCI;
+  inherit (inputs'.std.lib.ops) mkStandardOCI;
 
   mkImage = { name, description }:
     mkStandardOCI {

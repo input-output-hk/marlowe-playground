@@ -7,5 +7,6 @@
   includedPaths = lib.optionals pkgs.stdenv.hostPlatform.isLinux [
     "oci-images"
     "operables"
+    "playwright"
   ];
 }

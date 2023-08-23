@@ -15,6 +15,8 @@
       url = "github:nix-community/npmlock2nix";
       flake = false;
     };
+
+    std.url = "github:divnix/std";
   };
 
 
