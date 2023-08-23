@@ -27,7 +27,7 @@ let
     };
   };
 
-  forAllImages = f: concatMapStrings (s: s + "\n") (mapAttrsToList f images);
+  forAllImages = f: lib.concatMapStrings (s: s + "\n") (lib.mapAttrsToList f images);
 
 in
 images // {
