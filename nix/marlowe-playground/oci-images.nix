@@ -32,10 +32,10 @@ let
 in
 images // {
   all = {
-    copyToDockerDaemon = std.lib.ops.writeScript {
+    copyToDockerDaemon = inputs'.std.lib.ops.writeScript {
       name = "copy-to-docker-daemon";
       text = forAllImages (name: img:
-        "${n2c.packages.skopeo-nix2container}/bin/skopeo --insecure-policy copy nix:${img} docker-daemon:${name}:latest"
+        "${inputs'.n2c.packages.skopeo-nix2container}/bin/skopeo --insecure-policy copy nix:${img} docker-daemon:${name}:latest"
       );
     };
   };
