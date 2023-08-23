@@ -51,7 +51,7 @@
     pkgs.gawk
     pkgs.nil
     pkgs.z3
-    pkgs.nodejs-18_x
+    pkgs.nodejs-14_x
   ];
 
 }
