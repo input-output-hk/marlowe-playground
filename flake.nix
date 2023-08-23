@@ -17,6 +17,7 @@
     };
 
     std.url = "github:divnix/std";
+    std.inputs.n2c.follows = "n2c";
   };
 
 
