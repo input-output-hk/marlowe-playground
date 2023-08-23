@@ -19,7 +19,7 @@ npmlock2nix.v1.build {
   buildInputs = [
     spagoPkgs.installSpagoStyle
     spagoPkgs.buildSpagoStyle
-    pkgs.nodejs-14_x.pkgs.npm
+    pkgs.nodejs-18_x
     repoRoot.nix.marlowe-playground.easy-purescript-nix.purs
     repoRoot.nix.marlowe-playground.easy-purescript-nix.spago2nix
   ];
