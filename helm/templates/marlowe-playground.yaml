@@ -184,7 +184,6 @@ spec:
           - "github:input-output-hk/marlowe-playground#marlowe-playground-server"
           - "github:input-output-hk/marlowe-playground#ghc-with-marlowe"
           - "nixpkgs#z3"
-          - "nixpkgs#cacert"
         entrypointBinName: "marlowe-playground-server"
     - meta:
         alias: Push production server image
@@ -223,6 +222,7 @@ spec:
         alias: Deploy To local-marlowe-staging
       dependsOn:
         - push-server-image-staging
+        - push-client-image-staging
       name: local-marlowe-staging
       properties:
         policies:
@@ -232,6 +232,7 @@ spec:
         alias: Deploy To local-marlowe-production
       dependsOn:
         - push-server-image-production
+        - push-client-image-production
       name: local-marlowe-production
       properties:
         policies:
