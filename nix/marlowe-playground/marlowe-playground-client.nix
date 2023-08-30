@@ -1,9 +1,11 @@
-{ inputs, cell }:
+{ repoRoot, inputs, pkgs, ... }:
+
 let
-  inherit (cell.library) nodejs-pkgs npmlock2nix pkgs purescript;
-  inherit (nodejs-pkgs) npm;
+  npmlock2nix = import inputs.npmlock2nix { inherit pkgs; };
+
   spagoPkgs = import (inputs.self + "/marlowe-playground-client/spago-packages.nix") { inherit pkgs; };
 in
+
 npmlock2nix.v1.build {
   src = inputs.self + "/marlowe-playground-client";
   installPhase = "cp -r dist $out";
@@ -17,9 +19,9 @@ npmlock2nix.v1.build {
   buildInputs = [
     spagoPkgs.installSpagoStyle
     spagoPkgs.buildSpagoStyle
-    npm
-    purescript.spago2nix
-    purescript.purs
+    pkgs.nodejs-14_x
+    repoRoot.nix.marlowe-playground.easy-purescript-nix.purs
+    repoRoot.nix.marlowe-playground.easy-purescript-nix.spago2nix
   ];
   unpackPhase = ''
     mkdir -p marlowe-playground-client
