@@ -89,7 +89,6 @@ import Halogen.HTML
   , section
   , slot
   , span
-  , span_
   , strong_
   , text
   , ul
