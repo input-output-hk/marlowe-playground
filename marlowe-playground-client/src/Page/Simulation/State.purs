@@ -273,6 +273,8 @@ handleAction _ (ShowRightPanel val) = assign _showRightPanel val
 
 handleAction _ EditSource = pure unit
 
+handleAction _ ExportToRunner = pure unit
+
 stripPair :: String -> Boolean /\ String
 stripPair pair = case splitAt 4 pair of
   { before, after }
