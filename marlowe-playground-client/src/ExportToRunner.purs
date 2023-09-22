@@ -23,9 +23,9 @@ exportToRunnerForm contractString _state =
         , div_
             do
               (title /\ url) <-
-                [ ("Mainnet" /\ "")
-                , ("Preprod" /\ "")
-                , ("Preview" /\ "")
+                [ ("Mainnet" /\ "https://mainnet.runner.marlowe.iohk.io/")
+                , ("Preprod" /\ "https://preprod.runner.marlowe.iohk.io/")
+                , ("Preview" /\ "https://preview.runner.marlowe.iohk.io/")
                 ]
               pure $ a
                 [ idPublishGist

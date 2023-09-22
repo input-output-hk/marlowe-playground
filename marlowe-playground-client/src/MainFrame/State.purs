@@ -31,6 +31,7 @@ import Data.RawJson (RawJson(..))
 import Effect.Aff.Class (class MonadAff, liftAff)
 import Effect.Class (class MonadEffect)
 import Effect.Class.Console (log)
+import Effect.Console as Console
 import Gist (Gist, gistDescription, gistId)
 import Gists.Extra (_GistId)
 import Gists.Types (GistAction(..))
@@ -43,6 +44,7 @@ import Halogen.Monaco (KeyBindings(DefaultBindings))
 import Halogen.Monaco as Monaco
 import Halogen.Query (HalogenM)
 import Halogen.Query.Event (eventListener)
+import JSURI (encodeURIComponent)
 import Language.Marlowe.Core.V1.Semantics.Types (Contract)
 import Language.Marlowe.Extended.V1.Metadata
   ( emptyContractMetadata
@@ -125,9 +127,11 @@ import Simple.JSON (unsafeStringify)
 import StaticData (gistIdLocalStorageKey)
 import StaticData as StaticData
 import Types (WebpackBuildMode(..))
+import Web.HTML (window)
 import Web.HTML (window) as Web
 import Web.HTML.HTMLDocument (toEventTarget)
 import Web.HTML.Window (document) as Web
+import Web.HTML.Window (open)
 import Web.HTML.Window as Window
 import Web.UIEvent.KeyboardEvent as KE
 import Web.UIEvent.KeyboardEvent.EventTypes (keyup)
@@ -638,8 +642,16 @@ handleAction (OpenModal modalView) = assign _showModal $ Just modalView
 
 handleAction CloseModal = assign _showModal Nothing
 
-handleAction (SendToRunner _url _contractString) = do
-  handleAction CloseModal
+handleAction (SendToRunner url contractString) = do
+  case encodeURIComponent contractString of
+    Just encodedContract -> do
+      let fullUrl = url <> "?contract=" <> encodedContract
+      liftEffect $ do
+        win <- window
+        void $ open fullUrl "_blank" "" win
+      handleAction CloseModal
+    Nothing -> do
+      liftEffect $ Console.error "Failed to encode contract string for URL."
 
 handleAction (OpenLoginPopup intendedAction) = do
   authRole <- liftAff openLoginPopup
