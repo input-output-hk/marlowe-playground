@@ -3,6 +3,7 @@ module Page.Simulation.State
   , editorGetValue
   , getCurrentContract
   , mkStateBase
+  , mkContract
   ) where
 
 import Prologue hiding (div)
@@ -126,11 +127,11 @@ toBottomPanel
 toBottomPanel = mapSubmodule _bottomPanelState BottomPanelAction
 
 mkContract
-  :: forall m
+  :: forall m a
    . MonadAff m
   => MonadEffect m
   => MonadAjax Api m
-  => HalogenM State Action ChildSlots Void m (Maybe (Term Term.Contract))
+  => HalogenM State a ChildSlots Void m (Maybe (Term Term.Contract))
 mkContract = runMaybeT do
   termContract <- MaybeT $ peruse
     ( _currentMarloweState
@@ -272,6 +273,8 @@ handleAction _ (ChangeHelpContext help) = do
 handleAction _ (ShowRightPanel val) = assign _showRightPanel val
 
 handleAction _ EditSource = pure unit
+
+handleAction _ ExportToRunner = pure unit
 
 stripPair :: String -> Boolean /\ String
 stripPair pair = case splitAt 4 pair of

@@ -89,7 +89,6 @@ import Halogen.HTML
   , section
   , slot
   , span
-  , span_
   , strong_
   , text
   , ul
@@ -395,6 +394,12 @@ startSimulationWidget
                 , onClick $ const DownloadAsJson
                 ]
                 [ text "Download as JSON" ]
+            , button
+                [ classNames
+                    [ "btn", "bold", "flex-1", "max-w-[15rem]", "mx-2" ]
+                , onClick $ const ExportToRunner
+                ]
+                [ text "Export to Marlowe Runner" ]
             , button
                 [ classNames
                     [ "btn", "bold", "flex-1", "max-w-[15rem]", "mx-2" ]

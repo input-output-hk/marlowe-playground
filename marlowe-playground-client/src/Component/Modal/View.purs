@@ -10,6 +10,7 @@ import Component.NewProject.View (render) as NewProject
 import Component.Projects.View (render) as Projects
 import Data.Lens ((^.))
 import Effect.Aff.Class (class MonadAff)
+import ExportToRunner (exportToRunnerForm)
 import GistButtons (authButton)
 import Halogen (ComponentHTML)
 import Halogen.Extra (renderSubmodule)
@@ -61,3 +62,5 @@ modal state = case state ^. _showModal of
       intendedAction
       state
     (GithubLogin intendedAction) -> authButton intendedAction state
+    (ExportToRunnerModal contractString) -> exportToRunnerForm contractString
+      state

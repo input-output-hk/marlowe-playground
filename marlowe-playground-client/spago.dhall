@@ -41,6 +41,7 @@
   , "integers"
   , "js-object"
   , "js-timers"
+  , "js-uri"
   , "json-helpers"
   , "lists"
   , "markdown"

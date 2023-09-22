@@ -60,6 +60,7 @@ data Action
   | ShowRightPanel Boolean
   | BottomPanelAction (BottomPanel.Action BottomPanelView Action)
   | EditSource
+  | ExportToRunner
 
 defaultEvent :: String -> Event
 defaultEvent s = A.defaultEvent $ "Simulation." <> s
@@ -82,6 +83,7 @@ instance isEventAction :: IsEvent Action where
   toEvent (BottomPanelAction action) = A.toEvent action
   toEvent EditSource = Just $ defaultEvent "EditSource"
   toEvent (HandleEditorMessage _) = Just $ defaultEvent "HandleEditorMessage"
+  toEvent ExportToRunner = Just $ defaultEvent "ExportToRunner"
 
 data Query a = WebsocketResponse (RemoteData String Result) a
 
