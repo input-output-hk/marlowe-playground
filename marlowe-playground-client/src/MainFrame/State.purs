@@ -16,6 +16,7 @@ import Control.Monad.Except (ExceptT(..), lift, runExceptT)
 import Control.Monad.Maybe.Extra (hoistMaybe)
 import Control.Monad.Maybe.Trans (MaybeT(..), runMaybeT)
 import Control.Monad.State (modify_)
+import Data.Argonaut (encodeJson, stringify)
 import Data.Argonaut.Extra (encodeStringifyJson, parseDecodeJson)
 import Data.Bifunctor (lmap)
 import Data.Either (either, hush, note)
@@ -37,11 +38,12 @@ import Gists.Types (parseGistUrl) as Gists
 import Halogen (Component, liftEffect, subscribe')
 import Halogen as H
 import Halogen.Analytics (withAnalytics)
-import Halogen.Extra (mapSubmodule)
+import Halogen.Extra (imapState, mapSubmodule)
 import Halogen.Monaco (KeyBindings(DefaultBindings))
 import Halogen.Monaco as Monaco
 import Halogen.Query (HalogenM)
 import Halogen.Query.Event (eventListener)
+import Language.Marlowe.Core.V1.Semantics.Types (Contract)
 import Language.Marlowe.Extended.V1.Metadata
   ( emptyContractMetadata
   , getHintsFromMetadata
@@ -83,6 +85,7 @@ import MainFrame.View (render)
 import Marlowe (Api, getApiGistsByGistId)
 import Marlowe as Server
 import Marlowe.Gists (PlaygroundFiles, mkNewGist, mkPatchGist, playgroundFiles)
+import Marlowe.Holes (fromTerm)
 import Network.RemoteData (RemoteData(..), _Success, fromEither)
 import Page.BlocklyEditor.State as BlocklyEditor
 import Page.BlocklyEditor.Types (_marloweCode)
@@ -454,6 +457,18 @@ handleAction (SimulationAction action) = do
     ST.EditSource -> do
       mLang <- use _workflow
       for_ mLang \lang -> selectView $ selectLanguageView lang
+    ST.ExportToRunner -> do
+      result <- imapState _simulationState
+        ( runMaybeT $ do
+            extendedContract <- MaybeT Simulation.mkContract
+            coreContract :: Contract <- MaybeT $ pure $ fromTerm
+              extendedContract
+            pure $ stringify $ encodeJson coreContract
+        )
+      case result of
+        Just contract -> modify_
+          (set _showModal (Just $ ExportToRunnerModal contract))
+        Nothing -> pure unit
     _ -> pure unit
 
 handleAction (ChangeView view) = selectView view
@@ -622,6 +637,9 @@ handleAction (OpenModal RenameProject) = do
 handleAction (OpenModal modalView) = assign _showModal $ Just modalView
 
 handleAction CloseModal = assign _showModal Nothing
+
+handleAction (SendToRunner _url _contractString) = do
+  handleAction CloseModal
 
 handleAction (OpenLoginPopup intendedAction) = do
   authRole <- liftAff openLoginPopup
