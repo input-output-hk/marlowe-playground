@@ -11,7 +11,7 @@ spec:
     type: webservice
     properties:
       cpu: "0.5"
-      image: ghcr.io/input-output-hk/marlowe-playground-server:latest
+      image: ghcr.io/input-output-hk/marlowe-playground-server:61627e5e
       args:
       - webserver
       env:
@@ -86,7 +86,7 @@ spec:
     - type: init-container
       properties:
         name: playground-client
-        image: ghcr.io/input-output-hk/marlowe-playground-client:latest
+        image: ghcr.io/input-output-hk/marlowe-playground-client:61627e5e
         mountName: client-www
         initMountPath: /share/marlowe-playground-client/static
         appMountPath: /client-www
@@ -137,7 +137,7 @@ spec:
               secretKeyRef:
                 key: callbackPath
                 name: gh-oauth-production
-          image: ghcr.io/input-output-hk/marlowe-playground-server:production
+          image: ghcr.io/input-output-hk/marlowe-playground-server:61627e5e
         traits:
         - properties:
             domains:
@@ -161,7 +161,7 @@ spec:
         - type: init-container
           properties:
             name: build-client
-            image: ghcr.io/input-output-hk/marlowe-playground-client:production
+            image: ghcr.io/input-output-hk/marlowe-playground-client:61627e5e
             mountName: client-www
             initMountPath: /share/marlowe-playground-client/static
             appMountPath: /client-www
