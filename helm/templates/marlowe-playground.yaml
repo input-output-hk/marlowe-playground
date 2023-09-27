@@ -1,11 +1,11 @@
 apiVersion: core.oam.dev/v1beta1
 kind: Application
 metadata:
-  name: marlowe-playground-test
+  name: marlowe-playground
   namespace: marlowe-staging
 spec:
   components:
-  - name: marlowe-playground-test
+  - name: marlowe-playground
     type: webservice
     properties:
       cpu: "0.5"
@@ -14,7 +14,7 @@ spec:
       - webserver
       env:
       - name: FRONTEND_URL
-        value: https://marlowe-playground-test.scdev.aws.iohkdev.io
+        value: https://marlowe-playground.scdev.aws.iohkdev.io
       - name: WEBGHC_URL
         value: http://localhost:8080
       - name: JWT_SIGNATURE
@@ -49,14 +49,14 @@ spec:
       type: scaler
     - properties:
         domains:
-        - marlowe-playground-test.scdev.aws.iohkdev.io
+        - marlowe-playground.scdev.aws.iohkdev.io
         rules:
         - path:
             type: PathPrefix
             value: /api
           port: 8080
       type: https-route
-  - name: marlowe-playground-client-test
+  - name: marlowe-playground-client
     type: webservice
     properties:
       cpu: "0.5"
@@ -77,7 +77,7 @@ spec:
       type: scaler
     - properties:
         domains:
-        - marlowe-playground-test.scdev.aws.iohkdev.io
+        - marlowe-playground.scdev.aws.iohkdev.io
         rules:
         - port: 8080
       type: https-route
@@ -117,7 +117,7 @@ spec:
         properties:
           env:
           - name: FRONTEND_URL
-            value: https://playtest.marlowe.iohk.io
+            value: https://play.marlowe.iohk.io
           - name: WEBGHC_URL
             value: http://localhost:8080
           - name: JWT_SIGNATURE
@@ -144,20 +144,20 @@ spec:
         traits:
         - properties:
             domains:
-            - playtest.marlowe.iohk.io
+            - play.marlowe.iohk.io
             rules:
             - path:
                 type: PathPrefix
                 value: /api
               port: 8080
           type: https-route
-      - name: marlowe-playground-client-test
+      - name: marlowe-playground-client
         properties:
           image: p3terx/darkhttpd
         traits:
         - properties:
             domains:
-            - playtest.marlowe.iohk.io
+            - play.marlowe.iohk.io
             rules:
             - port: 8080
           type: https-route
