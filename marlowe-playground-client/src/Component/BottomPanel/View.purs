@@ -35,6 +35,7 @@ import Halogen.Classes
 import Halogen.HTML (ClassName, HTML, a, div, img, text)
 import Halogen.HTML.Events (onClick)
 import Halogen.HTML.Properties (alt, classes, src)
+import Halogen.HTML.Properties.ARIA (label, role)
 
 type PanelTitle panel =
   { view :: panel
@@ -74,6 +75,8 @@ render panelTitles panelContent state =
                         ( [ fontBold, paddingX ] <> panelTitle.classes <>
                             activeClasses panelTitle.view
                         )
+                    , role "link"
+                    , label panelTitle.title
                     , onClick $ clickTitleAction panelTitle.view
                     ]
                     [ text panelTitle.title ]

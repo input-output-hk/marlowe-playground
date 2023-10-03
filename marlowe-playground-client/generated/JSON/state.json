@@ -1,0 +1,29 @@
+{
+  "accounts": [
+    [
+      [
+        {
+          "address": "addr_test1vz3vyrrh3pavu8xescvnunn4h27cny70645etn2ulnnqnssrz8utc"
+        },
+        { "currency_symbol": "aa", "token_name": "name" }
+      ],
+      12
+    ]
+  ],
+  "boundValues": [
+    ["x", 1],
+    ["y", 2]
+  ],
+  "choices": [
+    [
+      {
+        "choice_name": "choice",
+        "choice_owner": {
+          "address": "addr_test1vz3vyrrh3pavu8xescvnunn4h27cny70645etn2ulnnqnssrz8utc"
+        }
+      },
+      42
+    ]
+  ],
+  "minTime": 123
+}

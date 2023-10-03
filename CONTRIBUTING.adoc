@@ -28,13 +28,15 @@ Please do make use of this, since problems due to mismatched versions of tools a
 
 The shell comes with some tools for fixing various simple problems that the CI will complain about. Specifically:
 
-- `fix-nixfmt` will re-format nix files
-- `fix-prettier` will re-format JS, CSS and HTML files.
-- `fix-stylish-haskell` will re-format all the Haskell sources correctly.
-- `fix-purs-tidy` will re-format all the Purescript sources correctly.
-- `fix-png-optimization` will optimize all PNGs in the repository.
+For example you can run the formatters via `pre-commit`, like so: 
 
-If you're not inside the nix shell all the time and you want to run one of these, you can use `nix run .#fix-purs-tidy` instead.
+``` 
+pre-commit run shellcheck
+pre-commit run stylish-haskell
+pre-commit run nixpkgs-fmt
+pre-commit run prettier
+pre-commit run purs-tidy
+``` 
 
 === How to build the code during development
 

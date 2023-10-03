@@ -73,24 +73,11 @@ If you use Nix, these tools are provided for you via `shell.nix`, and you do *no
 * If you want to build our Haskell packages with https://haskellstack.org/[`stack`], then install it.
 
 [[building-with-nix]]
-==== Using Std
+==== Using Nix
 
-This project is managed by https://github.com/divnix/std[`std`]. It provides a
-CLI and TUI for navigating all buildable artifacts in the project. To use it,
-you must enter the project dev shell. You can do this by running the command
-`nix develop` from the repo root, or if you are a direnv user, run `direnv
-allow` in the repo root and direnv will automatically load the dev shell for
-you when you `cd` into the repo and refresh it when it changes.
+Run `nix develop` to enter the shell.
 
-Upon entering the dev shell, you will be shown a MOD (message of the day) that
-lists the available commands. You can also launch the std TUI with the `std`
-command. It will display a navigable menu of all build actions defined for this
-project. You can invoke any of the commands from the TUI, or directly using the
-`std` CLI. For instance, to build the `marlowe-playground-server`, run the
-command `std //marlowe-playground/packages/marlowe-playground-server:build`.
-
-You can get tab-completion for the `std` CLI by running the command
-`source <(std _carapace)`.
+From there, you can type `info` to get a list of available commands.
 
 ==== How to build the Haskell packages with `cabal`
 

@@ -71,7 +71,9 @@ render state =
                 (const $ NewProjectAction $ NewProject.CreateProject Javascript)
             ]
             [ img
-                [ src newProjectJavascriptIcon, classNames [ "h-16", "mb-4" ] ]
+                [ src newProjectJavascriptIcon
+                , classNames [ "h-16", "mb-4" ]
+                ]
             , text
                 "Start in Javascript"
             ]
@@ -81,7 +83,10 @@ render state =
             , onClick
                 (const $ NewProjectAction $ NewProject.CreateProject Haskell)
             ]
-            [ img [ src newProjectHaskellIcon, classNames [ "h-16", "mb-4" ] ]
+            [ img
+                [ src newProjectHaskellIcon
+                , classNames [ "h-16", "mb-4" ]
+                ]
             , text
                 "Start in Haskell"
             ]
@@ -102,7 +107,10 @@ render state =
             , onClick
                 (const $ NewProjectAction $ NewProject.CreateProject Marlowe)
             ]
-            [ img [ src marloweLogo, classNames [ "h-16", "mb-4" ] ]
+            [ img
+                [ src marloweLogo
+                , classNames [ "h-16", "mb-4" ]
+                ]
             , text
                 "Start in Marlowe"
             ]
@@ -116,7 +124,10 @@ render state =
             , onClick
                 (const $ NewProjectAction $ NewProject.CreateProject Blockly)
             ]
-            [ img [ src newProjectBlocklyIcon, classNames [ "h-16", "mb-4" ] ]
+            [ img
+                [ src newProjectBlocklyIcon
+                , classNames [ "h-16", "mb-4" ]
+                ]
             , text
                 "Start in Blockly"
             ]
@@ -130,7 +141,10 @@ render state =
         , img [ classNames [ "ml-24" ], src arrowLeftDown ]
         ]
     , div [ classNames [ "font-bold", "text-sm" ] ]
-        [ a [ href "./doc/marlowe/tutorials/index.html", target "_blank" ]
+        [ a
+            [ href "https://docs.marlowe.iohk.io/tutorials"
+            , target "_blank"
+            ]
             [ text "Read our Getting Started guide" ]
         ]
     ]

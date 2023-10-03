@@ -13,175 +13,178 @@ export const debugBlockly = (name) => (state) => () => {
   window.blockly[name] = state;
 };
 
-export const createWorkspace =
-  (blockly) => (workspaceDiv) => (config) => (tzInfo) => () => {
-    /* Disable comments */
-    try {
-      blockly.ContextMenuRegistry.registry.unregister("blockComment");
-    } catch (err) {}
+export const createWorkspaceImpl = (
+  blockly,
+  workspaceDiv,
+  config,
+  tzInfo,
+  FieldDateTime
+) => {
+  /* Disable comments */
+  try {
+    blockly.ContextMenuRegistry.registry.unregister("blockComment");
+  } catch (err) {}
 
-    /* Disable disabling blocks */
-    try {
-      blockly.ContextMenuRegistry.registry.unregister("blockDisable");
-    } catch (err) {}
+  /* Disable disabling blocks */
+  try {
+    blockly.ContextMenuRegistry.registry.unregister("blockDisable");
+  } catch (err) {}
 
-    /* Register extensions */
-    /* Silently clean if already registered */
-    try {
-      blockly.Extensions.register("hash_validator", function () {});
-    } catch (err) {}
-    blockly.Extensions.unregister("hash_validator");
-    try {
-      blockly.Extensions.register("number_validator", function () {});
-    } catch (err) {}
-    blockly.Extensions.unregister("number_validator");
-    try {
-      blockly.Extensions.register("dynamic_timeout_type", function () {});
-    } catch (err) {}
-    blockly.Extensions.unregister("dynamic_timeout_type");
+  /* Register extensions */
+  /* Silently clean if already registered */
+  try {
+    blockly.Extensions.register("hash_validator", function () {});
+  } catch (err) {}
+  blockly.Extensions.unregister("hash_validator");
+  try {
+    blockly.Extensions.register("number_validator", function () {});
+  } catch (err) {}
+  blockly.Extensions.unregister("number_validator");
+  try {
+    blockly.Extensions.register("dynamic_timeout_type", function () {});
+  } catch (err) {}
+  blockly.Extensions.unregister("dynamic_timeout_type");
 
-    /* Hash extension (advanced validation for the hash fields) */
-    blockly.Extensions.register("hash_validator", function () {
-      var thisBlock = this;
+  /* Hash extension (advanced validation for the hash fields) */
+  blockly.Extensions.register("hash_validator", function () {
+    var thisBlock = this;
 
-      /* Validator for hash */
-      var hashValidator = function (input) {
-        var cleanedInput = input
-          .replace(new RegExp("[^a-fA-F0-9]+", "g"), "")
-          .toLowerCase();
-        if (new RegExp("^([a-f0-9][a-f0-9])*$", "g").test(cleanedInput)) {
-          return cleanedInput;
-        } else {
-          return null;
-        }
-      };
+    /* Validator for hash */
+    var hashValidator = function (input) {
+      var cleanedInput = input
+        .replace(new RegExp("[^a-fA-F0-9]+", "g"), "")
+        .toLowerCase();
+      if (new RegExp("^([a-f0-9][a-f0-9])*$", "g").test(cleanedInput)) {
+        return cleanedInput;
+      } else {
+        return null;
+      }
+    };
 
-      ["currency_symbol"].forEach(function (fieldName) {
-        var field = thisBlock.getField(fieldName);
-        if (field != null) {
-          field.setValidator(hashValidator);
+    ["currency_symbol"].forEach(function (fieldName) {
+      var field = thisBlock.getField(fieldName);
+      if (field != null) {
+        field.setValidator(hashValidator);
+      }
+    });
+  });
+
+  /* Number extension (advanced validation for number fields - other than timeout) */
+  blockly.Extensions.register("number_validator", function () {
+    var thisBlock = this;
+
+    /* Validator for number fields */
+    var numberValidator = function (input) {
+      if (!isFinite(input)) {
+        return null;
+      }
+    };
+
+    thisBlock.inputList.forEach((input) => {
+      input.fieldRow.forEach((field) => {
+        if (field instanceof blockly.FieldNumber) {
+          field.setValidator(numberValidator);
         }
       });
     });
+  });
 
-    /* Number extension (advanced validation for number fields - other than timeout) */
-    blockly.Extensions.register("number_validator", function () {
-      var thisBlock = this;
+  // This extension takes care of changing the `timeout field` depending on the value of
+  // `timeout_type`. When `timeout_type` is a constant, then we show a datetime picker
+  // if it is a parameter we show a text field.
+  blockly.Extensions.register("dynamic_timeout_type", function () {
+    const timeoutTypeField = this.getField("timeout_type");
+    // The timeoutField is mutable as we change it depending of the value of
+    // the timeout type.
+    let timeoutField = this.getField("timeout");
+    // The field Row is what groups a line in the block. In the case of a when block
+    // this is ["After" label, timeoutTypeField, timeoutField]
+    const row = timeoutField.getParentInput();
+    const safeRemoveField = function (fieldName) {
+      if (row.fieldRow.findIndex((field) => field.name === fieldName) > -1) {
+        row.removeField(fieldName);
+      }
+    };
+    // We store in this mutable data the values of the timeout field indexed by the different
+    // timeout types. We initialize this as undefined as there is no blockly event to get the initial
+    // loaded data, so we mark this information to be gathered on a different way.
+    let fieldValues = undefined; // { time :: String | undefined, time_param :: String };
 
-      /* Validator for number fields */
-      var numberValidator = function (input) {
-        if (!isFinite(input)) {
-          return null;
+    // The onChange function lets you know about Blockly events of the entire workspace, visual
+    // changes, data changes, etc.
+    const thisBlock = this;
+    this.setOnChange(function (event) {
+      // we only care about events for this block.
+      if (event.blockId != thisBlock.id) return;
+
+      timeoutField = thisBlock.getField("timeout");
+
+      // This function sets the Timeout Field of the correct type
+      const updateTimeoutField = function (type) {
+        if (type == "time") {
+          safeRemoveField("timeout");
+          row.appendField(
+            new FieldDateTime(fieldValues["time"], undefined, tzInfo),
+            "timeout"
+          );
+        } else if (type == "time_param") {
+          safeRemoveField("timeout");
+          row.appendField(
+            new blockly.FieldTextInput(fieldValues["time_param"]),
+            "timeout"
+          );
+          // For some reason Blockly doens't automatically fire this event
+          // indicating that the timeout field has changed. Not firing the
+          // event results in a bug where if you attach a new When block,
+          // change to time_param and convert to marlowe, the old time value
+          // is presented.
+          blockly.Events.fire(
+            new blockly.Events.Change(
+              thisBlock, // block that changed
+              "field", // type of element that changed
+              "timeout", // name of the element that changed
+              fieldValues["time"], // old value
+              fieldValues["time_param"] // new value
+            )
+          );
         }
       };
 
-      thisBlock.inputList.forEach((input) => {
-        input.fieldRow.forEach((field) => {
-          if (field instanceof blockly.FieldNumber) {
-            field.setValidator(numberValidator);
-          }
-        });
-      });
-    });
+      // For the first event we receive, we set the fieldValues to whatever is stored in
+      // the timeoutField.
+      if (typeof fieldValues === "undefined") {
+        const type = timeoutTypeField.getValue();
+        const val = timeoutField.getValue();
 
-    const FieldDateTime = registerDateTimeField(blockly);
-
-    // This extension takes care of changing the `timeout field` depending on the value of
-    // `timeout_type`. When `timeout_type` is a constant, then we show a datetime picker
-    // if it is a parameter we show a text field.
-    blockly.Extensions.register("dynamic_timeout_type", function () {
-      const timeoutTypeField = this.getField("timeout_type");
-      // The timeoutField is mutable as we change it depending of the value of
-      // the timeout type.
-      let timeoutField = this.getField("timeout");
-      // The field Row is what groups a line in the block. In the case of a when block
-      // this is ["After" label, timeoutTypeField, timeoutField]
-      const row = timeoutField.getParentInput();
-      const safeRemoveField = function (fieldName) {
-        if (row.fieldRow.findIndex((field) => field.name === fieldName) > -1) {
-          row.removeField(fieldName);
-        }
-      };
-      // We store in this mutable data the values of the timeout field indexed by the different
-      // timeout types. We initialize this as undefined as there is no blockly event to get the initial
-      // loaded data, so we mark this information to be gathered on a different way.
-      let fieldValues = undefined; // { time :: String | undefined, time_param :: String };
-
-      // The onChange function lets you know about Blockly events of the entire workspace, visual
-      // changes, data changes, etc.
-      const thisBlock = this;
-      this.setOnChange(function (event) {
-        // we only care about events for this block.
-        if (event.blockId != thisBlock.id) return;
-
-        timeoutField = thisBlock.getField("timeout");
-
-        // This function sets the Timeout Field of the correct type
-        const updateTimeoutField = function (type) {
-          if (type == "time") {
-            safeRemoveField("timeout");
-            row.appendField(
-              new FieldDateTime(fieldValues["time"], undefined, tzInfo),
-              "timeout"
-            );
-          } else if (type == "time_param") {
-            safeRemoveField("timeout");
-            row.appendField(
-              new blockly.FieldTextInput(fieldValues["time_param"]),
-              "timeout"
-            );
-            // For some reason Blockly doens't automatically fire this event
-            // indicating that the timeout field has changed. Not firing the
-            // event results in a bug where if you attach a new When block,
-            // change to time_param and convert to marlowe, the old time value
-            // is presented.
-            blockly.Events.fire(
-              new blockly.Events.Change(
-                thisBlock, // block that changed
-                "field", // type of element that changed
-                "timeout", // name of the element that changed
-                fieldValues["time"], // old value
-                fieldValues["time_param"] // new value
-              )
-            );
-          }
+        fieldValues = {
+          // If the timeout type was set to constant, then set the value here and a sensible
+          // default for time_param
+          time: type == "time" ? val : undefined,
+          // If the timeout type was set to a time parameter, then set the value here and
+          // use undefined for `time`. That will result than on the first switch to a Constant, the
+          // current time will be used.
+          time_param: type == "time_param" ? val : "time_param",
         };
+        // Set the timeout field to the correct type
+        updateTimeoutField(type);
+      }
 
-        // For the first event we receive, we set the fieldValues to whatever is stored in
-        // the timeoutField.
-        if (typeof fieldValues === "undefined") {
-          const type = timeoutTypeField.getValue();
-          const val = timeoutField.getValue();
-
-          fieldValues = {
-            // If the timeout type was set to constant, then set the value here and a sensible
-            // default for time_param
-            time: type == "time" ? val : undefined,
-            // If the timeout type was set to a time parameter, then set the value here and
-            // use undefined for `time`. That will result than on the first switch to a Constant, the
-            // current time will be used.
-            time_param: type == "time_param" ? val : "time_param",
-          };
-          // Set the timeout field to the correct type
-          updateTimeoutField(type);
-        }
-
-        if (event.element == "field" && event.name == "timeout") {
-          // If the timeout field changes, update the fieldValues "local store"
-          fieldValues[timeoutTypeField.getValue()] = event.newValue;
-        } else if (event.element == "field" && event.name == "timeout_type") {
-          // If the timeout_type field changes, then update the timeout field
-          updateTimeoutField(event.newValue);
-        }
-      });
+      if (event.element == "field" && event.name == "timeout") {
+        // If the timeout field changes, update the fieldValues "local store"
+        fieldValues[timeoutTypeField.getValue()] = event.newValue;
+      } else if (event.element == "field" && event.name == "timeout_type") {
+        // If the timeout_type field changes, then update the timeout field
+        updateTimeoutField(event.newValue);
+      }
     });
+  });
 
-    /* Inject workspace */
-    var workspace = blockly.inject(workspaceDiv, config);
-    blockly.svgResize(workspace);
+  /* Inject workspace */
+  var workspace = blockly.inject(workspaceDiv, config);
+  blockly.svgResize(workspace);
 
-    return workspace;
-  };
+  return workspace;
+};
 
 export const resize = (blockly) => (workspace) => () => {
   blockly.svgResize(workspace);

@@ -50,6 +50,7 @@ module Blockly.Internal
 
 import Prologue
 
+import Blockly.DateTimeField (FieldDateTime, registerDateTimeField)
 import Blockly.Toolbox (Toolbox, encodeToolbox)
 import Blockly.Types
   ( Block
@@ -72,6 +73,7 @@ import Effect (Effect)
 import Effect.Aff (Aff)
 import Effect.Class (liftEffect)
 import Effect.Exception (throw)
+import Effect.Uncurried (EffectFn5, runEffectFn5)
 import Foreign (Foreign)
 import Halogen.HTML (AttrName(..), ElemName(..), Node)
 import Halogen.HTML.Elements (element)
@@ -147,8 +149,15 @@ type TzInfo =
 
   }
 
-foreign import createWorkspace
+foreign import createWorkspaceImpl
+  :: EffectFn5 Blockly String WorkspaceConfig TzInfo FieldDateTime Workspace
+
+createWorkspace
   :: Blockly -> String -> WorkspaceConfig -> TzInfo -> Effect Workspace
+createWorkspace blockly workspaceContainer config tzInfo = do
+  fieldDateTime <- registerDateTimeField blockly
+  runEffectFn5 createWorkspaceImpl blockly workspaceContainer config tzInfo
+    fieldDateTime
 
 foreign import resize :: Blockly -> Workspace -> Effect Unit
 

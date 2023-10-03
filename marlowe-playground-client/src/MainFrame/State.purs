@@ -16,6 +16,7 @@ import Control.Monad.Except (ExceptT(..), lift, runExceptT)
 import Control.Monad.Maybe.Extra (hoistMaybe)
 import Control.Monad.Maybe.Trans (MaybeT(..), runMaybeT)
 import Control.Monad.State (modify_)
+import Data.Argonaut (encodeJson, stringify)
 import Data.Argonaut.Extra (encodeStringifyJson, parseDecodeJson)
 import Data.Bifunctor (lmap)
 import Data.Either (either, hush, note)
@@ -30,6 +31,7 @@ import Data.RawJson (RawJson(..))
 import Effect.Aff.Class (class MonadAff, liftAff)
 import Effect.Class (class MonadEffect)
 import Effect.Class.Console (log)
+import Effect.Console as Console
 import Gist (Gist, gistDescription, gistId)
 import Gists.Extra (_GistId)
 import Gists.Types (GistAction(..))
@@ -37,11 +39,13 @@ import Gists.Types (parseGistUrl) as Gists
 import Halogen (Component, liftEffect, subscribe')
 import Halogen as H
 import Halogen.Analytics (withAnalytics)
-import Halogen.Extra (mapSubmodule)
+import Halogen.Extra (imapState, mapSubmodule)
 import Halogen.Monaco (KeyBindings(DefaultBindings))
 import Halogen.Monaco as Monaco
 import Halogen.Query (HalogenM)
 import Halogen.Query.Event (eventListener)
+import JSURI (encodeURIComponent)
+import Language.Marlowe.Core.V1.Semantics.Types (Contract)
 import Language.Marlowe.Extended.V1.Metadata
   ( emptyContractMetadata
   , getHintsFromMetadata
@@ -82,7 +86,8 @@ import MainFrame.Types
 import MainFrame.View (render)
 import Marlowe (Api, getApiGistsByGistId)
 import Marlowe as Server
-import Marlowe.Gists (PlaygroundFiles, mkNewGist, playgroundFiles)
+import Marlowe.Gists (PlaygroundFiles, mkNewGist, mkPatchGist, playgroundFiles)
+import Marlowe.Holes (fromTerm)
 import Network.RemoteData (RemoteData(..), _Success, fromEither)
 import Page.BlocklyEditor.State as BlocklyEditor
 import Page.BlocklyEditor.Types (_marloweCode)
@@ -122,9 +127,11 @@ import Simple.JSON (unsafeStringify)
 import StaticData (gistIdLocalStorageKey)
 import StaticData as StaticData
 import Types (WebpackBuildMode(..))
+import Web.HTML (window)
 import Web.HTML (window) as Web
 import Web.HTML.HTMLDocument (toEventTarget)
 import Web.HTML.Window (document) as Web
+import Web.HTML.Window (open)
 import Web.HTML.Window as Window
 import Web.UIEvent.KeyboardEvent as KE
 import Web.UIEvent.KeyboardEvent.EventTypes (keyup)
@@ -454,6 +461,18 @@ handleAction (SimulationAction action) = do
     ST.EditSource -> do
       mLang <- use _workflow
       for_ mLang \lang -> selectView $ selectLanguageView lang
+    ST.ExportToRunner -> do
+      result <- imapState _simulationState
+        ( runMaybeT $ do
+            extendedContract <- MaybeT Simulation.mkContract
+            coreContract :: Contract <- MaybeT $ pure $ fromTerm
+              extendedContract
+            pure $ stringify $ encodeJson coreContract
+        )
+      case result of
+        Just contract -> modify_
+          (set _showModal (Just $ ExportToRunnerModal contract))
+        Nothing -> pure unit
     _ -> pure unit
 
 handleAction (ChangeView view) = selectView view
@@ -623,6 +642,17 @@ handleAction (OpenModal modalView) = assign _showModal $ Just modalView
 
 handleAction CloseModal = assign _showModal Nothing
 
+handleAction (SendToRunner url contractString) = do
+  case encodeURIComponent contractString of
+    Just encodedContract -> do
+      let fullUrl = url <> "?contract=" <> encodedContract
+      liftEffect $ do
+        win <- window
+        void $ open fullUrl "_blank" "" win
+      handleAction CloseModal
+    Nothing -> do
+      liftEffect $ Console.error "Failed to encode contract string for URL."
+
 handleAction (OpenLoginPopup intendedAction) = do
   authRole <- liftAff openLoginPopup
   fullHandleAction CloseModal
@@ -741,8 +771,6 @@ handleGistAction
 handleGistAction PublishOrUpdateGist = do
   description <- use _projectName
   files <- createFiles
-  let
-    newGist = mkNewGist description $ files
   void
     $ runMaybeT do
         mGist <- use _gistId
@@ -751,8 +779,10 @@ handleGistAction PublishOrUpdateGist = do
           lift
             $ lift
             $ case mGist of
-                Nothing -> Server.postApiGists newGist
-                Just gistId -> Server.postApiGistsByGistId newGist gistId
+                Nothing -> Server.postApiGists $ mkNewGist description files
+                Just gistId -> Server.patchApiGistsByGistId
+                  (mkPatchGist description files)
+                  gistId
         assign _createGistResult $ fromEither newResult
         gistId <- hoistMaybe $ preview (_Right <<< gistId) newResult
         modify_

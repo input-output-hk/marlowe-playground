@@ -30,11 +30,9 @@ import Data.Time.Duration (Milliseconds(..))
 import Language.Marlowe.Core.V1.Semantics.Types
   ( Address
   , CurrencySymbol
-  , Input(..)
   , Rational(..)
   , TimeInterval(..)
   , TokenName
-  , TransactionInput(..)
   , TransactionWarning(..)
   )
 import Language.Marlowe.Core.V1.Semantics.Types as S
@@ -53,6 +51,7 @@ import Marlowe.Holes
   , Term(..)
   , TermWrapper(..)
   , Token(..)
+  , TransactionInputContent(..)
   , Value(..)
   , ValueId(..)
   , mkArgName
@@ -519,27 +518,27 @@ genInput
   :: forall m
    . MonadGen m
   => MonadRec m
-  => m S.Input
+  => m S.InputContent
 genInput =
   oneOf
     $
-      ( IDeposit <$> genPartyValue <*> genPartyValue <*> genTokenValue <*>
+      ( S.IDeposit <$> genPartyValue <*> genPartyValue <*> genTokenValue <*>
           genBigInt
       )
         :|
-          [ IChoice <$> genChoiceIdValue <*> genBigInt
-          , pure INotify
+          [ S.IChoice <$> genChoiceIdValue <*> genBigInt
+          , pure S.INotify
           ]
 
 genTransactionInput
   :: forall m
    . MonadGen m
   => MonadRec m
-  => m S.TransactionInput
+  => m TransactionInputContent
 genTransactionInput = do
   interval <- genTimeInterval genInstant
   inputs <- unfoldable genInput
-  pure $ TransactionInput { interval, inputs }
+  pure $ TransactionInputContent { interval, inputs }
 
 genTransactionWarning
   :: forall m

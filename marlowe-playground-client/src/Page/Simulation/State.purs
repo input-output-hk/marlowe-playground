@@ -3,6 +3,7 @@ module Page.Simulation.State
   , editorGetValue
   , getCurrentContract
   , mkStateBase
+  , mkContract
   ) where
 
 import Prologue hiding (div)
@@ -46,9 +47,8 @@ import Language.Marlowe.Core.V1.Semantics (inBounds)
 import Language.Marlowe.Core.V1.Semantics.Types
   ( ChoiceId(..)
   , Contract
-  , Input(..)
+  , InputContent(..)
   , Party(..)
-
   )
 import Language.Marlowe.Extended.V1.Metadata.Types (MetaData)
 import MainFrame.Types (ChildSlots, _projectName, _simulatorEditorSlot)
@@ -127,11 +127,11 @@ toBottomPanel
 toBottomPanel = mapSubmodule _bottomPanelState BottomPanelAction
 
 mkContract
-  :: forall m
+  :: forall m a
    . MonadAff m
   => MonadEffect m
   => MonadAjax Api m
-  => HalogenM State Action ChildSlots Void m (Maybe (Term Term.Contract))
+  => HalogenM State a ChildSlots Void m (Maybe (Term Term.Contract))
 mkContract = runMaybeT do
   termContract <- MaybeT $ peruse
     ( _currentMarloweState
@@ -240,14 +240,20 @@ handleAction metadata Undo = do
 
 handleAction metadata (LoadContract contents) = do
   liftEffect $ SessionStorage.setItem simulatorBufferLocalStorageKey contents
+  currentTime <- liftEffect now
+  prevTemplateContent <- do
+    use _marloweState >>= last >>> case _ of
+      { executionState: Just (SimulationNotStarted { templateContent }) } ->
+        pure $ Just templateContent
+      _ -> pure Nothing
   let
     mTermContract = hush $ parseContract contents
-  currentTime <- liftEffect now
   for_ mTermContract \termContract ->
     assign
       _marloweState
       ( NEL.singleton
           $ initialMarloweState currentTime termContract metadata
+              prevTemplateContent
       )
 
   editorSetValue contents
@@ -267,6 +273,8 @@ handleAction _ (ChangeHelpContext help) = do
 handleAction _ (ShowRightPanel val) = assign _showRightPanel val
 
 handleAction _ EditSource = pure unit
+
+handleAction _ ExportToRunner = pure unit
 
 stripPair :: String -> Boolean /\ String
 stripPair pair = case splitAt 4 pair of

@@ -1,0 +1,4 @@
+{
+  "localhost": "http://0.0.0.0:8009/",
+  "staging": "https://marlowe-playground-test.scdev.aws.iohkdev.io/"
+}

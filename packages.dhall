@@ -10,6 +10,7 @@ in  upstream
         [ "aff"
         , "console"
         , "effect"
+        , "heterogeneous"
         , "prelude"
         , "psci-support"
         , "typelevel-prelude"
@@ -100,6 +101,7 @@ in  upstream
       mkPackage
         [ "aff"
         , "affjax"
+        , "affjax-web"
         , "argonaut"
         , "arrays"
         , "bifunctors"
@@ -209,4 +211,4 @@ in  upstream
         , "unfoldable"
         ]
         "https://github.com/input-output-hk/purescript-marlowe"
-        "b1b556905c672ec0ae811fa4e48b367b5e7c5d5d"
+        "710cb2d4024d91c112b5b33763d289b7e86bcf5f"

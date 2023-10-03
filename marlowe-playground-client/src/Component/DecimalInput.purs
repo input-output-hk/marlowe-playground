@@ -27,6 +27,7 @@ import Halogen.HTML.Properties
   , type_
   , value
   ) as HH
+import Halogen.HTML.Properties.ARIA (label, role) as HH
 import Type.Prelude (Proxy(..))
 
 type Input =
@@ -107,5 +108,7 @@ render state = HH.input
   , HH.type_ HH.InputNumber
   , HH.value $ state.value
   , HH.ref refLabel
+  , HH.role "spinbutton"
+  , HH.label "Decimal Amount"
   ]
 

@@ -18,7 +18,7 @@ import Language.Marlowe.Core.V1.Semantics.Types
   ( Bound
   , ChoiceId
   , ChosenNum
-  , Input
+  , InputContent
   )
 import Marlowe.Symbolic.Types.Response (Result)
 import Network.RemoteData (RemoteData)
@@ -46,7 +46,7 @@ data Action
   | StartSimulation
   | DownloadAsJson
   | MoveTime Instant
-  | AddInput Input (Array Bound)
+  | AddInput InputContent (Array Bound)
   | SetChoice ChoiceId ChosenNum
   | ResetSimulator
   | Undo
@@ -60,6 +60,7 @@ data Action
   | ShowRightPanel Boolean
   | BottomPanelAction (BottomPanel.Action BottomPanelView Action)
   | EditSource
+  | ExportToRunner
 
 defaultEvent :: String -> Event
 defaultEvent s = A.defaultEvent $ "Simulation." <> s
@@ -82,6 +83,7 @@ instance isEventAction :: IsEvent Action where
   toEvent (BottomPanelAction action) = A.toEvent action
   toEvent EditSource = Just $ defaultEvent "EditSource"
   toEvent (HandleEditorMessage _) = Just $ defaultEvent "HandleEditorMessage"
+  toEvent ExportToRunner = Just $ defaultEvent "ExportToRunner"
 
 data Query a = WebsocketResponse (RemoteData String Result) a
 

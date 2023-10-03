@@ -85,7 +85,6 @@ library
         time -any,
         time-out -any,
         time-units -any,
-        unordered-containers -any,
         wai-cors -any
     ghc-options:
         -Wall -Wnoncanonical-monad-instances -Wunused-packages
@@ -122,12 +121,13 @@ executable marlowe-playground-server
         directory -any,
         filepath -any,
         lens -any,
-        marlowe-cardano -any,
+        marlowe-cardano ==0.1.0.3,
         marlowe-playground-server -any,
         marlowe-symbolic -any,
         monad-logger -any,
         mtl -any,
         plutus-ledger-api ==1.0.0.1,
+        plutus-tx,
         purescript-bridge -any,
         optparse-applicative -any,
         servant-server -any,
@@ -159,7 +159,7 @@ executable flow-chart-generator
     build-depends:
         aeson -any,
         base -any,
-        marlowe-cardano -any,
+        marlowe-cardano ==0.1.0.3,
         marlowe-playground-server -any,
         plutus-ledger-api ==1.0.0.1
 

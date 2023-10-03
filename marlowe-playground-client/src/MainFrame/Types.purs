@@ -6,7 +6,7 @@ import Analytics (class IsEvent, defaultEvent, toEvent)
 import Auth (AuthStatus, _GithubUser, authStatusAuthRole)
 import Component.Blockly.Types as Blockly
 import Component.ConfirmUnsavedNavigation.Types as ConfirmUnsavedNavigation
-import Component.CurrencyInput.Types as CurrencyInput
+import Component.CurrencyInput as CurrencyInput
 import Component.DateTimeLocalInput.Types as DateTimeLocalInput
 import Component.Demos.Types as Demos
 import Component.MetadataTab.Types (MetadataAction)
@@ -57,6 +57,7 @@ data ModalView
   | SaveProjectAs
   | GithubLogin Action
   | ConfirmUnsavedNavigation Action
+  | ExportToRunnerModal String
 
 derive instance genericModalView :: Generic ModalView _
 
@@ -68,6 +69,7 @@ instance showModalView :: Show ModalView where
   show SaveProjectAs = "SaveProjectAs"
   show (ConfirmUnsavedNavigation _) = "ConfirmUnsavedNavigation"
   show (GithubLogin _) = "GithubLogin"
+  show (ExportToRunnerModal _) = "ExportToRunnerModal"
 
 -- Before adding the intended action to GithubLogin, this instance was being
 -- handled by the genericShow. Action does not have a show instance so genericShow
@@ -99,6 +101,7 @@ data Action
   | GistAction GistAction
   | OpenModal ModalView
   | CloseModal
+  | SendToRunner String String
   | OpenLoginPopup Action
 
 -- | Here we decide which top-level queries to track as GA events, and
@@ -127,6 +130,7 @@ instance actionIsEvent :: IsEvent Action where
     { category = Just "OpenModal" }
   toEvent CloseModal = Just $ defaultEvent "CloseModal"
   toEvent (OpenLoginPopup _) = Just $ defaultEvent "OpenLoginPopup"
+  toEvent (SendToRunner _ _) = Just $ defaultEvent "SendToRunner"
   toEvent Logout = Just $ defaultEvent "Logout"
 
 data View

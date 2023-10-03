@@ -32,14 +32,12 @@ import Language.Marlowe.Core.V1.Semantics.Types
   ( Bound(..)
   , ChoiceId(..)
   , Contract(..)
-  , Input(..)
+  , InputContent(..)
   , Party(..)
   , Token(..)
   , TransactionError
   , TransactionWarning
   )
--- FIXME FIXME FIXME
--- import Language.Marlowe.Extended.V1 (resolveRelativeTimes)
 import Language.Marlowe.Extended.V1 as EM
 import Language.Marlowe.Extended.V1.Metadata (emptyContractMetadata)
 import Language.Marlowe.ToTerm (toTerm)
@@ -89,8 +87,11 @@ mkState contract =
   in
     set
       _marloweState
-      ( NEL.singleton $ initialMarloweState unixEpoch contract
+      ( NEL.singleton $ initialMarloweState
+          unixEpoch
+          contract
           emptyContractMetadata
+          Nothing
       )
       baseState
 

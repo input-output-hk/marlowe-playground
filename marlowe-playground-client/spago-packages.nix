@@ -101,6 +101,18 @@ let
       installPhase = "ln -s $src $out";
     };
 
+    "argonaut-generic" = pkgs.stdenv.mkDerivation {
+      name = "argonaut-generic";
+      version = "v8.0.0";
+      src = pkgs.fetchgit {
+        url = "https://github.com/purescript-contrib/purescript-argonaut-generic.git";
+        rev = "2df4080f036762df91a24b22842e389395ef0bdd";
+        sha256 = "0f3bkmv37nk89vscvivdr971sjydqiw7lwk9hfdfms05id8jdjkw";
+      };
+      phases = "installPhase";
+      installPhase = "ln -s $src $out";
+    };
+
     "argonaut-traversals" = pkgs.stdenv.mkDerivation {
       name = "argonaut-traversals";
       version = "v10.0.0";
@@ -787,11 +799,11 @@ let
 
     "marlowe" = pkgs.stdenv.mkDerivation {
       name = "marlowe";
-      version = "b1b556905c672ec0ae811fa4e48b367b5e7c5d5d";
+      version = "710cb2d4024d91c112b5b33763d289b7e86bcf5f";
       src = pkgs.fetchgit {
         url = "https://github.com/input-output-hk/purescript-marlowe";
-        rev = "b1b556905c672ec0ae811fa4e48b367b5e7c5d5d";
-        sha256 = "0rg8gmns0vavd6izkn3vjmwxdsjv4jvl3vpbyilb1a9mb2888fch";
+        rev = "710cb2d4024d91c112b5b33763d289b7e86bcf5f";
+        sha256 = "0gf6wxp4bnpji34gr125wf5d74c0bpadgpwwafr0pcai1468n9b8";
       };
       phases = "installPhase";
       installPhase = "ln -s $src $out";
@@ -1628,11 +1640,12 @@ in
   '';
 
   buildFromNixStore = pkgs.writeShellScriptBin "build-from-store" ''
-    set -e
-    echo building project using sources from nix store...
-    purs compile ${builtins.toString (
-      builtins.map getStoreGlob (builtins.attrValues inputs))} "$@"
-    echo done.
+          set -e
+          echo building project using sources from nix store...
+          purs compile ${builtins.toString (
+            builtins.map getStoreGlob (builtins.attrValues inputs)
+    )} "$@"
+          echo done.
   '';
 
   mkBuildProjectOutput =
