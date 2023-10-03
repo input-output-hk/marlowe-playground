@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
+        with:
+          ref: kube-deploy
 
       - name: Update publish version
         id: update
@@ -34,5 +36,3 @@ jobs:
           add: '.'
           message: "[ci skip] deploy from ${{ steps.update.outputs.VERSION }}"
           signoff: true
-          # specify the branch you want to commit if need
-          # branch: main
