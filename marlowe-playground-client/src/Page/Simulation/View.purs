@@ -397,12 +397,6 @@ startSimulationWidget
             , button
                 [ classNames
                     [ "btn", "bold", "flex-1", "max-w-[15rem]", "mx-2" ]
-                , onClick $ const ExportToRunner
-                ]
-                [ text "Export to Marlowe Runner" ]
-            , button
-                [ classNames
-                    [ "btn", "bold", "flex-1", "max-w-[15rem]", "mx-2" ]
                 , onClick $ const StartSimulation
                 ]
                 [ text "Start simulation" ]
