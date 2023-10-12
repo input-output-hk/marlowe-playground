@@ -18,6 +18,7 @@ jobs:
       - name: Update publish version
         id: update
         run: |
+          set -x
           VERSION=${GITHUB_SHA::8}
           if "$GITHUB_REF" == refs/heads/production; then
             TYPE=production
