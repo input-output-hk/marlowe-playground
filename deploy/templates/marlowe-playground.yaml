@@ -89,7 +89,7 @@ spec:
           - -c
           - |
               root="$(dirname $(readlink -f /profile/index.html))"
-              cp -a $root/* /share/marlowe-playground-client/static
+              cp -va $root/share/marlowe-playground-client/* /share/marlowe-playground-client/
         mountName: client-www
         initMountPath: /share/marlowe-playground-client/static
         appMountPath: /client-www
