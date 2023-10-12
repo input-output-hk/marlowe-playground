@@ -117,7 +117,7 @@ spec:
         properties:
           env:
           - name: FRONTEND_URL
-            value: https://play.marlowe.iohk.io
+            value: https://marlowe-playground.test.scdev.aws.iohkdev.io
           - name: WEBGHC_URL
             value: http://localhost:8080
           - name: JWT_SIGNATURE
@@ -144,7 +144,7 @@ spec:
         traits:
         - properties:
             domains:
-            - play.marlowe.iohk.io
+            - marlowe-playground.test.scdev.aws.iohkdev.io
             rules:
             - path:
                 type: PathPrefix
@@ -157,7 +157,7 @@ spec:
         traits:
         - properties:
             domains:
-            - play.marlowe.iohk.io
+            - marlowe-playground.test.scdev.aws.iohkdev.io
             rules:
             - port: 8080
           type: https-route
