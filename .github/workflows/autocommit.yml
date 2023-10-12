@@ -19,7 +19,7 @@ jobs:
         id: update
         run: |
           VERSION=${GITHUB_SHA::8}
-          if "$GITHUB_REF" == production; then
+          if "$GITHUB_REF" == refs/heads/production; then
             TYPE=production
           else
             TYPE=staging
