@@ -26,7 +26,7 @@ jobs:
           fi
           echo ::set-output name=VERSION::${VERSION}
           # replace app.yaml with your app file name
-          sed -i "s|${TYPE}Tag:.*|${TYPE}Tag: $VERSION|g" deploy/values.yaml
+          sed -i "s|${TYPE}Tag:.*|${TYPE}Tag: \"$VERSION\"|g" deploy/values.yaml
 
       - name: Commit changes
         uses: EndBug/add-and-commit@v7
