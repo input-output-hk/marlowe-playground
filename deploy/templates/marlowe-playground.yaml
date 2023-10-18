@@ -173,56 +173,7 @@ spec:
       steps: DAG
     steps:
     - meta:
-        alias: Push staging server image
-      name: push-server-image-staging
-      type: build-nix-image
-      properties:
-        image: ghcr.io/input-output-hk/marlowe-playground-server:{{ $.Values.images.stagingTag }}
-        requests:
-          ephemeralStorage: 25Gi
-        includedFlakeURIs:
-          - "github:input-output-hk/marlowe-playground#marlowe-playground-server"
-          - "github:input-output-hk/marlowe-playground#ghc-with-marlowe"
-          - "nixpkgs#z3"
-        entrypointBinName: "marlowe-playground-server"
-    - meta:
-        alias: Push production server image
-      name: push-server-image-production
-      type: build-nix-image
-      properties:
-        image: ghcr.io/input-output-hk/marlowe-playground-server:{{ $.Values.images.productionTag }}
-        requests:
-          ephemeralStorage: 25Gi
-        includedFlakeURIs:
-        - "github:input-output-hk/marlowe-playground/production#marlowe-playground-server"
-        - "github:input-output-hk/marlowe-playground/production#ghc-with-marlowe"
-        - "nixpkgs#z3"
-        entrypointBinName: "marlowe-playground-server"
-    - meta:
-        alias: Push staging client image
-      name: push-client-image-staging
-      type: build-nix-image
-      properties:
-        image: ghcr.io/input-output-hk/marlowe-playground-client:{{ $.Values.images.stagingTag }}
-        requests:
-          ephemeralStorage: 25Gi
-        includedFlakeURIs:
-        - "github:input-output-hk/marlowe-playground#marlowe-playground-client"
-    - meta:
-        alias: Push production client image
-      name: push-client-image-production
-      type: build-nix-image
-      properties:
-        image: ghcr.io/input-output-hk/marlowe-playground-client:{{ $.Values.images.productionTag }}
-        requests:
-          ephemeralStorage: 25Gi
-        includedFlakeURIs:
-        - "github:input-output-hk/marlowe-playground/production#marlowe-playground-client"
-    - meta:
         alias: Deploy To local-marlowe-staging
-      dependsOn:
-        - push-server-image-staging
-        - push-client-image-staging
       name: local-marlowe-staging
       properties:
         policies:
@@ -230,9 +181,6 @@ spec:
       type: deploy
     - meta:
         alias: Deploy To local-marlowe-production
-      dependsOn:
-        - push-server-image-production
-        - push-client-image-production
       name: local-marlowe-production
       properties:
         policies:
