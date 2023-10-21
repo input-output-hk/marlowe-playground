@@ -73,8 +73,8 @@ buyer = Role "Buyer"
 arbiter :: Party
 arbiter = Role "Mediator"
 
-ada :: Token
-ada = Token "" ""
+lovelace :: Token
+lovelace = Token "" ""
 
 escrowPrice :: BigInt
 escrowPrice = fromInt 1500
@@ -97,26 +97,26 @@ escrowFlows =
   List.fromFoldable
     [ "Everything is alright"
         /\ List.fromFoldable
-          [ transaction $ S.IDeposit seller buyer ada escrowPrice
+          [ transaction $ S.IDeposit seller buyer lovelace escrowPrice
           , transaction $ S.IChoice (S.ChoiceId "Everything is alright" buyer)
               zero
           ]
     , "Seller confirm problem"
         /\ List.fromFoldable
-          [ transaction $ S.IDeposit seller buyer ada escrowPrice
+          [ transaction $ S.IDeposit seller buyer lovelace escrowPrice
           , transaction $ S.IChoice (S.ChoiceId "Report problem" buyer) one
           , transaction $ S.IChoice (S.ChoiceId "Confirm problem" seller) one
           ]
     , "Dismiss claim"
         /\ List.fromFoldable
-          [ transaction $ S.IDeposit seller buyer ada escrowPrice
+          [ transaction $ S.IDeposit seller buyer lovelace escrowPrice
           , transaction $ S.IChoice (S.ChoiceId "Report problem" buyer) one
           , transaction $ S.IChoice (S.ChoiceId "Dispute problem" seller) zero
           , transaction $ S.IChoice (S.ChoiceId "Dismiss claim" arbiter) zero
           ]
     , "Mediator confirm problem"
         /\ List.fromFoldable
-          [ transaction $ S.IDeposit seller buyer ada escrowPrice
+          [ transaction $ S.IDeposit seller buyer lovelace escrowPrice
           , transaction $ S.IChoice (S.ChoiceId "Report problem" buyer) one
           , transaction $ S.IChoice (S.ChoiceId "Dispute problem" seller) zero
           , transaction $ S.IChoice (S.ChoiceId "Confirm problem" arbiter) one
@@ -125,7 +125,7 @@ escrowFlows =
         /\ List.singleton
           ( multipleInputs
               $ List.fromFoldable
-                  [ S.IDeposit seller buyer ada escrowPrice
+                  [ S.IDeposit seller buyer lovelace escrowPrice
                   , S.IChoice (S.ChoiceId "Report problem" buyer) one
                   , S.IChoice (S.ChoiceId "Dispute problem" seller) zero
                   , S.IChoice (S.ChoiceId "Confirm problem" arbiter) one
@@ -133,7 +133,7 @@ escrowFlows =
           )
     , "Invalid input"
         /\ List.fromFoldable
-          [ transaction $ S.IDeposit arbiter arbiter ada escrowPrice
+          [ transaction $ S.IDeposit arbiter arbiter lovelace escrowPrice
           ]
     , "Timeout 1"
         /\ List.fromFoldable
@@ -141,7 +141,7 @@ escrowFlows =
           ]
     , "Timeout 2"
         /\ List.fromFoldable
-          [ transaction $ S.IDeposit seller buyer ada escrowPrice
+          [ transaction $ S.IDeposit seller buyer lovelace escrowPrice
           , timeout (unsafeInstantFromInt 181)
           ]
     -- Because the slot 10 is lower than the first timeout (60), this "timeout" should
@@ -149,7 +149,7 @@ escrowFlows =
     , "Everything is alright (with non significant timeout)"
         /\ List.fromFoldable
           [ timeout (unsafeInstantFromInt 10)
-          , transaction $ S.IDeposit seller buyer ada escrowPrice
+          , transaction $ S.IDeposit seller buyer lovelace escrowPrice
           , transaction $ S.IChoice (S.ChoiceId "Everything is alright" buyer)
               zero
           ]
@@ -195,8 +195,8 @@ contractForDifferencesFlows =
   List.fromFoldable
     [ "Decrease in price"
         /\ List.fromFoldable
-          [ transaction $ S.IDeposit party party ada cfdPrice
-          , transaction $ S.IDeposit counterparty counterparty ada cfdPrice
+          [ transaction $ S.IDeposit party party lovelace cfdPrice
+          , transaction $ S.IDeposit counterparty counterparty lovelace cfdPrice
           , timeout (unsafeInstantFromInt 35)
           , transaction $ S.IChoice (S.ChoiceId "Price in first window" oracle)
               (fromInt 90000000)
@@ -206,8 +206,8 @@ contractForDifferencesFlows =
           ]
     , "Increase in price"
         /\ List.fromFoldable
-          [ transaction $ S.IDeposit party party ada cfdPrice
-          , transaction $ S.IDeposit counterparty counterparty ada cfdPrice
+          [ transaction $ S.IDeposit party party lovelace cfdPrice
+          , transaction $ S.IDeposit counterparty counterparty lovelace cfdPrice
           , timeout (unsafeInstantFromInt 35)
           , transaction $ S.IChoice (S.ChoiceId "Price in first window" oracle)
               (fromInt 90000000)
@@ -217,8 +217,8 @@ contractForDifferencesFlows =
           ]
     , "Same price"
         /\ List.fromFoldable
-          [ transaction $ S.IDeposit party party ada cfdPrice
-          , transaction $ S.IDeposit counterparty counterparty ada cfdPrice
+          [ transaction $ S.IDeposit party party lovelace cfdPrice
+          , transaction $ S.IDeposit counterparty counterparty lovelace cfdPrice
           , timeout (unsafeInstantFromInt 35)
           , transaction $ S.IChoice (S.ChoiceId "Price in first window" oracle)
               (fromInt 90000000)

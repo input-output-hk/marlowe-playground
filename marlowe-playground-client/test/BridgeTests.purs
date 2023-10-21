@@ -62,7 +62,7 @@ serializationTest =
   it "Contract Serialization" do
     -- A simple test that runs the Escrow contract to completion
     let
-      ada = Token "" ""
+      lovelace = Token "" ""
 
       aliceAddr = Address
         "addr_test1vz3vyrrh3pavu8xescvnunn4h27cny70645etn2ulnnqnssrz8utc"
@@ -80,9 +80,9 @@ serializationTest =
       contract =
         Assert TrueObs
           ( When
-              [ Case (Deposit aliceAddr aliceAddr ada valueExpr)
+              [ Case (Deposit aliceAddr aliceAddr lovelace valueExpr)
                   ( Let (ValueId "x") valueExpr
-                      ( Pay aliceAddr (Party bobRole) ada
+                      ( Pay aliceAddr (Party bobRole) lovelace
                           ( Cond TrueObs (UseValue (ValueId "x"))
                               (UseValue (ValueId "y"))
                           )

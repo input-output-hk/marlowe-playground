@@ -33,7 +33,7 @@ escrow =
 
 
     function deposit(timeout: Timeout, timeoutContinuation: Contract, continuation: Contract): Contract {
-        return When([Case(Deposit(seller, buyer, ada, price), continuation)],
+        return When([Case(Deposit(seller, buyer, lovelace, price), continuation)],
             timeout,
             timeoutContinuation);
     }
@@ -47,16 +47,16 @@ escrow =
     }
 
     function sellerToBuyer(continuation: Contract): Contract {
-        return Pay(seller, Account(buyer), ada, price, continuation);
+        return Pay(seller, Account(buyer), lovelace, price, continuation);
     }
 
     function paySeller(continuation: Contract): Contract {
-        return Pay(buyer, Party(seller), ada, price, continuation);
+        return Pay(buyer, Party(seller), lovelace, price, continuation);
     }
 
-    const refundBuyer: Contract = explicitRefunds ? Pay(buyer, Party(buyer), ada, price, Close) : Close;
+    const refundBuyer: Contract = explicitRefunds ? Pay(buyer, Party(buyer), lovelace, price, Close) : Close;
 
-    const refundSeller: Contract = explicitRefunds ? Pay(seller, Party(seller), ada, price, Close) : Close;
+    const refundSeller: Contract = explicitRefunds ? Pay(seller, Party(seller), lovelace, price, Close) : Close;
 
     const contract: Contract =
         deposit(depositTimeout, Close,
@@ -102,19 +102,19 @@ escrowWithCollateral =
     const answerTimeout: Timeout = TimeParam("Complaint deadline");
 
     function depositCollateral(party: Party, timeout: Timeout, timeoutContinuation: Contract, continuation: Contract): Contract {
-        return When([Case(Deposit(party, party, ada, collateral), continuation)],
+        return When([Case(Deposit(party, party, lovelace, collateral), continuation)],
             timeout,
             timeoutContinuation);
     }
 
     function burnCollaterals(continuation: Contract): Contract {
-        return Pay(seller, Party(burnAddress), ada, collateral,
-            Pay(buyer, Party(burnAddress), ada, collateral,
+        return Pay(seller, Party(burnAddress), lovelace, collateral,
+            Pay(buyer, Party(burnAddress), lovelace, collateral,
                 continuation));
     }
 
     function deposit(timeout: Timeout, timeoutContinuation: Contract, continuation: Contract): Contract {
-        return When([Case(Deposit(seller, buyer, ada, price), continuation)],
+        return When([Case(Deposit(seller, buyer, lovelace, price), continuation)],
             timeout,
             timeoutContinuation);
     }
@@ -134,12 +134,12 @@ escrowWithCollateral =
     }
 
     function sellerToBuyer(continuation: Contract): Contract {
-        return Pay(seller, Account(buyer), ada, price, continuation);
+        return Pay(seller, Account(buyer), lovelace, price, continuation);
     }
 
     function refundSellerCollateral(continuation: Contract): Contract {
         if (explicitRefunds) {
-            return Pay(seller, Party(seller), ada, collateral, continuation);
+            return Pay(seller, Party(seller), lovelace, collateral, continuation);
         } else {
             return continuation;
         }
@@ -147,7 +147,7 @@ escrowWithCollateral =
 
     function refundBuyerCollateral(continuation: Contract): Contract {
         if (explicitRefunds) {
-            return Pay(buyer, Party(buyer), ada, collateral, continuation);
+            return Pay(buyer, Party(buyer), lovelace, collateral, continuation);
         } else {
             return continuation;
         }
@@ -157,9 +157,9 @@ escrowWithCollateral =
         return refundSellerCollateral(refundBuyerCollateral(continuation));
     }
 
-    const refundBuyer: Contract = explicitRefunds ? Pay(buyer, Party(buyer), ada, price, Close) : Close;
+    const refundBuyer: Contract = explicitRefunds ? Pay(buyer, Party(buyer), lovelace, price, Close) : Close;
 
-    const refundSeller: Contract = explicitRefunds ? Pay(seller, Party(seller), ada, price, Close) : Close;
+    const refundSeller: Contract = explicitRefunds ? Pay(seller, Party(seller), lovelace, price, Close) : Close;
 
     const contract: Contract =
         depositCollateral(seller, sellerCollateralTimeout, Close,
@@ -193,8 +193,8 @@ zeroCouponBond =
     const maturityExchangeTimeout: Timeout = TimeParam("Payback deadline");
 
     function transfer(timeout: Timeout, from: Party, to: Party, amount: Value, continuation: Contract): Contract {
-        return When([Case(Deposit(from, from, ada, amount),
-            Pay(from, Party(to), ada, amount, continuation))],
+        return When([Case(Deposit(from, from, lovelace, amount),
+            Pay(from, Party(to), lovelace, amount, continuation))],
             timeout,
             Close);
     }
@@ -231,26 +231,26 @@ couponBondGuaranteed =
     function deposit(amount: Value, by: Party, toAccount: Party,
         timeout: ETimeout, timeoutContinuation: Contract,
         continuation: Contract): Contract {
-        return When([Case(Deposit(toAccount, by, ada, amount), continuation)],
+        return When([Case(Deposit(toAccount, by, lovelace, amount), continuation)],
             timeout,
             timeoutContinuation);
     }
 
     function refundGuarantor(amount: Value, continuation: Contract): Contract {
-        return Pay(investor, Party(guarantor), ada, amount, continuation)
+        return Pay(investor, Party(guarantor), lovelace, amount, continuation)
     }
 
     function transfer(amount: Value, from: Party, to: Party,
         timeout: ETimeout, timeoutContinuation: Contract,
         continuation: Contract): Contract {
         return deposit(amount, from, to, timeout, timeoutContinuation,
-            Pay(to, Party(to), ada, amount,
+            Pay(to, Party(to), lovelace, amount,
                 continuation))
     }
 
     function giveCollateralToLender(amount: Value): Contract {
         if (explicitRefunds) {
-            return Pay(investor, Party(investor), ada, amount,
+            return Pay(investor, Party(investor), lovelace, amount,
                 Close);
         } else {
             return Close;
@@ -302,7 +302,7 @@ swap =
 
     const adaProvider: SwapParty = {
         party: Role("Ada provider"),
-        currency: ada,
+        currency: lovelace,
         amount: amountOfLovelace
     }
 
@@ -367,7 +367,7 @@ contractForDifferences =
 
     function initialDeposit(by: Party, deposit: Value, timeout: ETimeout, timeoutContinuation: Contract,
         continuation: Contract): Contract {
-        return When([Case(Deposit(by, by, ada, deposit), continuation)],
+        return When([Case(Deposit(by, by, lovelace, deposit), continuation)],
             timeout,
             timeoutContinuation);
     }
@@ -395,12 +395,12 @@ contractForDifferences =
     }
 
     function transferUpToDeposit(from: Party, payerDeposit: Value, to: Party, amount: Value, continuation: Contract): Contract {
-        return Pay(from, Account(to), ada, Cond(ValueLT(amount, payerDeposit), amount, payerDeposit), continuation);
+        return Pay(from, Account(to), lovelace, Cond(ValueLT(amount, payerDeposit), amount, payerDeposit), continuation);
     }
 
     function refund(who: Party, amount: Value, continuation: Contract): Contract {
         if (explicitRefunds) {
-            return Pay(who, Party(who), ada, amount,
+            return Pay(who, Party(who), lovelace, amount,
                 continuation);
         } else {
             return continuation;
@@ -480,7 +480,7 @@ contractForDifferencesWithOracle =
 
     function initialDeposit(by: Party, deposit: Value, timeout: ETimeout, timeoutContinuation: Contract,
         continuation: Contract): Contract {
-        return When([Case(Deposit(by, by, ada, deposit), continuation)],
+        return When([Case(Deposit(by, by, lovelace, deposit), continuation)],
             timeout,
             timeoutContinuation);
     }
@@ -514,12 +514,12 @@ contractForDifferencesWithOracle =
     }
 
     function transferUpToDeposit(from: Party, payerDeposit: Value, to: Party, amount: Value, continuation: Contract): Contract {
-        return Pay(from, Account(to), ada, Cond(ValueLT(amount, payerDeposit), amount, payerDeposit), continuation);
+        return Pay(from, Account(to), lovelace, Cond(ValueLT(amount, payerDeposit), amount, payerDeposit), continuation);
     }
 
     function refund(who: Party, amount: Value, continuation: Contract): Contract {
         if (explicitRefunds) {
-            return Pay(who, Party(who), ada, amount,
+            return Pay(who, Party(who), lovelace, amount,
                 continuation);
         } else {
             return continuation;

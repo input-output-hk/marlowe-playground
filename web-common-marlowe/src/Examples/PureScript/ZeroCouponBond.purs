@@ -89,8 +89,8 @@ metadata =
       )
   }
 
-ada :: Token
-ada = Token "" ""
+lovelace :: Token
+lovelace = Token "" ""
 
 discountedPrice :: Value
 discountedPrice = ConstantParam "Amount"
@@ -113,8 +113,8 @@ maturityExchangeTimeout = TimeParam "Payback deadline"
 transfer :: Timeout -> Party -> Party -> Value -> Contract -> Contract
 transfer timeout from to amount continuation =
   When
-    [ Case (Deposit from from ada amount)
-        (Pay from (Party to) ada amount continuation)
+    [ Case (Deposit from from lovelace amount)
+        (Pay from (Party to) lovelace amount continuation)
     ]
     timeout
     Close
