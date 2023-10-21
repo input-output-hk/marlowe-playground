@@ -143,7 +143,7 @@ handleAction metadata Compile = do
                 over (_analysisState <<< _templateContent)
                   ( Template.updateTemplateContent
                       currentTime
-                      (Minutes 5.0)
+                      (Minutes 30.0)
                       (OMap.keys metadata.timeParameterDescriptions)
                       (getPlaceholderIds contract)
                   )
