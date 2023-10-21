@@ -111,8 +111,8 @@ metadata =
       )
   }
 
-ada :: Token
-ada = Token "" ""
+lovelace :: Token
+lovelace = Token "" ""
 
 party :: Party
 party = Role "Party"
@@ -149,7 +149,7 @@ increaseInPrice = ValueId "Increase in price"
 
 initialDeposit :: Party -> Value -> Timeout -> Contract -> Contract -> Contract
 initialDeposit by deposit timeout timeoutContinuation continuation =
-  When [ Case (Deposit by by ada deposit) continuation ]
+  When [ Case (Deposit by by lovelace deposit) continuation ]
     timeout
     timeoutContinuation
 
@@ -184,7 +184,7 @@ recordDifference :: ValueId -> Value -> Value -> Contract -> Contract
 recordDifference name val1 val2 = Let name (SubValue val1 val2)
 
 transferUpToDeposit :: Party -> Value -> Party -> Value -> Contract -> Contract
-transferUpToDeposit from payerDeposit to amount = Pay from (Account to) ada
+transferUpToDeposit from payerDeposit to amount = Pay from (Account to) lovelace
   (Cond (ValueLT amount payerDeposit) amount payerDeposit)
 
 contract :: Contract

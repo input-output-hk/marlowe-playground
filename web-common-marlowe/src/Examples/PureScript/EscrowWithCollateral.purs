@@ -137,8 +137,8 @@ metadata =
       )
   }
 
-ada :: Token
-ada = Token "" ""
+lovelace :: Token
+lovelace = Token "" ""
 
 buyer :: Party
 buyer = Role "Buyer"
@@ -173,19 +173,19 @@ answerTimeout = TimeParam "Complaint deadline"
 
 depositCollateral :: Party -> Timeout -> Contract -> Contract -> Contract
 depositCollateral party timeout timeoutContinuation continuation =
-  When [ Case (Deposit party party ada collateral) continuation ]
+  When [ Case (Deposit party party lovelace collateral) continuation ]
     timeout
     timeoutContinuation
 
 burnCollaterals :: Contract -> Contract
 burnCollaterals continuation =
-  Pay seller (Party burnAddress) ada collateral
-    $ Pay buyer (Party burnAddress) ada collateral
+  Pay seller (Party burnAddress) lovelace collateral
+    $ Pay buyer (Party burnAddress) lovelace collateral
     $ continuation
 
 deposit :: Timeout -> Contract -> Contract -> Contract
 deposit timeout timeoutContinuation continuation =
-  When [ Case (Deposit seller buyer ada price) continuation ]
+  When [ Case (Deposit seller buyer lovelace price) continuation ]
     timeout
     timeoutContinuation
 
@@ -213,7 +213,7 @@ choices timeout chooser timeoutContinuation list =
     timeoutContinuation
 
 sellerToBuyer :: Contract -> Contract
-sellerToBuyer = Pay seller (Account buyer) ada price
+sellerToBuyer = Pay seller (Account buyer) lovelace price
 
 fullExtendedContract :: Contract
 fullExtendedContract =

@@ -55,7 +55,11 @@ export const Token = function (
   }
 };
 
+/**
+ * @deprecated in favour of lovelace
+ */
 export const ada: Token = { currency_symbol: "", token_name: "" };
+export const lovelace: Token = { currency_symbol: "", token_name: "" };
 
 type ValueId = string;
 

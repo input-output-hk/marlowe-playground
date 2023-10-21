@@ -92,8 +92,8 @@ metadata =
       )
   }
 
-ada :: Token
-ada = Token "" ""
+lovelace :: Token
+lovelace = Token "" ""
 
 lovelacePerAda :: Value
 lovelacePerAda = Constant (fromInt 1000000)
@@ -125,7 +125,7 @@ type SwapParty =
 adaProvider :: SwapParty
 adaProvider =
   { party: Role "Ada provider"
-  , currency: ada
+  , currency: lovelace
   , amount: amountOfLovelace
   }
 

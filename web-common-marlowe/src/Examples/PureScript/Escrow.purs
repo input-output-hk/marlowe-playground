@@ -134,8 +134,8 @@ metadata =
       )
   }
 
-ada :: Token
-ada = Token "" ""
+lovelace :: Token
+lovelace = Token "" ""
 
 buyer :: Party
 buyer = Role "Buyer"
@@ -171,7 +171,7 @@ choice choiceName chooser choiceValue continuation =
 
 deposit :: Timeout -> Contract -> Contract -> Contract
 deposit timeout timeoutContinuation continuation =
-  When [ Case (Deposit seller buyer ada price) continuation ]
+  When [ Case (Deposit seller buyer lovelace price) continuation ]
     timeout
     timeoutContinuation
 
@@ -191,10 +191,10 @@ choices timeout chooser timeoutContinuation list =
     timeoutContinuation
 
 sellerToBuyer :: Contract -> Contract
-sellerToBuyer = Pay seller (Account buyer) ada price
+sellerToBuyer = Pay seller (Account buyer) lovelace price
 
 paySeller :: Contract -> Contract
-paySeller = Pay buyer (Party seller) ada price
+paySeller = Pay buyer (Party seller) lovelace price
 
 fullExtendedContract :: Contract
 fullExtendedContract =
