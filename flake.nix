@@ -1,13 +1,33 @@
-# This file is part of the IOGX template and is documented at the link below:
-# https://www.github.com/input-output-hk/iogx#31-flakenix
-
 {
   description = "Marlowe Playground";
 
 
   inputs = {
 
-    iogx.url = "github:input-output-hk/iogx";
+    iogx = {
+      url = "github:input-output-hk/iogx";
+      inputs.hackage.follows = "hackage";
+      inputs.CHaP.follows = "CHaP";
+      inputs.haskell-nix.follows = "haskell-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nixpkgs.follows = "haskell-nix/nixpkgs";
+
+    hackage = {
+      url = "github:input-output-hk/hackage.nix";
+      flake = false;
+    };
+
+    CHaP = {
+      url = "github:input-output-hk/cardano-haskell-packages?ref=repo";
+      flake = false;
+    };
+
+    haskell-nix = {
+      url = "github:input-output-hk/haskell.nix";
+      inputs.hackage.follows = "hackage";
+    };
 
     n2c.url = "github:nlewo/nix2container";
 
@@ -24,14 +44,8 @@
   outputs = inputs: inputs.iogx.lib.mkFlake {
     inherit inputs;
     repoRoot = ./.;
-    nixpkgsConfig = {
-      permittedInsecurePackages = [
-        # These is required by SASS, which we should move away from!
-        "python-2.7.18.6"
-        "nodejs-14.21.3"
-        "openssl-1.1.1u"
-      ];
-    };
+    systems = [ "x86_64-linux" "x86_64-darwin" ];
+    outputs = import ./nix/outputs.nix;
   };
 
 

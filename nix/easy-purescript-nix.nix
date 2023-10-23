@@ -1,4 +1,4 @@
-{ inputs, pkgs, system, ... }:
+{ repoRoot, inputs, pkgs, system, lib }:
 let
   easy-purescript-nix = pkgs.callPackage inputs.iogx.inputs.easy-purescript-nix { };
 in
