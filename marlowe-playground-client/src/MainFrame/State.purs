@@ -108,7 +108,7 @@ import Page.JavascriptEditor.Types
   ) as JS
 import Page.JavascriptEditor.Types (CompilationState(..))
 import Page.MarloweEditor.State as MarloweEditor
-import Page.MarloweEditor.Types as ME
+import Page.MarloweEditor.Types (Action(..), State, initialState) as ME
 import Page.Simulation.State as Simulation
 import Page.Simulation.Types as ST
 import Rename.State (handleAction) as Rename
@@ -256,6 +256,11 @@ handleSubRoute Router.Home = selectView HomePage
 handleSubRoute Router.Simulation = selectView Simulation
 
 handleSubRoute Router.MarloweEditor = selectView MarloweEditor
+
+handleSubRoute (Router.ImportContract contract) = do
+  handleActionWithoutNavigationGuard
+    (MarloweEditorAction (ME.ImportCompressedJSON contract))
+  selectView MarloweEditor
 
 handleSubRoute Router.HaskellEditor = selectView HaskellEditor
 
@@ -697,6 +702,7 @@ routeToView { subroute } = case subroute of
   Router.Simulation -> Just Simulation
   Router.HaskellEditor -> Just HaskellEditor
   Router.MarloweEditor -> Just MarloweEditor
+  Router.ImportContract _ -> Just MarloweEditor
   Router.JSEditor -> Just JSEditor
   Router.Blockly -> Just BlocklyEditor
   Router.GithubAuthCallback -> Nothing
