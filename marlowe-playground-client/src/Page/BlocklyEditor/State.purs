@@ -189,7 +189,7 @@ processBlocklyCode metadata = do
         maybeUpdateTemplateContent = case Holes.fromTerm holesContract of
           Just (contract :: Extended.Contract) -> Template.updateTemplateContent
             currentTime
-            (Minutes 5.0)
+            (Minutes 30.0)
             (OMap.keys metadata.timeParameterDescriptions)
             (Template.getPlaceholderIds contract)
           Nothing -> identity

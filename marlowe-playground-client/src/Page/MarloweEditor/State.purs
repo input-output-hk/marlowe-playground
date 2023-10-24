@@ -268,7 +268,7 @@ processMarloweCode metadata text = do
       Just contract ->
         Template.updateTemplateContent
           currentTime
-          (Minutes 5.0)
+          (Minutes 30.0)
           (OMap.keys metadata.timeParameterDescriptions)
           (Template.getPlaceholderIds contract)
   void $ H.request _marloweEditorPageSlot unit $ Monaco.SetModelMarkers

@@ -142,7 +142,7 @@ simulationNotStarted initialTime termContract metadata prevTemplateContent =
     tc@(TemplateContent { timeContent, valueContent }) =
       initializeTemplateContentWithIncreasingTime
         initialTime
-        (Minutes 5.0)
+        (Minutes 30.0)
         (OMap.keys metadata.timeParameterDescriptions)
         (getPlaceholderIds termContract)
     templateContent = case prevTemplateContent of

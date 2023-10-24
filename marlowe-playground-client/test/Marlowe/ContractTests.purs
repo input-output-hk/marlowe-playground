@@ -139,8 +139,8 @@ buyer = Role "Buyer"
 arbiter :: Party
 arbiter = Role "Mediator"
 
-ada :: Token
-ada = Token "" ""
+lovelace :: Token
+lovelace = Token "" ""
 
 filledEscrow :: Term T.Contract
 filledEscrow =
@@ -288,7 +288,7 @@ escrowSimpleFlow =
   it "Escrow simple flow" do
     -- A simple test that runs the Escrow contract to completion
     let
-      deposit = IDeposit seller buyer ada (BigInt.fromInt 450)
+      deposit = IDeposit seller buyer lovelace (BigInt.fromInt 450)
 
       choice1 = IChoice ((ChoiceId "Report problem") buyer) (BigInt.fromInt 1)
 

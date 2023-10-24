@@ -201,7 +201,7 @@ handleAction metadata Compile = do
                   over (_analysisState <<< _templateContent)
                     ( updateTemplateContent
                         currentTime
-                        (Minutes 5.0)
+                        (Minutes 30.0)
                         (OMap.keys metadata.timeParameterDescriptions)
                         (getPlaceholderIds contract)
                     )
@@ -268,7 +268,7 @@ analyze doAnalyze = do
 decorationHeader :: String
 decorationHeader =
   """import {
-    Address, Role, Account, Party, ada, AvailableMoney, Constant, ConstantParam,
+    Address, Role, Account, Party, ada, lovelace, AvailableMoney, Constant, ConstantParam,
     NegValue, AddValue, SubValue, MulValue, DivValue, ChoiceValue, TimeIntervalStart,
     TimeIntervalEnd, UseValue, Cond, AndObs, OrObs, NotObs, ChoseSomething,
     ValueGE, ValueGT, ValueLT, ValueLE, ValueEQ, TrueObs, FalseObs, Deposit,

@@ -64,8 +64,8 @@ metadata =
       )
   }
 
-ada :: Token
-ada = Token "" ""
+lovelace :: Token
+lovelace = Token "" ""
 
 guarantor :: Party
 guarantor = Role "Guarantor"
@@ -93,19 +93,20 @@ lastInstalment = AddValue instalment principal
 deposit
   :: Value -> Party -> Party -> Timeout -> Contract -> Contract -> Contract
 deposit amount by toAccount timeout timeoutContinuation continuation =
-  When [ Case (Deposit toAccount by ada amount) continuation ]
+  When [ Case (Deposit toAccount by lovelace amount) continuation ]
     timeout
     timeoutContinuation
 
 refundGuarantor :: Value -> Contract -> Contract
-refundGuarantor amount continuation = Pay investor (Party guarantor) ada amount
+refundGuarantor amount continuation = Pay investor (Party guarantor) lovelace
+  amount
   continuation
 
 transfer
   :: Value -> Party -> Party -> Timeout -> Contract -> Contract -> Contract
 transfer amount from to timeout timeoutContinuation continuation =
   deposit amount from to timeout timeoutContinuation
-    $ Pay to (Party to) ada amount
+    $ Pay to (Party to) lovelace amount
         continuation
 
 contract :: Contract
