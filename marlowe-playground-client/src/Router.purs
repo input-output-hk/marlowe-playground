@@ -20,6 +20,7 @@ data SubRoute
   = Home
   | Simulation
   | MarloweEditor
+  | ImportContract String
   | HaskellEditor
   | JSEditor
   | Blockly
@@ -39,12 +40,15 @@ route =
           { "Home": noArgs
           , "Simulation": "simulation" / noArgs
           , "MarloweEditor": "marlowe" / noArgs
+          , "ImportContract": "importContract" / (param "contract")
           , "HaskellEditor": "haskell" / noArgs
           , "JSEditor": "javascript" / noArgs
           , "Blockly": "blockly" / noArgs
           , "GithubAuthCallback": "gh-oauth-cb" / noArgs
           }
   where
+  _importedContract = Proxy :: _ "importedContract"
+
   _gistId = Proxy :: _ "gistId"
 
   _subroute = Proxy :: _ "subroute"
