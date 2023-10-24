@@ -11,6 +11,7 @@ import Component.BottomPanel.Types (Action(..), State) as BottomPanel
 import Control.Monad.Except (lift)
 import Control.Monad.Maybe.Extra (hoistMaybe)
 import Control.Monad.Maybe.Trans (MaybeT(..), runMaybeT)
+import Data.Argonaut.Extra (parseDecodeJson)
 import Data.Array as Array
 import Data.Either (hush)
 import Data.Foldable (for_)
@@ -31,6 +32,7 @@ import Halogen.Extra (mapSubmodule)
 import Halogen.Monaco (Message(..), Query(..)) as Monaco
 import Language.Marlowe.Extended.V1 as Extended
 import Language.Marlowe.Extended.V1.Metadata.Types (MetaData, MetadataHintInfo)
+import Language.Marlowe.ToTerm (toTerm)
 import MainFrame.Types (ChildSlots, _marloweEditorPageSlot)
 import Marlowe (Api)
 import Marlowe.Holes as Holes
@@ -71,6 +73,7 @@ import StaticAnalysis.Types
 import StaticData (marloweBufferLocalStorageKey)
 import StaticData as StaticData
 import Text.Pretty (pretty)
+import Web.Blob.CompressString (decompressFromURI)
 import Web.Event.Extra (preventDefault, readFileFromDragEvent)
 
 toBottomPanel
@@ -141,6 +144,17 @@ handleAction _ (LoadScript key) = do
       prettyContents
 
 handleAction _ (SetEditorText contents) = editorSetValue contents
+
+handleAction _ (ImportCompressedJSON contents) = do
+  let
+    decodedContract = case parseDecodeJson (decompressFromURI contents) of
+      Right contract -> contract
+      Left _ -> Extended.Close
+    termContract = toTerm decodedContract :: Holes.Term Holes.Contract
+    prettyContents = show $ pretty termContract
+  editorSetValue prettyContents
+  liftEffect $ SessionStorage.setItem marloweBufferLocalStorageKey
+    prettyContents
 
 handleAction metadata (BottomPanelAction (BottomPanel.PanelAction action)) =
   handleAction
