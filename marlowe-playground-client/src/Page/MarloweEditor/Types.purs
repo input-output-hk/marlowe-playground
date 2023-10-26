@@ -37,6 +37,7 @@ data Action
   | ShowErrorDetail Boolean
   | SendToSimulator
   | ViewAsBlockly
+  | CopyContractLink
   | InitMarloweProject String
   | SelectHole (Maybe String)
   | MetadataAction MetadataAction
@@ -65,6 +66,7 @@ instance actionIsEvent :: IsEvent Action where
   toEvent (ShowErrorDetail _) = Just $ defaultEvent "ShowErrorDetail"
   toEvent SendToSimulator = Just $ defaultEvent "SendToSimulator"
   toEvent ViewAsBlockly = Just $ defaultEvent "ViewAsBlockly"
+  toEvent CopyContractLink = Just $ defaultEvent "CopyContractLink"
   toEvent (InitMarloweProject _) = Just $ defaultEvent "InitMarloweProject"
   toEvent (SelectHole _) = Just $ defaultEvent "SelectHole"
   toEvent (MetadataAction action) = Just $ (defaultEvent "MetadataAction")

@@ -11,6 +11,7 @@ import Component.BottomPanel.Types (Action(..), State) as BottomPanel
 import Control.Monad.Except (lift)
 import Control.Monad.Maybe.Extra (hoistMaybe)
 import Control.Monad.Maybe.Trans (MaybeT(..), runMaybeT)
+import Data.Argonaut (encodeJson, stringify)
 import Data.Argonaut.Extra (parseDecodeJson)
 import Data.Array as Array
 import Data.Either (hush)
@@ -20,10 +21,11 @@ import Data.Lens.Index (ix)
 import Data.Map as Map
 import Data.Map.Ordered.OMap as OMap
 import Data.Maybe (fromMaybe)
-import Data.String (Pattern(..), codePointFromChar, contains)
+import Data.String (Pattern(..), codePointFromChar, contains, length, splitAt)
 import Data.String as String
 import Data.Time.Duration (Minutes(..))
 import Effect.Aff.Class (class MonadAff, liftAff)
+import Effect.Console (error)
 import Effect.Now (now)
 import Examples.Marlowe.Contracts (example) as ME
 import Halogen (HalogenM, liftEffect, modify_, query)
@@ -57,6 +59,8 @@ import Page.MarloweEditor.Types
   , _selectedHole
   , _showErrorDetail
   )
+import Router (SubRoute(..)) as Route
+import Router (printSubRoute)
 import Servant.PureScript (class MonadAjax)
 import SessionStorage as SessionStorage
 import StaticAnalysis.Reachability
@@ -73,7 +77,9 @@ import StaticAnalysis.Types
 import StaticData (marloweBufferLocalStorageKey)
 import StaticData as StaticData
 import Text.Pretty (pretty)
-import Web.Blob.CompressString (decompressFromURI)
+import Web.Blob.Clipboard (copyToClipboard)
+import Web.Blob.CompressString (compressToURI, decompressFromURI)
+import Web.Blob.Window (getUrl)
 import Web.Event.Extra (preventDefault, readFileFromDragEvent)
 
 toBottomPanel
@@ -169,6 +175,35 @@ handleAction _ (ShowErrorDetail val) = assign _showErrorDetail val
 handleAction _ SendToSimulator = pure unit
 
 handleAction _ ViewAsBlockly = pure unit
+
+handleAction _ CopyContractLink = do
+  url <- liftEffect getUrl
+  mResult <-
+    ( runMaybeT $ do
+        contents <- MaybeT $ editorGetValue
+        contract <- hoistMaybe $ parseContract' contents
+        let compressedContract = compressToURI $ stringify $ encodeJson contract
+        hoistMaybe $ composeURL url compressedContract
+    )
+  case mResult of
+    Just result -> liftAff $ copyToClipboard result
+    Nothing -> liftEffect $ error "Could not encode contract as a link"
+
+  where
+  composeURL :: String -> String -> Maybe String
+  composeURL url compCont = do
+    baseUrl <- removeSuffix url (printSubRoute Route.MarloweEditor)
+    pure $ baseUrl <> (printSubRoute (Route.ImportContract compCont))
+
+  removeSuffix :: String -> String -> Maybe String
+  removeSuffix str suffix =
+    let
+      { before: strPrefix, after: strSuffix } = splitAt
+        (length str - length suffix)
+        str
+    in
+      if strSuffix == suffix then Just $ strPrefix
+      else Nothing
 
 handleAction _ (InitMarloweProject contents) = do
   editorSetValue contents

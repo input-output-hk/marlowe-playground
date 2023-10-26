@@ -1,4 +1,8 @@
-module Page.MarloweEditor.View where
+module Page.MarloweEditor.View
+  ( otherActions
+  , render
+  , sendToSimulatorButton
+  ) where
 
 import Prologue hiding (div)
 
@@ -92,6 +96,7 @@ otherActions
 otherActions state =
   div [ classes [ group ] ]
     [ editorOptions state
+    , copyLink state
     , viewAsBlocklyButton state
     , sendToSimulatorButton state
     ]
@@ -140,6 +145,30 @@ viewAsBlocklyButton state =
       ]
     else
       []
+
+copyLink
+  :: forall m
+   . MonadAff m
+  => State
+  -> ComponentHTML Action ChildSlots m
+copyLink state =
+  div [ HP.id "copyContractLink", classNames [ "relative" ] ]
+    [ button
+        [ onClick $ const CopyContractLink
+        , disabled disabled'
+        , classNames [ "btn" ]
+        ]
+        [ text "Copy Link" ]
+    , tooltip tooltipMessage (RefId "copyContractLink") Bottom
+    ]
+  where
+  disabled' = contractHasErrors state || contractHasHoles state
+
+  tooltipMessage =
+    if disabled' then
+      "A contract link can only be generated if the contract has no errors and no holes"
+    else
+      "Copy a link to the Marlowe editor with the current contract encoded in the URL"
 
 editorOptions :: forall p. State -> HTML p Action
 editorOptions state =
