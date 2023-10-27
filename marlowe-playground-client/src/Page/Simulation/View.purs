@@ -687,15 +687,11 @@ participant metadata state party actionInputs =
         [ h6_
             [ em [ classNames [ "mr-1" ] ]
                 [ text "Participant "
-                , strong_ [ text partyName ]
+                , strong_ [ renderPrettyParty metadata party ]
                 ]
             , partyHint
             ]
         ]
-
-  partyName = case party of
-    (Address name) -> name
-    (Role name) -> name
 
 choiceRef :: String -> ChoiceId -> String
 choiceRef prefix (ChoiceId choiceName choiceOwner) = intercalate "-"
