@@ -28,7 +28,7 @@ let
     shellArgs = repoRoot.nix.shell;
     readTheDocs = {
       enable = true;
-      siteFolder = "docs";
+      siteFolder = "doc";
     };
   };
 

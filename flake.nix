@@ -46,6 +46,10 @@
     repoRoot = ./.;
     systems = [ "x86_64-linux" "x86_64-darwin" ];
     outputs = import ./nix/outputs.nix;
+    nixpkgsArgs.config.permittedInsecurePackages = [
+      "nodejs-14.21.3"
+      "openssl-1.1.1w"
+    ];
   };
 
 

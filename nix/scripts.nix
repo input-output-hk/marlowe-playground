@@ -26,15 +26,6 @@
   '';
 
 
-  update-client-deps = ''
-    cd "$(git rev-parse --show-toplevel)"
-
-    cd marlowe-playground-client
-
-    ${repoRoot.nix.easy-purescript-nix.spago2nix}/bin/spago2nix generate
-  '';
-
-
   gen-nix-lockfiles = ''
     repo_root="$(git rev-parse --show-toplevel)"
 

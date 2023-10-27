@@ -21,12 +21,6 @@ _cabalProject:
     group = "marlowe-playground";
   };
 
-  scripts.update-client-deps = {
-    exec = repoRoot.nix.scripts.update-client-deps;
-    description = "Run spago2nix in marlowe-playground-client";
-    group = "marlowe-playground";
-  };
-
   scripts.start-backend = {
     exec = repoRoot.nix.scripts.start-backend;
     description = "Start the Marlowe Playground server";
@@ -57,11 +51,10 @@ _cabalProject:
     pkgs.nil
     pkgs.z3
     pkgs.which
-    pkgs.python38
     pkgs.prefetch-npm-deps
-    pkgs.nodejs-18_x
-    pkgs.nodejs-18_x.pkgs.webpack
-    pkgs.nodejs-18_x.pkgs.webpack-cli
+    pkgs.nodejs-14_x
+    pkgs.nodejs-14_x.pkgs.webpack
+    pkgs.nodejs-14_x.pkgs.webpack-cli
   ];
 
   preCommit = {
