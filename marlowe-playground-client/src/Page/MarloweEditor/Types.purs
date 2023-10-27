@@ -32,7 +32,7 @@ data Action
   | MoveToPosition Pos Pos
   | LoadScript String
   | SetEditorText String
-  | ImportCompressedJSON String
+  | ImportCompressedContract String
   | BottomPanelAction (BottomPanel.Action BottomPanelView Action)
   | ShowErrorDetail Boolean
   | SendToSimulator
@@ -61,7 +61,8 @@ instance actionIsEvent :: IsEvent Action where
   toEvent (LoadScript script) = Just $ (defaultEvent "LoadScript")
     { label = Just script }
   toEvent (SetEditorText _) = Just $ defaultEvent "SetEditorText"
-  toEvent (ImportCompressedJSON _) = Just $ defaultEvent "ImportCompressedJSON"
+  toEvent (ImportCompressedContract _) = Just $ defaultEvent
+    "ImportCompressedContract"
   toEvent (BottomPanelAction action) = A.toEvent action
   toEvent (ShowErrorDetail _) = Just $ defaultEvent "ShowErrorDetail"
   toEvent SendToSimulator = Just $ defaultEvent "SendToSimulator"
