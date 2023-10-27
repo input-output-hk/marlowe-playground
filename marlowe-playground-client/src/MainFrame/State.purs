@@ -259,7 +259,7 @@ handleSubRoute Router.MarloweEditor = selectView MarloweEditor
 
 handleSubRoute (Router.ImportContract contract) = do
   handleActionWithoutNavigationGuard
-    (MarloweEditorAction (ME.ImportCompressedJSON contract))
+    (MarloweEditorAction (ME.ImportCompressedContract contract))
   selectView MarloweEditor
 
 handleSubRoute Router.HaskellEditor = selectView HaskellEditor

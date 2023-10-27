@@ -162,11 +162,11 @@ copyLink state =
     , tooltip tooltipMessage (RefId "copyContractLink") Bottom
     ]
   where
-  disabled' = contractHasErrors state || contractHasHoles state
+  disabled' = contractHasErrors state
 
   tooltipMessage =
     if disabled' then
-      "A contract link can only be generated if the contract has no errors and no holes"
+      "A contract link can only be generated if the contract has no errors"
     else
       "Copy a link to the Marlowe editor with the current contract encoded in the URL"
 

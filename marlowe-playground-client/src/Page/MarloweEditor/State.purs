@@ -20,7 +20,7 @@ import Data.Lens (assign, modifying, over, preview, set, use)
 import Data.Lens.Index (ix)
 import Data.Map as Map
 import Data.Map.Ordered.OMap as OMap
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromMaybe, maybe)
 import Data.String (Pattern(..), codePointFromChar, contains, length, splitAt)
 import Data.String as String
 import Data.Time.Duration (Minutes(..))
@@ -151,12 +151,14 @@ handleAction _ (LoadScript key) = do
 
 handleAction _ (SetEditorText contents) = editorSetValue contents
 
-handleAction _ (ImportCompressedJSON contents) = do
+handleAction _ (ImportCompressedContract contents) = do
   let
-    decodedContract = case parseDecodeJson (decompressFromURI contents) of
-      Right contract -> contract
-      Left _ -> Extended.Close
-    termContract = toTerm decodedContract :: Holes.Term Holes.Contract
+    decompressedInput = decompressFromURI contents
+    termContract = case parseDecodeJson decompressedInput of
+      Right contract -> toTerm (contract :: Extended.Contract)
+      Left _ -> case parseContract decompressedInput of
+        Right hcontract -> hcontract
+        Left _ -> toTerm Extended.Close
     prettyContents = show $ pretty termContract
   editorSetValue prettyContents
   liftEffect $ SessionStorage.setItem marloweBufferLocalStorageKey
@@ -181,8 +183,11 @@ handleAction _ CopyContractLink = do
   mResult <-
     ( runMaybeT $ do
         contents <- MaybeT $ editorGetValue
-        contract <- hoistMaybe $ parseContract' contents
-        let compressedContract = compressToURI $ stringify $ encodeJson contract
+        encodedContract <- hoistMaybe $ maybe
+          (show <$> (hush $ parseContract contents))
+          (Just <<< stringify <<< encodeJson)
+          (parseContract' contents)
+        let compressedContract = compressToURI encodedContract
         hoistMaybe $ composeURL url compressedContract
     )
   case mResult of
