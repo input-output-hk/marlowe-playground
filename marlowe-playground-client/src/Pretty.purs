@@ -14,13 +14,18 @@ import Data.Numbers.Natural as N
 import Data.String as String
 import Halogen.HTML (HTML, abbr, text)
 import Halogen.HTML.Properties (title)
-import Language.Marlowe.Core.V1.Semantics.Types (Party(..), Payee(..))
+import Language.Marlowe.Core.V1.Semantics.Types (Address, Party(..), Payee(..))
 import Language.Marlowe.Extended.V1.Metadata.Types (MetaData, NumberFormat(..))
+
+prettyAddress :: Address -> String
+prettyAddress addr = String.take 9 addr <> "..." <> takeEnd 5 addr
+  where
+  takeEnd n str = String.drop (String.length str - n) str
 
 renderPrettyParty :: forall p i. MetaData -> Party -> HTML p i
 renderPrettyParty _ (Address addr) =
   if String.length addr > 10 then abbr [ title $ "address " <> addr ]
-    [ text $ String.take 10 addr ]
+    [ text $ prettyAddress addr ]
   else text addr
 
 renderPrettyParty metadata (Role role) = abbr
