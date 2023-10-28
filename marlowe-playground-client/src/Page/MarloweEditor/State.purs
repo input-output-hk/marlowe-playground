@@ -59,8 +59,8 @@ import Page.MarloweEditor.Types
   , _selectedHole
   , _showErrorDetail
   )
+import Router (MarloweView(..), printSubRoute)
 import Router (SubRoute(..)) as Route
-import Router (printSubRoute)
 import Servant.PureScript (class MonadAjax)
 import SessionStorage as SessionStorage
 import StaticAnalysis.Reachability
@@ -198,7 +198,12 @@ handleAction _ CopyContractLink = do
   composeURL :: String -> String -> Maybe String
   composeURL url compCont = do
     baseUrl <- removeSuffix url (printSubRoute Route.MarloweEditor)
-    pure $ baseUrl <> (printSubRoute (Route.ImportContract compCont))
+    let
+      subroute = Route.ImportContract
+        { contract: compCont
+        , "marlowe-view": MarloweEditorView
+        }
+    pure $ baseUrl <> printSubRoute subroute
 
   removeSuffix :: String -> String -> Maybe String
   removeSuffix str suffix =
