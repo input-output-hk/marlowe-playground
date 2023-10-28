@@ -7,6 +7,7 @@ import Data.Newtype (unwrap)
 import Data.Profunctor (dimap)
 import Gists.Extra (GistId(..))
 import Routing.Duplex (RouteDuplex', optional, param, record, root, (:=))
+import Routing.Duplex as Route
 import Routing.Duplex.Generic (noArgs, sum)
 import Routing.Duplex.Generic.Syntax ((/))
 import Type.Proxy (Proxy(..))
@@ -52,3 +53,6 @@ route =
   _gistId = Proxy :: _ "gistId"
 
   _subroute = Proxy :: _ "subroute"
+
+printSubRoute :: SubRoute -> String
+printSubRoute sr = Route.print route { gistId: Nothing, subroute: sr }
