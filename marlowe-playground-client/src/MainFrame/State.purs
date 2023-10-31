@@ -113,7 +113,7 @@ import Page.Simulation.State as Simulation
 import Page.Simulation.Types as ST
 import Rename.State (handleAction) as Rename
 import Rename.Types (Action(..), State, emptyState) as Rename
-import Router (Route, SubRoute)
+import Router (MarloweView(..), Route, SubRoute)
 import Router as Router
 import Routing.Duplex as RD
 import Routing.Hash as Routing
@@ -257,10 +257,12 @@ handleSubRoute Router.Simulation = selectView Simulation
 
 handleSubRoute Router.MarloweEditor = selectView MarloweEditor
 
-handleSubRoute (Router.ImportContract contract) = do
+handleSubRoute (Router.ImportContract props) = do
   handleActionWithoutNavigationGuard
-    (MarloweEditorAction (ME.ImportCompressedContract contract))
-  selectView MarloweEditor
+    (MarloweEditorAction (ME.ImportCompressedContract props.contract))
+  case props."marlowe-view" of
+    MarloweEditorView -> selectView MarloweEditor
+    MarloweBlocklyView -> selectView BlocklyEditor
 
 handleSubRoute Router.HaskellEditor = selectView HaskellEditor
 
