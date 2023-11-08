@@ -3,13 +3,15 @@
 ## Getting started
 
 Make sure you have a local backend server running first:
+
 ```bash
-[nix-shell] $ marlowe-playground-server
+[nix-shell] $ start-backend
 ```
 
 Check the [backend documentation](../marlowe-playground-server/README.md) for more information on how to setup the Github OAuth application.
 
 Now we will build and run the front end:
+
 ```bash
 [nix-shell] $ cd marlowe-playground-client
 # Generate the purescript bridge files
@@ -26,8 +28,8 @@ Now we will build and run the front end:
 
 ## Adding dependencies
 
-* Javascript dependencies are managed with npm, so add them to [package.json](./package.json)
-* purescript uses package sets managed by spago so if the package set doesn't contain a dependency you can add it to [../packages.dhall](../packages.dhall)
+- Javascript dependencies are managed with npm, so add them to [package.json](./package.json)
+- purescript uses package sets managed by spago so if the package set doesn't contain a dependency you can add it to [../packages.dhall](../packages.dhall)
 
 Whenever you change `packages.dhall` you need to make sure that all dependencies can still properly be resolved and built.
 You can do so using the `update-client-deps` script:
@@ -36,7 +38,6 @@ You can do so using the `update-client-deps` script:
 - Outside of the nix-shell environment (from the client directory): `$(nix-build -A plutus.updateClientDeps ../)/bin/update-client-deps`
 
 The `update-client-deps` script will generate/update `.nix` files which have to be committed and are required for a successful CI run.
-
 
 ## Code formatting
 
