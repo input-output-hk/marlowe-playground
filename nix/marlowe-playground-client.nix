@@ -3,7 +3,7 @@
 let
   npmlock2nix = import inputs.npmlock2nix { inherit pkgs; };
 
-  spagoPkgs = import (inputs.self + "/marlowe-playground-client/spago-packages.nix") { inherit pkgs; };
+  spagoPkgs = import ./spago-packages.nix { inherit pkgs; };
 in
 
 npmlock2nix.v1.build {
@@ -23,8 +23,8 @@ npmlock2nix.v1.build {
     spagoPkgs.installSpagoStyle
     spagoPkgs.buildSpagoStyle
     pkgs.nodejs-14_x
-    repoRoot.nix.marlowe-playground.easy-purescript-nix.purs
-    repoRoot.nix.marlowe-playground.easy-purescript-nix.spago2nix
+    repoRoot.nix.easy-purescript-nix.purs
+    repoRoot.nix.easy-purescript-nix.spago2nix
   ];
   unpackPhase = ''
     mkdir -p marlowe-playground-client

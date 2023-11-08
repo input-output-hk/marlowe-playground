@@ -1,26 +1,22 @@
-{ inputs', pkgs, ... }:
-
-project:
+{ repoRoot, inputs, pkgs, system, lib }:
 
 let
 
   inherit (pkgs) darkhttpd lib mailcap coreutils cacert z3;
-  inherit (inputs'.std.lib.ops) mkOperable;
-
-  ghc-with-marlowe = project.ghcWithPackages (pkgs: [ pkgs.marlowe-cardano ]);
+  inherit (inputs.std.lib.ops) mkOperable;
 
 in
 {
   marlowe-playground-client = mkOperable {
-    package = inputs'.self.packages.marlowe-playground-client;
+    package = inputs.self.packages.marlowe-playground-client;
     runtimeInputs = [ darkhttpd ];
     runtimeScript = ''
-      exec darkhttpd "''${CONFIG_HTML_ROOT:-${inputs'.self.packages.marlowe-playground-client}}" --port 8080 --mimetypes ${mailcap}/etc/mime.types
+      exec darkhttpd "''${CONFIG_HTML_ROOT:-${inputs.self.packages.marlowe-playground-client}}" --port 8080 --mimetypes ${mailcap}/etc/mime.types
     '';
   };
   marlowe-playground-server = mkOperable {
-    package = inputs'.self.packages.marlowe-playground-server;
-    runtimeInputs = [ ghc-with-marlowe coreutils cacert z3 ];
+    package = inputs.self.packages.marlowe-playground-server;
+    runtimeInputs = [ inputs.self.packages.ghc-with-marlowe coreutils cacert z3 ];
     runtimeScript = ''
       #################
       # REQUIRED VARS #
@@ -46,7 +42,7 @@ in
 
       mkdir -p /tmp
 
-      ${inputs'.self.packages.marlowe-playground-server}/bin/marlowe-playground-server webserver
+      ${inputs.self.packages.marlowe-playground-server}/bin/marlowe-playground-server webserver
     '';
   };
 }

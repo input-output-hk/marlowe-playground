@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ repoRoot, inputs, pkgs, system, lib }:
 
 let
   # extracted from "node_modules/playwright-core/browsers.json"

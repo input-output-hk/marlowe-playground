@@ -1,12 +1,12 @@
-{ inputs', pkgs, lib, ... }:
+{ repoRoot, inputs, pkgs, system, lib }:
 let
-  inherit (inputs'.std.lib.ops) mkStandardOCI;
+  inherit (inputs.std.lib.ops) mkStandardOCI;
 
   mkImage = { name, description }:
     mkStandardOCI {
       inherit name;
       # meta.tags = [ "latest" ];
-      operable = inputs'.self.operables.${name};
+      operable = inputs.self.operables.${name};
       uid = "0";
       gid = "0";
       labels = {
@@ -32,10 +32,10 @@ let
 in
 images // {
   all = {
-    copyToDockerDaemon = inputs'.std.lib.ops.writeScript {
+    copyToDockerDaemon = inputs.std.lib.ops.writeScript {
       name = "copy-to-docker-daemon";
       text = forAllImages (name: img:
-        "${inputs'.n2c.packages.skopeo-nix2container}/bin/skopeo --insecure-policy copy nix:${img} docker-daemon:${name}:latest"
+        "${inputs.n2c.packages.skopeo-nix2container}/bin/skopeo --insecure-policy copy nix:${img} docker-daemon:${name}:latest"
       );
     };
   };
