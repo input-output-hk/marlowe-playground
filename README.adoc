@@ -18,18 +18,6 @@ Related projects:
 ====
 The rest of this README is focussed on people who want to develop or contribute to Marlowe.
 
-====
-
-[[cache-warning]]
-[IMPORTANT]
-====
-DO NOT IGNORE THIS
-
-If you want to use Nix with this project, make sure to set up the xref:iohk-binary-cache[IOHK binary cache].
-If you do not do this, you will end up building GHC, which takes several hours.
-If you find yourself building GHC, STOP and fix the cache.
-====
-
 == Documentation
 
 == Working with the project
@@ -57,12 +45,17 @@ The other artifacts (docs etc.) are also most easily built with Nix.
 
 ===== Nix
 
-Install https://nixos.org/nix/[Nix] (recommended). following the instructions on the https://nixos.org/nix/[Nix website].
+This repository uses nix to provide the development and build environment.
 
-Make sure you have read and understood the xref:cache-warning[cache warning].
-DO NOT IGNORE THIS.
+If you know nix, simply run `nix develop` to enter the shell; if prompted, trust 
+the flake config values to enable access to our binary caches.   
 
-See <<nix-advice>> for further advice on using Nix.
+The nix code is based on a template from the the 
+[IOGX flake](https://github.com/input-output-hk/iogx). 
+For instructions on how to install and configure nix (including how to enable 
+access to our binary caches), and how keep the flake inputs up to date, refer to 
+[this section](https://github.com/input-output-hk/iogx/blob/main/doc/api.md#flakenix)
+of the IOGX manual.
 
 ===== Non-Nix
 
@@ -72,26 +65,12 @@ If you use Nix, these tools are provided for you via `shell.nix`, and you do *no
 * If you want to build our Haskell packages with https://www.haskell.org/cabal/[`cabal`], then install it.
 * If you want to build our Haskell packages with https://haskellstack.org/[`stack`], then install it.
 
-[[building-with-nix]]
-==== Using Nix
-
-Run `nix develop` to enter the shell.
-
-From there, you can type `info` to get a list of available commands.
-
-==== How to build the Haskell packages with `cabal`
-
-The Haskell packages can be built directly with `cabal`.
-We do this during development (see <<how-to-develop>>).
-The best way is to do this is inside a `nix-shell`.
-
 [NOTE]
 ====
 For fresh development setups, you also need to run `cabal update`.
 ====
 
 Run `cabal build all` from the root to build all artifacts.
-
 
 === Deployment
 
@@ -100,69 +79,6 @@ The Marlowe Playground is automatically deployed upon certain pushes to GitHub
 * https://marlowe-playground-staging.plutus.aws.iohkdev.io/[Marlowe Playground staging] and https://marlowe-run-staging.plutus.aws.iohkdev.io/[Marlowe Run staging] are deployed from every commit pushed to `main` (these URLs subject to change)
 
 For more details, including instructions for setting up ad hoc testing deployments, see https://github.com/input-output-hk/plutus-ops[the plutus-ops repo].
-
-
-[[nix-advice]]
-== Nix
-
-[[iohk-binary-cache]]
-=== How to set up the IOHK binary caches
-
-Adding the IOHK binary cache to your Nix configuration will speed up
-builds a lot, since many things will have been built already by our CI.
-
-If you find you are building packages that are not defined in this
-repository, or if the build seems to take a very long time then you may
-not have this set up properly.
-
-To set up the cache:
-
-. On non-NixOS, edit `/etc/nix/nix.conf` and add the following lines:
-+
-----
-experimental-features = nix-command flakes
-substituters        = "https://cache.nixos.org" "https://cache.iog.io "https://marlowe-playground.cachix.org"
-trusted-public-keys = "hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ= marlowe-playground.cachix.org-1:8TmdbVgcB4QzTmuzLxNdaCxdc8ZVI9S8eeeXsY9stxo="
-----
-+
-[NOTE]
-====
-If you don't have an `/etc/nix/nix.conf` or don't want to edit it, you may add the `nix.conf` lines to `~/.config/nix/nix.conf` instead.
-You must be a https://nixos.org/nix/manual/#ssec-multi-user[trusted user] to do this.
-====
-. On NixOS, set the following NixOS options:
-+
-----
-nix.settings = {
-  experimental-features = [ "nix-command" "flakes" ];
-  substituters = [
-    "https://cache.nixos.org"
-    "https://cache.iog.io"
-  ];
-  trusted-public-keys = [
-    "hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ="
-  ];
-};
-----
-
-
-=== Nix on macOS
-
-Nix on macOS can be a bit tricky. In particular, sandboxing is disabled by default, which can lead to strange failures.
-
-These days it should be safe to turn on sandboxing on macOS with a few exceptions. Consider setting the following Nix settings, in the same way as in xref:iohk-binary-cache[previous section]:
-
-----
-sandbox = true
-extra-sandbox-paths = /System/Library/Frameworks /System/Library/PrivateFrameworks /usr/lib /private/tmp /private/var/tmp /usr/bin/env
-----
-
-Changes to `/etc/nix/nix.conf` may require a restart of the nix daemon in order to take affect. Restart the nix daemon by running the following commands:
-
-----
-sudo launchctl stop org.nixos.nix-daemon
-sudo launchctl start org.nixos.nix-daemon
-----
 
 == Licensing
 

@@ -29,25 +29,21 @@ Now we will build and run the front end:
 ## Adding dependencies
 
 - Javascript dependencies are managed with npm, so add them to [package.json](./package.json)
-- purescript uses package sets managed by spago so if the package set doesn't contain a dependency you can add it to [../packages.dhall](../packages.dhall)
+- Purescript uses package sets managed by spago so if the package set doesn't contain a dependency you can add it to [../packages.dhall](../packages.dhall)
 
-Whenever you change `packages.dhall` you need to make sure that all dependencies can still properly be resolved and built.
-You can do so using the `update-client-deps` script:
-
-- Inside the nix-shell environment: `update-client-deps`
-- Outside of the nix-shell environment (from the client directory): `$(nix-build -A plutus.updateClientDeps ../)/bin/update-client-deps`
-
-The `update-client-deps` script will generate/update `.nix` files which have to be committed and are required for a successful CI run.
+Whenever you change `packages.dhall` or `packages.json` you must also run the following commands inside the nix shell:
+```bash
+gen-nix-lockfiles
+generate-purescript
+``` 
 
 ## Code formatting
 
 The code is formatted using [purs-tidy](https://github.com/natefaubion/purescript-tidy), and there is a CI task that will fail if the code is not properly formatted. You can apply purs-tidy to the project by calling:
 
 ```bash
-nix-shell shell.nix --run fix-purs-tidy
+pre-commit run purs-tidy
 ```
-
-The code is formatted using [purs-tidy](https://github.com/natefaubion/purescript-tidy), and there is a CI task that will fail if the code is not properly formatted. You can apply purs-tidy to the project by calling:
 
 ## VSCode notes
 
