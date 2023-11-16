@@ -4,6 +4,7 @@ module Humanize
   , humanizeDuration
   , formatDate
   , formatDate'
+  , humanizeInstant
   , formatInstant
   , formatDateTime'
   , formatDateTime
@@ -75,6 +76,13 @@ humanizeInterval tzOffset (TimeInterval from to) = humanize
 toLocalDateTime :: Minutes -> Instant -> Maybe DateTime
 toLocalDateTime tzOffset = adjust (over Minutes negate tzOffset :: Minutes)
   <<< toDateTime
+
+humanizeInstant :: Minutes -> Instant -> String
+humanizeInstant tzOffset time =
+  let
+    date /\ time = formatInstant tzOffset time
+  in
+    date <> " at " <> time
 
 formatInstant :: Minutes -> Instant -> (Tuple String String)
 formatInstant tzOffset time =

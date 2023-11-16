@@ -22,7 +22,7 @@ import Formatting.Clock (timeSpecs)
 import Language.Marlowe (POSIXTime (..), TransactionInput, TransactionWarning)
 import Language.Marlowe.Analysis.FSSemantics (warningsTraceCustom)
 import Marlowe.Symbolic.Types.Request (Request (..))
-import Marlowe.Symbolic.Types.Response (Response (..), Result (..))
+import Marlowe.Symbolic.Types.Response (POSIXTimeWrapper (..), Response (..), Result (..))
 import Servant (Application, JSON, Post, ReqBody, Server, serve, (:>))
 import System.Clock (Clock (Monotonic), diffTimeSpec, getTime, toNanoSecs)
 
@@ -35,9 +35,9 @@ makeResult (Left err) = Error (show err)
 makeResult (Right res) =
   case res of
         Nothing -> Valid
-        Just (POSIXTime sn, ti, tw) ->
+        Just (POSIXTime iti, ti, tw) ->
           CounterExample
-            { initialSlot = sn
+            { initialTime = POSIXTimeWrapper iti
             , transactionList = ti
             , transactionWarning = tw
             }
