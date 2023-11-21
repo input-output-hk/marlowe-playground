@@ -5,12 +5,15 @@ module StaticAnalysis.BottomPanel
 import Prologue hiding (div)
 
 import Data.Array as Array
+import Data.BigInt.Argonaut (toNumber)
 import Data.BigInt.Argonaut as BigInt
+import Data.DateTime.Instant (instant)
 import Data.Lens (to, (^.))
 import Data.List (List(..), null, toUnfoldable, (:))
 import Data.List as List
 import Data.List.NonEmpty (toList)
-import Data.Time.Duration (Minutes)
+import Data.Newtype (unwrap)
+import Data.Time.Duration (Milliseconds(..), Minutes)
 import Effect.Aff.Class (class MonadAff)
 import Halogen (ComponentHTML)
 import Halogen.Classes (btn, spaceBottom, spaceRight, spaceTop, spanText)
@@ -32,7 +35,7 @@ import Halogen.HTML
   )
 import Halogen.HTML.Events (onClick)
 import Halogen.HTML.Properties (classes, enabled)
-import Humanize (humanizeInterval, humanizeValue)
+import Humanize (humanizeInstant, humanizeInterval, humanizeValue)
 import Icons (Icon(..), icon)
 import Language.Marlowe.Core.V1.Semantics.Types
   ( ChoiceId(..)
@@ -185,7 +188,7 @@ warningAnalysisResult tzOffset staticSubResult = div
       ]
     Success
       ( R.CounterExample
-          { initialSlot, transactionList, transactionWarning }
+          { initialTime, transactionList, transactionWarning }
       ) ->
       [ h3 [ classes [ ClassName "analysis-result-title" ] ]
           [ text "Warning Analysis Result: Warnings Found" ]
@@ -196,8 +199,15 @@ warningAnalysisResult tzOffset staticSubResult = div
               , displayWarningList transactionWarning
               ]
           , li_
-              [ spanText "Initial slot: "
-              , b_ [ spanText (BigInt.toString initialSlot) ]
+              [ spanText "Initial time: "
+              , b_
+                  [ spanText $
+                      case
+                        instant $ Milliseconds $ toNumber $ unwrap initialTime
+                        of
+                        Just inst -> humanizeInstant tzOffset inst
+                        Nothing -> "Error parsing time"
+                  ]
               ]
           , li_
               [ spanText "Offending sequence: "

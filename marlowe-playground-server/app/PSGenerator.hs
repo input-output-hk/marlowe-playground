@@ -222,6 +222,7 @@ myTypes =
        , equal . genericShow . argonaut $ mkSumType @Owner
        , equal . genericShow . argonaut $ mkSumType @Auth.AuthStatus
        , order . equal . genericShow . argonaut $ mkSumType @Auth.AuthRole
+       , order . equal . genericShow . argonaut $ mkSumType @MSRes.POSIXTimeWrapper
        , argonaut $ mkSumType @CompilationError
        , argonaut $ mkSumType @InterpreterError
        , argonaut $ mkSumType @Warning

@@ -15,7 +15,7 @@ Now we will build and run the front end:
 ```bash
 [nix-shell] $ cd marlowe-playground-client
 # Generate the purescript bridge files
-[nix-shell] $ generate-purs
+[nix-shell] $ generate-purescript
 # Download javascript dependencies (we use ci to use the package-lock.json)
 [nix-shell] $ npm ci
 # Install purescript depdendencies

@@ -1,13 +1,19 @@
 {-# LANGUAGE DeriveGeneric #-}
 module Marlowe.Symbolic.Types.Response where
 
-import Data.Aeson (FromJSON, ToJSON)
 import GHC.Generics
+import Data.Aeson (FromJSON, ToJSON)
 import Language.Marlowe.Core.V1.Semantics (TransactionInput, TransactionWarning)
+
+newtype POSIXTimeWrapper = POSIXTimeWrapper Integer
+  deriving (Generic)
+
+instance ToJSON POSIXTimeWrapper
+instance FromJSON POSIXTimeWrapper
 
 data Result = Valid
             | CounterExample
-                { initialSlot        :: Integer
+                { initialTime        :: POSIXTimeWrapper
                 , transactionList    :: [TransactionInput]
                 , transactionWarning :: [TransactionWarning]
                 }

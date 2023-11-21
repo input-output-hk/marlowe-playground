@@ -27,6 +27,32 @@ import Language.Marlowe.Core.V1.Semantics.Types
   )
 import Type.Proxy (Proxy(Proxy))
 
+newtype POSIXTimeWrapper = POSIXTimeWrapper BigInt
+
+derive instance Eq POSIXTimeWrapper
+
+derive instance Ord POSIXTimeWrapper
+
+instance Show POSIXTimeWrapper where
+  show a = genericShow a
+
+instance EncodeJson POSIXTimeWrapper where
+  encodeJson = defer \_ -> E.encode $ unwrap >$< E.value
+
+instance DecodeJson POSIXTimeWrapper where
+  decodeJson = defer \_ -> D.decode $ (POSIXTimeWrapper <$> D.value)
+
+derive instance Generic POSIXTimeWrapper _
+
+derive instance Newtype POSIXTimeWrapper _
+
+--------------------------------------------------------------------------------
+
+_POSIXTimeWrapper :: Iso' POSIXTimeWrapper BigInt
+_POSIXTimeWrapper = _Newtype
+
+--------------------------------------------------------------------------------
+
 newtype Response = Response
   { result :: Result
   , durationMs :: BigInt
@@ -65,7 +91,7 @@ _Response = _Newtype
 data Result
   = Valid
   | CounterExample
-      { initialSlot :: BigInt
+      { initialTime :: POSIXTimeWrapper
       , transactionList :: Array TransactionInput
       , transactionWarning :: Array TransactionWarning
       }
@@ -77,10 +103,10 @@ instance Show Result where
 instance EncodeJson Result where
   encodeJson = defer \_ -> case _ of
     Valid -> encodeJson { tag: "Valid", contents: jsonNull }
-    CounterExample { initialSlot, transactionList, transactionWarning } ->
+    CounterExample { initialTime, transactionList, transactionWarning } ->
       encodeJson
         { tag: "CounterExample"
-        , initialSlot: flip E.encode initialSlot E.value
+        , initialTime: flip E.encode initialTime E.value
         , transactionList: flip E.encode transactionList E.value
         , transactionWarning: flip E.encode transactionWarning E.value
         }
@@ -93,7 +119,7 @@ instance DecodeJson Result where
         [ "Valid" /\ pure Valid
         , "CounterExample" /\
             ( CounterExample <$> D.object "CounterExample"
-                { initialSlot: D.value :: _ BigInt
+                { initialTime: D.value :: _ POSIXTimeWrapper
                 , transactionList: D.value :: _ (Array TransactionInput)
                 , transactionWarning: D.value :: _ (Array TransactionWarning)
                 }
@@ -112,7 +138,7 @@ _Valid = prism' (const Valid) case _ of
 
 _CounterExample
   :: Prism' Result
-       { initialSlot :: BigInt
+       { initialTime :: POSIXTimeWrapper
        , transactionList :: Array TransactionInput
        , transactionWarning :: Array TransactionWarning
        }

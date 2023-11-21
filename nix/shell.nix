@@ -49,6 +49,7 @@ _cabalProject:
     pkgs.act
     pkgs.gawk
     pkgs.nil
+    pkgs.scriv
     pkgs.z3
     pkgs.which
     pkgs.prefetch-npm-deps
