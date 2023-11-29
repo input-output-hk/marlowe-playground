@@ -13,6 +13,7 @@ all :: Spec Unit
 all =
   describe "Shelley address check" do
     mainnetPaymentKeyAddresses
+    invalidPaymentKeyAddresses
     mainnetScriptKeyAddresses
     mainnetStakeAddresses
     testnetPaymentKeyAddresses
@@ -27,6 +28,16 @@ mainnetPaymentKeyAddresses =
       , "addr1yx2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzerkr0vd4msrxnuwnccdxlhdjar77j6lg0wypcc9uar5d2shs2z78ve" -- type-02
       , "addr1gx2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzer5pnz75xxcrzqf96k" -- type-04
       , "addr1vx2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzers66hrl8" -- type-06
+      ]
+
+invalidPaymentKeyAddresses :: Spec Unit
+invalidPaymentKeyAddresses =
+  it "Invalid addresses" do
+    traverse_ (\addr -> shouldNotSatisfy addr validPaymentShelleyAddress)
+      [ "addr1qx2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzer3nqd3vllmyqwsx5wktcd8cc3sq835lu7drv2xwl2wywfgse35a3x" -- type-00 (bad checksum)
+      , "addr1yx2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzerkr0vd4msrxnuwnccdxlhdjar77j6lg0wypcc9ulr5d2shs2z78ve" -- type-02 (bad checksum)
+      , "addr_test1gx2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzer5pnz75xxcrzqf96k" -- type-04 (bad network label/bit)
+      , "addr1vx2fxv2umyhttkxyxp1x0dlpdt3k6cwng5pxj3jhsydzers66hrl8" -- type-06 (bad label)
       ]
 
 mainnetScriptKeyAddresses :: Spec Unit

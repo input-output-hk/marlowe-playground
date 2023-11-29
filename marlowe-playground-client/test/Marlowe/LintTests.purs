@@ -120,11 +120,30 @@ choiceAndThenDo continuation =
     <> continuation
     <> "] 5 Close"
 
-payContract :: String -> String
-payContract subExpression =
-  "When [Case (Deposit (Role \"role\" ) (Role \"role\") (Token \"\" \"\") (Constant 100)) (Pay (Role \"role\") (Party (Role \"role\")) (Token \"\" \"\") "
+payContract :: String -> String -> String
+payContract party subExpression =
+  "When [Case (Deposit (" <> party <> ") (" <> party
+    <> ") (Token \"\" \"\") (Constant 100)) (Pay ("
+    <> party
+    <> ") (Party ("
+    <> party
+    <> ")) (Token \"\" \"\") "
     <> subExpression
     <> " Close)] 10 Close"
+
+payContractWithRole :: String -> String
+payContractWithRole = payContract "Role \"role\""
+
+payContractWithPaymentKeyAddress :: String -> String
+payContractWithPaymentKeyAddress = payContract
+  "Address \"addr1qx2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzer3n0d3vllmyqwsx5wktcd8cc3sq835lu7drv2xwl2wywfgse35a3x\""
+
+invalidAddress :: String
+invalidAddress =
+  "addr1z8phkx6acpnf78fuvxn0mkew3l0fd058hzquvz7w36x4gten0d3vllmyqwsx5wktcd8cc3sq835lu7drv2xwl2wywfgs9yc0hh"
+
+payContractWithScriptAddress :: String -> String
+payContractWithScriptAddress = payContract "Address \" <> invalidAddress <> \""
 
 notifyContract :: String -> String
 notifyContract subExpression = "When [Case (Notify " <> subExpression <>
@@ -247,7 +266,7 @@ paySimplifies =
 
     simplification = "(Constant 1)"
   in
-    testValueSimplificationWarning payContract simplifiableExpression
+    testValueSimplificationWarning payContractWithRole simplifiableExpression
       simplification
 
 addValueSimplifies :: forall m. MonadThrow Error m => m Unit
@@ -445,7 +464,9 @@ undefinedChoiceValue =
   testWarningSimple
     ( choiceAndThenDo
         ( addParenthesis
-            (payContract "(ChoiceValue (ChoiceId \"choice\" (Role \"role2\")))")
+            ( payContractWithRole
+                "(ChoiceValue (ChoiceId \"choice\" (Role \"role2\")))"
+            )
         )
     ) $ show UndefinedChoice
 
@@ -458,11 +479,11 @@ negativeDeposit = testWarningSimple (depositContract "(Constant -1)") $ show
   NegativeDeposit
 
 nonPositivePay :: forall m. MonadThrow Error m => m Unit
-nonPositivePay = testWarningSimple (payContract "(Constant 0)") $ show
+nonPositivePay = testWarningSimple (payContractWithRole "(Constant 0)") $ show
   NegativePayment
 
 negativePay :: forall m. MonadThrow Error m => m Unit
-negativePay = testWarningSimple (payContract "(Constant -1)") $ show
+negativePay = testWarningSimple (payContractWithRole "(Constant -1)") $ show
   NegativePayment
 
 payBeforeWarning :: forall m. MonadThrow Error m => m Unit
@@ -536,7 +557,9 @@ normalChoiceValue :: forall m. MonadThrow Error m => m Unit
 normalChoiceValue = testNoWarning
   ( choiceAndThenDo
       ( addParenthesis
-          (payContract "(ChoiceValue (ChoiceId \"choice\" (Role \"role\")))")
+          ( payContractWithRole
+              "(ChoiceValue (ChoiceId \"choice\" (Role \"role\")))"
+          )
       )
   )
 
@@ -544,4 +567,14 @@ positiveDeposit :: forall m. MonadThrow Error m => m Unit
 positiveDeposit = testNoWarning (depositContract "(Constant 1)")
 
 positivePay :: forall m. MonadThrow Error m => m Unit
-positivePay = testNoWarning (payContract "(Constant 1)")
+positivePay = testNoWarning (payContractWithRole "(Constant 1)")
+
+paymentAddressPay :: forall m. MonadThrow Error m => m Unit
+paymentAddressPay = testNoWarning
+  (payContractWithPaymentKeyAddress "(Constant 1)")
+
+scriptAddressPay :: forall m. MonadThrow Error m => m Unit
+scriptAddressPay = testWarningSimple
+  (payContractWithPaymentKeyAddress "(Constant 1)")
+  (show invalidAddress <> " is not a valid Shelley payment key address")
+

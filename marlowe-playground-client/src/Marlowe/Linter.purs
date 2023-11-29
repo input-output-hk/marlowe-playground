@@ -75,6 +75,7 @@ import Monaco (TextEdit)
 import Pretty (showPrettyParty)
 import StaticAnalysis.Reachability (initializePrefixMap, stepPrefixMap)
 import StaticAnalysis.Types (ContractPath, ContractPathStep(..), PrefixMap)
+import Text.Bech32 (validPaymentShelleyAddress)
 import Text.Pretty (hasArgs, pretty)
 import Type.Proxy (Proxy(..))
 
@@ -111,6 +112,7 @@ data WarningDetail
   = NegativePayment
   | NegativeDeposit
   | TimeoutNotIncreasing
+  | InvalidAddress String
   | UnreachableCaseEmptyChoice
   | InvalidBound
   | UnreachableCaseFalseNotify
@@ -127,6 +129,8 @@ instance showWarningDetail :: Show WarningDetail where
   show NegativePayment = "The contract can make a non-positive payment"
   show NegativeDeposit = "The contract can make a non-positive deposit"
   show TimeoutNotIncreasing = "Timeouts should always increase in value"
+  show (InvalidAddress addr) = show addr <>
+    " is not a valid Shelley payment key address"
   show UnreachableCaseEmptyChoice =
     "This case will never be used, because there are no options to choose from"
   show InvalidBound =
@@ -210,12 +214,6 @@ _metadataHints = _Newtype <<< prop (Proxy :: _ "metadataHints")
 
 hasHoles :: State -> Boolean
 hasHoles = not MH.isEmpty <<< view _holes
-
-addRoleFromPartyTerm :: Term Party -> CMS.State State Unit
-addRoleFromPartyTerm (Term (Role role) _) =
-  modifying (_metadataHints <<< _roles) $ Set.insert role
-
-addRoleFromPartyTerm _ = pure unit
 
 addTimeParameter :: String -> CMS.State State Unit
 addTimeParameter timeParam = modifying (_metadataHints <<< _timeParameters) $
@@ -406,14 +404,24 @@ lint unreachablePaths contract =
   in
     CMS.execState (lintContract env contract) mempty
 
+lintParty :: Term Party -> CMS.State State Unit
+lintParty (Term (Address addr) pos) =
+  if validPaymentShelleyAddress addr then pure unit
+  else addWarning (InvalidAddress addr) pos
+
+lintParty (Term (Role role) _) =
+  modifying (_metadataHints <<< _roles) $ Set.insert role
+
+lintParty _ = pure unit
+
 lintContract :: LintEnv -> Term Contract -> CMS.State State Unit
 lintContract _ (Term Close _) = pure unit
 
 lintContract env (Term (Pay acc payee token payment cont) pos) = do
-  addRoleFromPartyTerm acc
+  lintParty acc
   case payee of
-    Term (Account party) _ -> addRoleFromPartyTerm party
-    Term (Party party) _ -> addRoleFromPartyTerm party
+    Term (Account party) _ -> lintParty party
+    Term (Party party) _ -> lintParty party
     _ -> pure unit
   modifying _holes (getHoles acc <> getHoles payee <> getHoles token) -- First we calculate the value and warn for non positive values
   sa <- lintValue env payment
@@ -590,7 +598,7 @@ lintObservation
   _
   t@(Term (ChoseSomething choiceId@(ChoiceId choiceName party)) pos) = do
   addChoiceName choiceName
-  addRoleFromPartyTerm party
+  lintParty party
   modifying _holes (getHoles choiceId)
   pure (ValueSimp pos false t)
 
@@ -662,7 +670,7 @@ lintValue
   -> Term Value
   -> CMS.State State (TemporarySimplification BigInt Value)
 lintValue _ t@(Term (AvailableMoney acc token) pos) = do
-  addRoleFromPartyTerm acc
+  lintParty acc
   let
     gatherHoles = getHoles acc <> getHoles token
   modifying _holes gatherHoles
@@ -757,7 +765,7 @@ lintValue env t@(Term (DivValue a b) pos) = do
 lintValue env t@(Term (ChoiceValue choiceId@(ChoiceId choiceName party)) pos) =
   do
     addChoiceName choiceName
-    addRoleFromPartyTerm party
+    lintParty party
     when
       ( case fromTerm choiceId of
           Just semChoiceId -> not $ Set.member semChoiceId
@@ -853,8 +861,8 @@ lintAction env (Term (Deposit acc party token value) pos) = do
       (fromTerm token)
 
     isReachable = view _isReachable env
-  addRoleFromPartyTerm acc
-  addRoleFromPartyTerm party
+  lintParty acc
+  lintParty party
   modifying _holes (getHoles acc <> getHoles party <> getHoles token)
   sa <- lintValue env value
   (\effect -> effect /\ isReachable)
@@ -881,7 +889,7 @@ lintAction env (Term (Choice choiceId@(ChoiceId choiceName party) bounds) pos) =
 
       isReachable = view _isReachable env
     addChoiceName choiceName
-    addRoleFromPartyTerm party
+    lintParty party
     modifying _holes (getHoles choiceId <> getHoles bounds)
     allInvalid <- foldM lintBounds true bounds
     when (allInvalid && isReachable) $ addWarning UnreachableCaseEmptyChoice pos
