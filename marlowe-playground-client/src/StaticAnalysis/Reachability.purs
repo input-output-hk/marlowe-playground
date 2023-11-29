@@ -2,20 +2,14 @@ module StaticAnalysis.Reachability
   ( analyseReachability
   , areContractAndStateTheOnesAnalysed
   , getUnreachableContracts
-  , initializePrefixMap
   , startReachabilityAnalysis
-  , stepPrefixMap
   ) where
 
 import Prologue hiding (div)
 
-import Control.Monad.State as CMS
 import Data.Lens (assign, use)
-import Data.List (List(..), any, catMaybes, fromFoldable, null)
-import Data.List.NonEmpty (fromList, head, tail, toList)
-import Data.Map (fromFoldableWith, lookup, unionWith)
-import Data.Map as Map
-import Data.Set (singleton, union)
+import Data.List (List(..))
+import Data.List.NonEmpty (toList)
 import Data.Tuple.Nested (type (/\), (/\))
 import Effect.Aff.Class (class MonadAff)
 import Halogen (HalogenM)
@@ -25,6 +19,7 @@ import Language.Marlowe.Core.V1.Semantics.Types as S
 import Language.Marlowe.Extended.V1 (toCore)
 import Language.Marlowe.Extended.V1 as EM
 import Marlowe (Api)
+import Marlowe.Linter (hasInvalidAddresses)
 import Marlowe.Template (fillTemplate)
 import Servant.PureScript (class MonadAjax)
 import StaticAnalysis.StaticTools
@@ -36,11 +31,9 @@ import StaticAnalysis.Types
   ( AnalysisExecutionState(..)
   , AnalysisState
   , ContractPath
-  , ContractPathStep
   , ContractZipper
   , MultiStageAnalysisData(..)
   , MultiStageAnalysisProblemDef
-  , PrefixMap
   , _analysisExecutionState
   , _analysisState
   , _templateContent
@@ -55,23 +48,29 @@ analyseReachability
        Unit
 analyseReachability extendedContract = do
   templateContent <- use (_analysisState <<< _templateContent)
-  case toCore $ fillTemplate templateContent extendedContract of
-    Just contract -> do
-      assign (_analysisState <<< _analysisExecutionState)
-        (ReachabilityAnalysis AnalysisNotStarted)
-      -- when editor and simulator were together the analyse contract could be made
-      -- at any step of the simulator. Now that they are separate, it can only be done
-      -- with initial state
-      let
-        emptySemanticState = emptyState
-      newReachabilityAnalysisState <- startReachabilityAnalysis contract
-        emptySemanticState
-      assign (_analysisState <<< _analysisExecutionState)
-        (ReachabilityAnalysis newReachabilityAnalysisState)
-    Nothing -> assign (_analysisState <<< _analysisExecutionState)
-      ( ReachabilityAnalysis $ AnalysisFailure
-          "The code has templates. Static analysis can only be run in core Marlowe code."
-      )
+  if hasInvalidAddresses extendedContract then
+    assign (_analysisState <<< _analysisExecutionState)
+      $ CloseAnalysis
+      $ AnalysisFailure
+          "The code has invalid addresses. Please check the Warnings tab."
+  else
+    case toCore $ fillTemplate templateContent extendedContract of
+      Just contract -> do
+        assign (_analysisState <<< _analysisExecutionState)
+          (ReachabilityAnalysis AnalysisNotStarted)
+        -- when editor and simulator were together the analyse contract could be made
+        -- at any step of the simulator. Now that they are separate, it can only be done
+        -- with initial state
+        let
+          emptySemanticState = emptyState
+        newReachabilityAnalysisState <- startReachabilityAnalysis contract
+          emptySemanticState
+        assign (_analysisState <<< _analysisExecutionState)
+          (ReachabilityAnalysis newReachabilityAnalysisState)
+      Nothing -> assign (_analysisState <<< _analysisExecutionState)
+        ( ReachabilityAnalysis $ AnalysisFailure
+            "The code has templates. Static analysis can only be run in core Marlowe code."
+        )
 
 expandSubproblem :: ContractZipper -> Contract -> (ContractPath /\ Contract)
 expandSubproblem z _ = zipperToContractPath z /\ closeZipperContract z
@@ -122,29 +121,3 @@ areContractAndStateTheOnesAnalysed
 
 areContractAndStateTheOnesAnalysed _ _ _ = false
 
--- It groups the contract paths by their head, discards empty contract paths
-initializePrefixMap :: List ContractPath -> PrefixMap
-initializePrefixMap unreachablePathList = fromFoldableWith union
-  $ map (\x -> (head x /\ singleton x))
-  $ catMaybes
-  $ map fromList unreachablePathList
-
--- Returns Nothing when the path is unreachable according to one of the paths, otherwise it returns the updated PrefixMap for the subpath
-stepPrefixMap
-  :: forall a
-   . CMS.State a Unit
-  -> PrefixMap
-  -> ContractPathStep
-  -> CMS.State a (Maybe PrefixMap)
-stepPrefixMap markUnreachable prefixMap contractPath =
-  case lookup contractPath prefixMap of
-    Just pathSet ->
-      let
-        tails = map tail $ fromFoldable pathSet
-      in
-        if any null tails then do
-          markUnreachable
-          pure Nothing
-        else
-          pure $ Just $ unionWith union (initializePrefixMap tails) Map.empty
-    Nothing -> pure (Just Map.empty)

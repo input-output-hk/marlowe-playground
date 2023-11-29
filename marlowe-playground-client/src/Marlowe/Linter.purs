@@ -9,6 +9,7 @@ module Marlowe.Linter
   , _warnings
   , _metadataHints
   , _location
+  , hasInvalidAddresses
   ) where
 
 import Prologue
@@ -18,13 +19,13 @@ import Data.Bifunctor (bimap)
 import Data.BigInt.Argonaut (BigInt)
 import Data.DateTime.Instant (Instant)
 import Data.Eq.Generic (genericEq)
-import Data.Foldable (foldM)
+import Data.Foldable (any, foldM)
 import Data.FoldableWithIndex (traverseWithIndex_)
 import Data.Generic.Rep (class Generic)
 import Data.Lens (Lens', modifying, over, set, view)
 import Data.Lens.Iso.Newtype (_Newtype)
 import Data.Lens.Record (prop)
-import Data.List (List)
+import Data.List (List(..))
 import Data.Map (Map)
 import Data.Map as Map
 import Data.Maybe (isNothing, maybe)
@@ -49,6 +50,7 @@ import Language.Marlowe.Extended.V1.Metadata.Lenses
   , _valueParameters
   )
 import Language.Marlowe.Extended.V1.Metadata.Types (MetadataHintInfo)
+import Language.Marlowe.ToTerm (toTerm)
 import Marlowe.Holes
   ( Action(..)
   , Bound(..)
@@ -73,7 +75,7 @@ import Marlowe.Holes as MH
 import Marlowe.Time (unixEpoch)
 import Monaco (TextEdit)
 import Pretty (showPrettyParty)
-import StaticAnalysis.Reachability (initializePrefixMap, stepPrefixMap)
+import StaticAnalysis.ReachabilityTools (initializePrefixMap, stepPrefixMap)
 import StaticAnalysis.Types (ContractPath, ContractPathStep(..), PrefixMap)
 import Text.Bech32 (validPaymentShelleyAddress)
 import Text.Pretty (hasArgs, pretty)
@@ -914,3 +916,14 @@ lintAction env hole@(Hole _ _) = do
     isReachable = view _isReachable env
   modifying _holes (insertHole hole)
   pure $ NoEffect /\ isReachable
+
+isAddressWarning :: Warning -> Boolean
+isAddressWarning (Warning { warning: InvalidAddress _ }) = true
+isAddressWarning _ = false
+
+hasInvalidAddresses :: EM.Contract -> Boolean
+hasInvalidAddresses ec =
+  let
+    State { warnings } = lint Nil (toTerm ec)
+  in
+    any isAddressWarning warnings

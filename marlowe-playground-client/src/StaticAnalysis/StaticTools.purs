@@ -34,6 +34,7 @@ import Language.Marlowe.Extended.V1 (toCore)
 import Language.Marlowe.Extended.V1 as EM
 import Marlowe (Api)
 import Marlowe as Server
+import Marlowe.Linter (hasInvalidAddresses)
 import Marlowe.Symbolic.Types.Request as MSReq
 import Marlowe.Symbolic.Types.Response (Response(..), Result(..))
 import Marlowe.Template (fillTemplate)
@@ -64,21 +65,26 @@ analyseContract
        Unit
 analyseContract extendedContract = do
   templateContent <- use (_analysisState <<< _templateContent)
-  case toCore $ fillTemplate templateContent extendedContract of
-    Just contract -> do
-      assign (_analysisState <<< _analysisExecutionState)
-        (WarningAnalysis Loading)
-      -- when editor and simulator were together the analyse contract could be made
-      -- at any step of the simulator. Now that they are separate, it can only be done
-      -- with initial state
-      response <- checkContractForWarnings emptyState contract
-      assign (_analysisState <<< _analysisExecutionState) $ WarningAnalysis
-        $ lmap WarningAnalysisAjaxError
-        $ fromEither
-        $ response
-    Nothing -> assign (_analysisState <<< _analysisExecutionState)
+  if hasInvalidAddresses extendedContract then
+    assign (_analysisState <<< _analysisExecutionState)
       $ WarningAnalysis
-      $ Failure WarningAnalysisIsExtendedMarloweError
+      $ Failure WarningWrongAddressesInContract
+  else
+    case toCore $ fillTemplate templateContent extendedContract of
+      Just contract -> do
+        assign (_analysisState <<< _analysisExecutionState)
+          (WarningAnalysis Loading)
+        -- when editor and simulator were together the analyse contract could be made
+        -- at any step of the simulator. Now that they are separate, it can only be done
+        -- with initial state
+        response <- checkContractForWarnings emptyState contract
+        assign (_analysisState <<< _analysisExecutionState) $ WarningAnalysis
+          $ lmap WarningAnalysisAjaxError
+          $ fromEither
+          $ response
+      Nothing -> assign (_analysisState <<< _analysisExecutionState)
+        $ WarningAnalysis
+        $ Failure WarningAnalysisIsExtendedMarloweError
   where
   checkContractForWarnings state contract =
     traverse logAndStripDuration =<< lift

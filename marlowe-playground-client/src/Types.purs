@@ -15,6 +15,7 @@ type JsonAjaxError = AjaxError JsonDecodeError Json
 data WarningAnalysisError
   = WarningAnalysisAjaxError JsonAjaxError
   | WarningAnalysisIsExtendedMarloweError
+  | WarningWrongAddressesInContract
 
 type WebData = RemoteData JsonAjaxError
 
