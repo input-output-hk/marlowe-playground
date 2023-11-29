@@ -91,11 +91,11 @@ escrowWithCollateral =
                                          (ChoiceId "Dispute problem" (Role "Seller")) [
                                          (Bound 0 0)])
                                       (Pay (Role "Seller")
-                                         (Party (Address "addr_test1vqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3lgle2"))
+                                         (Party (Address "addr_test1vqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqd9tg5t"))
                                          (Token "" "")
                                          (ConstantParam "Collateral amount")
                                          (Pay (Role "Buyer")
-                                            (Party (Address "addr_test1vqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3lgle2"))
+                                            (Party (Address "addr_test1vqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqd9tg5t"))
                                             (Token "" "")
                                             (ConstantParam "Collateral amount") Close)))] (TimeParam "Complaint deadline") Close)))] (TimeParam "Dispute by buyer timeout") Close))] (TimeParam "Deposit of price by buyer timeout") Close))] (TimeParam "Deposit of collateral by buyer timeout") Close))] (TimeParam "Collateral deposit by seller timeout") Close"""
 
