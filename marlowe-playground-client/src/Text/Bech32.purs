@@ -88,9 +88,12 @@ validPaymentShelleyAddress sAddr =
 
           && addrType <= 7 -- It is a payment key (not a stake address)
           && addrType .&. 0x01 == 0 -- It is not a script address
+          && addrType /= 4
+          && addrType /= 5 -- No pointer
           &&
             ( if addrType < 6 -- Does it have two hashes?
-              then datLength == 101 &&
-                (fromMaybe false (map ((>) 0x10) dat !! 95)) -- 8 + 224 + 224 + 48 = 504 bits = 100 chars of 5 bits + 4 (bits)
-              else datLength == 56
-            ) -- 8 + 224 + 48 = 280 -> 56 chars of 5 bits
+              then datLength == 98 &&
+                (fromMaybe false (map (\x -> x .&. 1 == 0) dat !! 91)) -- 8 + 224 + 224 + 30 = 486 bits = 97 chars of 5 bits + 1 bit
+              else datLength == 53 &&
+                (fromMaybe false (map (\x -> x .&. 7 == 0) dat !! 46))
+            ) -- 8 + 224 + 30 = 262 -> 52 chars of 5 bits + 2 bits
