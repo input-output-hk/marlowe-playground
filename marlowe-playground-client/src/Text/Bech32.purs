@@ -14,6 +14,7 @@ import Data.String.CodeUnits (fromCharArray, indexOf, toCharArray)
 import Data.Traversable (traverse)
 import Data.Tuple.Nested (type (/\), (/\))
 
+-- Based on code and spec in: https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki (licensed under: BSD-2-Clause)
 gen :: Array Int
 gen = [ 0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3 ]
 
@@ -70,6 +71,7 @@ splitAddress s = do
     )
   pure $ (hrp /\ intDataArr)
 
+-- Based on: https://cips.cardano.org/cips/cip19/ (licensed under: CC-BY-4.0)
 validPaymentShelleyAddress :: String -> Boolean
 validPaymentShelleyAddress sAddr =
   fromMaybe false

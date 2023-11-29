@@ -20,6 +20,7 @@ all =
     testnetScriptAndPointerAddresses
     testnetStakeAddresses
 
+-- Part of the test vectors are obtained or derived from: https://cips.cardano.org/cips/cip19/ (licensed under: CC-BY.4.0)
 mainnetPaymentKeyAddresses :: Spec Unit
 mainnetPaymentKeyAddresses =
   it "Mainnet payment key addresses" do
