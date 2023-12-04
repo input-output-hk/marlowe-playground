@@ -148,7 +148,7 @@ seller = Role "Seller"
 
 burnAddress :: Party
 burnAddress = Address
-  "addr_test1vqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3lgle2"
+  "addr_test1vqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqd9tg5t"
 
 price :: Value
 price = ConstantParam "Price"

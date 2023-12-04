@@ -22,6 +22,7 @@ import Language.Marlowe.Core.V1.Semantics.Types as S
 import Language.Marlowe.Extended.V1 (toCore)
 import Language.Marlowe.Extended.V1 as EM
 import Marlowe (Api)
+import Marlowe.Linter (hasInvalidAddresses)
 import Marlowe.Template (fillTemplate)
 import Servant.PureScript (class MonadAjax)
 import StaticAnalysis.StaticTools
@@ -50,22 +51,28 @@ analyseClose
        Unit
 analyseClose extendedContract = do
   templateContent <- use (_analysisState <<< _templateContent)
-  case toCore $ fillTemplate templateContent extendedContract of
-    Just contract -> do
-      assign (_analysisState <<< _analysisExecutionState)
-        (CloseAnalysis AnalysisNotStarted)
-      -- when editor and simulator were together the analyse contract could be made
-      -- at any step of the simulator. Now that they are separate, it can only be done
-      -- with initial state
-      let
-        emptySemanticState = emptyState
-      newCloseAnalysisState <- startCloseAnalysis contract emptySemanticState
-      assign (_analysisState <<< _analysisExecutionState)
-        (CloseAnalysis newCloseAnalysisState)
-    Nothing -> assign (_analysisState <<< _analysisExecutionState)
-      ( CloseAnalysis $ AnalysisFailure
-          "The code has templates. Static analysis can only be run in core Marlowe code."
-      )
+  if hasInvalidAddresses extendedContract then
+    assign (_analysisState <<< _analysisExecutionState)
+      $ CloseAnalysis
+      $ AnalysisFailure
+          "The code has invalid addresses. Please check the Warnings tab."
+  else
+    case toCore $ fillTemplate templateContent extendedContract of
+      Just contract -> do
+        assign (_analysisState <<< _analysisExecutionState)
+          (CloseAnalysis AnalysisNotStarted)
+        -- when editor and simulator were together the analyse contract could be made
+        -- at any step of the simulator. Now that they are separate, it can only be done
+        -- with initial state
+        let
+          emptySemanticState = emptyState
+        newCloseAnalysisState <- startCloseAnalysis contract emptySemanticState
+        assign (_analysisState <<< _analysisExecutionState)
+          (CloseAnalysis newCloseAnalysisState)
+      Nothing -> assign (_analysisState <<< _analysisExecutionState)
+        ( CloseAnalysis $ AnalysisFailure
+            "The code has templates. Static analysis can only be run in core Marlowe code."
+        )
 
 extractAccountIdsFromZipper :: ContractZipper -> Set (AccountId /\ Token)
 extractAccountIdsFromZipper = go

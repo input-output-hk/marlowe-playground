@@ -90,7 +90,7 @@ escrowWithCollateral =
 
     const buyer: Party = Role("Buyer");
     const seller: Party = Role("Seller");
-    const burnAddress: Party = Address("addr_test1vqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3lgle2");
+    const burnAddress: Party = Address("addr_test1vqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqd9tg5t");
 
     const price: Value = ConstantParam("Price");
     const collateral: Value = ConstantParam("Collateral amount");

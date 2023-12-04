@@ -250,6 +250,19 @@ warningAnalysisResult tzOffset staticSubResult = div
               ]
           ]
       ]
+    Failure WarningWrongAddressesInContract ->
+      [ h3 [ classes [ ClassName "analysis-result-title" ] ]
+          [ text "Error during warning analysis" ]
+      , text "Analysis failed for the following reason:"
+      , ul [ classes [ ClassName "indented-enum-initial" ] ]
+          [ li_
+              [ b_
+                  [ spanText
+                      "The code has invalid addresses. Please check the Warnings tab."
+                  ]
+              ]
+          ]
+      ]
     Loading -> [ text "" ]
 
 reachabilityAnalysisResult

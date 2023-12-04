@@ -181,6 +181,7 @@ warningType (Warning { warning }) = case warning of
   NegativePayment -> "NegativePayment"
   NegativeDeposit -> "NegativeDeposit"
   TimeoutNotIncreasing -> "TimeoutNotIncreasing"
+  (InvalidAddress _) -> "InvalidAddress"
   UnreachableCaseEmptyChoice -> "UnreachableCaseEmptyChoice"
   InvalidBound -> "InvalidBound"
   UnreachableCaseFalseNotify -> "UnreachableCaseFalseNotify"

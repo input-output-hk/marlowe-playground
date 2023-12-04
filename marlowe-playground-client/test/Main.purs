@@ -16,6 +16,7 @@ import Test.Component.DateTimeLocalInputTest as DateTimeLocalInputTest
 import Test.Humanize as HumanizeTest
 import Test.Spec.Reporter (consoleReporter)
 import Test.Spec.Runner (runSpec)
+import Test.Text.Bech32Tests as Bech32Tests
 
 foreign import forDeps :: Effect Unit
 
@@ -31,3 +32,4 @@ main = launchAff_ $ runSpec [ consoleReporter ] do
   HolesTimeoutTest.all
   DateTimeLocalInputTest.all
   HumanizeTest.all
+  Bech32Tests.all
