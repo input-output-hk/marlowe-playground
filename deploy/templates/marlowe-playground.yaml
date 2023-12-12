@@ -60,11 +60,16 @@ spec:
     type: webservice
     properties:
       cpu: "0.5"
-      image: p3terx/darkhttpd
+      image: joseluisq/static-web-server:2
       args:
-      - /client-www
-      - --port
-      - "8080"
+        - --root
+        - /client-www
+        - --port
+        - "8080"
+        - --page-fallback
+        - "/client-www/index.html"
+        - --log-level
+        - info
       imagePullPolicy: Always
       memory: 1024Mi
       ports:
@@ -153,7 +158,7 @@ spec:
           type: https-route
       - name: marlowe-playground-client
         properties:
-          image: p3terx/darkhttpd
+          image: joseluisq/static-web-server:2
         traits:
         - properties:
             domains:
