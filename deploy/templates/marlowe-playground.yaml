@@ -52,7 +52,7 @@ spec:
         - marlowe-playground.scdev.aws.iohkdev.io
         rules:
         - path:
-            type: PathPrefix
+            type: Prefix
             value: /api
           port: 8080
       type: https-route
@@ -152,7 +152,7 @@ spec:
             - play.marlowe.iohk.io
             rules:
             - path:
-                type: PathPrefix
+                type: Prefix
                 value: /api
               port: 8080
           type: https-route
