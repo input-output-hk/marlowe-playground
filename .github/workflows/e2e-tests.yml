@@ -32,4 +32,4 @@ jobs:
           authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
       - name: Run E2E tests
         run: |
-          nix develop --command 'cd e2e && . ./run_tests.sh @regression'
+          nix develop --command 'cd e2e'
