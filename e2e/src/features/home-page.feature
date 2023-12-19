@@ -8,6 +8,7 @@ Feature: As a user I should be able to see the Marlowe Playground home page
     see all the starting point options available
 
     Scenario: As a user I expect to be able to see the available languages
+      Given I use alice lace browser
       Given I am on the "home" page
       Then I should see a "link" with "Start in Javascript" text
       Then I should see a "link" with "Start in Haskell" text
@@ -21,6 +22,7 @@ Feature: As a user I should be able to see the Marlowe Playground home page
       Then I should see a "heading" with "Login with github" text
 
     Scenario Outline: As a user, I would like to see a list of example contracts by language
+      Given I use alice lace browser
       Given I am on the "home" page
       When I click the "button" with "Open an example" text
       Then I should see a "heading" with "<Contract Name>" text
@@ -41,6 +43,7 @@ Feature: As a user I should be able to see the Marlowe Playground home page
 
     Scenario: As a user, I would like to see links to a tutorial
 
+      Given I use alice lace browser
       Given I am on the "home" page
       Then I should see a "link" with "Tutorial" text
       And I should see a "link" with "cardano.org" text

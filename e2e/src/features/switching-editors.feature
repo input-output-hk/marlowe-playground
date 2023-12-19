@@ -7,6 +7,7 @@ Feature: Switching text editors
 
     Scenario: As a user I want to switch from Haskell, to Javascript, to Marlowe, to Blockly
 
+      Given I use alice lace browser
       Given I am on the "home" page
       When I click the "link" with "Start in Haskell" text
       Then I should be on the "haskell-editor" page

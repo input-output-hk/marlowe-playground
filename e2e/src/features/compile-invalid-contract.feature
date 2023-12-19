@@ -7,6 +7,7 @@ Feature: Compile an invalid contract
 
     Scenario: As a user I want to not compile invalid contracts
 
+      Given I use alice lace browser
       Given I am on the "home" page
 
       When I click the "button" with "Open an example" text

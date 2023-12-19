@@ -1,5 +1,5 @@
 import { Page } from 'playwright';
-import { GlobalConfig, PageId } from '../env/global';
+import { GlobalConfig, PageId } from '../env/global.js';
 
 export const navigateToPage = async (
   page: Page,
@@ -13,8 +13,11 @@ export const navigateToPage = async (
   const hostPath = hostsConfig[`${environmentId}`];
   const url = new URL(hostPath);
   const pagesConfigItem = pagesConfig[pageId];
-  url.pathname = pagesConfigItem.route;
 
+  if (!!pagesConfigItem.query) {
+    url.search = pagesConfigItem.query;
+  }
+  url.pathname = pagesConfigItem.route;
   await page.goto(url.href);
 }
 

@@ -8,6 +8,7 @@ Feature: Contract Simulation
 
     Scenario: As a user I to enter valid currency values in currency inputs
 
+      Given I use alice lace browser
       Given I am on the "home" page
 
       When I click the "button" with "Open an example" text
@@ -37,6 +38,7 @@ Feature: Contract Simulation
 @wip
     Scenario: As a user who is simulating a contract, I would like to see a transaction log
 
+      Given I use alice lace browser
       Given I am on the "home" page
 
       When I click the "button" with "Open an example" text

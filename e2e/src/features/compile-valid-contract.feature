@@ -6,6 +6,7 @@ Feature: Compile a valid contract
     As a user I expect to be able to compile a valid contract and see the generated code
     Scenario: As a user I want to compile a valid contract and see the generated code
 
+      Given I use alice lace browser
       Given I am on the "home" page
 
       When I click the "button" with "Open an example" text

@@ -8,6 +8,7 @@ Feature: Open a new project and comiple
 
     Scenario: As a user I would like to open a new project with a valid default contract
 
+      Given I use alice lace browser
       Given I am on the "home" page
 
       When I click the "link" with "Start in Javascript" text

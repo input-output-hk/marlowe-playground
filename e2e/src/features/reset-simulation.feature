@@ -7,6 +7,7 @@ Feature: Reset Simulation
 
     Scenario: As a user I to reset the simulation after interacting with it
 
+      Given I use alice lace browser
       Given I am on the "home" page
 
       When I click the "button" with "Open an example" text

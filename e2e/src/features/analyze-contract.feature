@@ -6,6 +6,7 @@ Feature: Analyze a contract
     As a user I want to analyze a contract for warnings, reachability and refunds on close
     Scenario: As a user I want to analyze a contract for warnings
 
+      Given I use alice lace browser
       Given I am on the "home" page
 
       When I click the "button" with "Open an example" text
