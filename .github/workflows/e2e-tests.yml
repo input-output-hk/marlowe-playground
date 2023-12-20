@@ -30,6 +30,13 @@ jobs:
         with:
           name: ${{ env.CACHE_NAME }}
           authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+      - name: Debugging Information
+        run: |
+          nix --version
+          node --version
+          npm --version
+          which cucumber-js
+          npm list -g
       - name: Run E2E tests
         run: |
           nix develop --command bash -c 'cd e2e && npm install && . ./run_tests.sh @dev'
