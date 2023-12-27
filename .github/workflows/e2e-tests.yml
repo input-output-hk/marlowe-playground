@@ -37,6 +37,8 @@ jobs:
           cache: 'npm'
       - name: Update npm
         run: npm install -g npm@8.19.2
+      - name: Install cucumber
+        run: npm install cucumber
       - name: Run E2E tests
         run: |
           nix develop --command bash -c 'cd e2e && npm install && . ./run_tests.sh @dev'
