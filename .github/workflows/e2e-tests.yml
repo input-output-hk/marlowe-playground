@@ -39,6 +39,11 @@ jobs:
         run: npm install -g npm@8.19.2
       - name: Install cucumber
         run: npm install cucumber
+      - name: Check PATH and Cucumber
+        run: |
+          echo $PATH
+          which cucumber-js || true
+          npm bin -g
       - name: Run E2E tests
         run: |
           nix develop --command bash -c 'cd e2e && npm install && . ./run_tests.sh @dev'
