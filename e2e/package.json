@@ -9,7 +9,7 @@
     "transpile": "rimraf dist && babel --extensions .ts --out-dir dist src",
     "cucumber-compile": "yarn transpile && cucumber-js",
     "cucumber": "COMMON_CONFIG_FILE=env/common.env yarn cucumber-compile",
-    "postcucumber": "COMMON_CONFIG_FILE=env/common.env ts-node ./src/reporter/cucumber-report.ts"
+    "postcucumber": "node --loader ts-node/esm ./src/reporter/cucumber-report.ts"
   },
   "author": "",
   "license": "ISC",
