@@ -4,10 +4,12 @@ import Prologue
 
 import Control.Monad.Error.Class (class MonadThrow)
 import Data.Array (singleton)
-import Data.Foldable (for_)
-import Data.List (List(..))
+import Data.List (List(..), fold)
+import Data.List.Lazy (replicate)
 import Data.Map as Map
 import Data.Set (toUnfoldable)
+import Data.String.CodeUnits as S
+import Data.Traversable (class Foldable, foldMap, for_)
 import Data.Tuple (uncurry)
 import Data.Tuple.Nested (type (/\), (/\))
 import Effect.Aff (Error)
@@ -47,6 +49,18 @@ all = do
     it "reports simplication of DivValue with constant" divConstantSimplified
     it "reports simplication Invalid bound in Case" unreachableCaseInvalidBound
     it "reports bad practices Let shadowing" letShadowing
+    it "reports role name too many characters" roleTooLongWarning
+    it "reports role name too many bytes" roleTooLongBytesWarning
+    it "does not report 32 ANSI-characters role name" roleOkNoWarning
+    it "does not report 32 bytes role name" roleOkBytesNoWarning
+    it "reports currency symbol is too short" currencySymbolTooShortWarning
+    it "reports currency symbol is too long" currencySymbolTooLongWarning
+    it "does not report currency symbol is the right length"
+      currencySymbolOkNoWarning
+    it "reports token name too many characters" tokenNameTooLongWarning
+    it "reports token name too many bytes" tokenNameTooLongBytesWarning
+    it "does not report 32 ANSI-characters token name" tokenNameOkNoWarning
+    it "does not report 32 bytes token name" tokenNameOkBytesNoWarning
     it "reports bad practices Non-increasing timeouts" nonIncreasingTimeouts
     it "reports unreachable code Unreachable If branch (then)" unreachableThen
     it "reports unreachable code Unreachable If branch (else)" unreachableElse
@@ -424,6 +438,122 @@ letShadowing :: forall m. MonadThrow Error m => m Unit
 letShadowing = testWarningSimple
   "Let \"value\" (Constant 1) (Let \"value\" (Constant 1) Close)"
   "Let is redefining a ValueId that already exists"
+
+fromChars :: forall f. Foldable f => f Char -> String
+fromChars = foldMap S.singleton
+
+roleTooLongWarning :: forall m. MonadThrow Error m => m Unit
+roleTooLongWarning = testWarningSimple contract
+  "Role name is too long (role names are limited to 32 bytes)"
+  where
+  roleTooLong = fromChars $ replicate 33 'r'
+  contract =
+    "When [Case (Deposit (Role " <> show roleTooLong <>
+      ") (Role \"alice\") (Token \"\" \"\") (Constant 10)) Close] 2 Close"
+
+roleTooLongBytesWarning :: forall m. MonadThrow Error m => m Unit
+roleTooLongBytesWarning = testWarningSimple contract
+  "Role name is too long (role names are limited to 32 bytes)"
+  where
+  roleTooLong = S.singleton 'r' <> (fold $ replicate 16 "ü")
+  contract =
+    "When [Case (Deposit (Role " <> show roleTooLong <>
+      ") (Role \"alice\") (Token \"\" \"\") (Constant 10)) Close] 2 Close"
+
+roleOkNoWarning :: forall m. MonadThrow Error m => m Unit
+roleOkNoWarning = testNoWarning contract
+  where
+  roleOk = fromChars $ replicate 32 'r'
+  contract =
+    "When [Case (Deposit (Role " <> show roleOk <>
+      ") (Role \"alice\") (Token \"\" \"\") (Constant 10)) Close] 2 Close"
+
+roleOkBytesNoWarning :: forall m. MonadThrow Error m => m Unit
+roleOkBytesNoWarning = testNoWarning contract
+  where
+  roleOk = fold $ replicate 16 "ü"
+  contract =
+    "When [Case (Deposit (Role " <> show roleOk <>
+      ") (Role \"alice\") (Token \"\" \"\") (Constant 10)) Close] 2 Close"
+
+currencySymbolTooLongWarning :: forall m. MonadThrow Error m => m Unit
+currencySymbolTooLongWarning = testWarningSimple contract
+  "Policy ID is the wrong length (policy IDs must consist of 56 hexadecimal characters or 0 for ADA)"
+  where
+  currencySymbolTooLong = fromChars $ replicate 58 '0'
+  contract =
+    "When [Case (Deposit (Role \"alice\") (Role \"alice\") (Token "
+      <> show currencySymbolTooLong
+      <> " \"\") (Constant 10)) Close] 2 Close"
+
+currencySymbolTooShortWarning :: forall m. MonadThrow Error m => m Unit
+currencySymbolTooShortWarning = testWarningSimple contract
+  "Policy ID is the wrong length (policy IDs must consist of 56 hexadecimal characters or 0 for ADA)"
+  where
+  currencySymbolTooLong = fromChars $ replicate 54 '0'
+  contract =
+    "When [Case (Deposit (Role \"alice\") (Role \"alice\") (Token "
+      <> show currencySymbolTooLong
+      <> " \"\") (Constant 10)) Close] 2 Close"
+
+currencySymbolOkNoWarning :: forall m. MonadThrow Error m => m Unit
+currencySymbolOkNoWarning = testNoWarning contract
+  where
+  currencySymbolOk = fromChars $ replicate 56 '0'
+  contract =
+    "When [Case (Deposit (Role \"alice\") (Role \"alice\") (Token "
+      <> show currencySymbolOk
+      <> " \"\") (Constant 10)) Close] 2 Close"
+
+tokenNameTooLongWarning :: forall m. MonadThrow Error m => m Unit
+tokenNameTooLongWarning = testWarningSimple contract
+  "Token name is too long (token names are limited to 32 bytes)"
+  where
+  currencySymbolOk = fromChars $ replicate 56 '0'
+  tokenNameTooLong = fromChars $ replicate 33 'r'
+  contract =
+    "When [Case (Deposit (Role \"alice\") (Role \"alice\") (Token "
+      <> show currencySymbolOk
+      <> " "
+      <> show tokenNameTooLong
+      <> ") (Constant 10)) Close] 2 Close"
+
+tokenNameTooLongBytesWarning :: forall m. MonadThrow Error m => m Unit
+tokenNameTooLongBytesWarning = testWarningSimple contract
+  "Token name is too long (token names are limited to 32 bytes)"
+  where
+  currencySymbolOk = fromChars $ replicate 56 '0'
+  tokenNameTooLong = S.singleton 'r' <> (fold $ replicate 16 "ü")
+  contract =
+    "When [Case (Deposit (Role \"alice\") (Role \"alice\") (Token "
+      <> show currencySymbolOk
+      <> " "
+      <> show tokenNameTooLong
+      <> ") (Constant 10)) Close] 2 Close"
+
+tokenNameOkNoWarning :: forall m. MonadThrow Error m => m Unit
+tokenNameOkNoWarning = testNoWarning contract
+  where
+  currencySymbolOk = fromChars $ replicate 56 '0'
+  tokenNameOk = fromChars $ replicate 32 'r'
+  contract =
+    "When [Case (Deposit (Role \"alice\") (Role \"alice\") (Token "
+      <> show currencySymbolOk
+      <> " "
+      <> show tokenNameOk
+      <> ") (Constant 10)) Close] 2 Close"
+
+tokenNameOkBytesNoWarning :: forall m. MonadThrow Error m => m Unit
+tokenNameOkBytesNoWarning = testNoWarning contract
+  where
+  currencySymbolOk = fromChars $ replicate 56 '0'
+  tokenNameOk = fold $ replicate 16 "ü"
+  contract =
+    "When [Case (Deposit (Role \"alice\") (Role \"alice\") (Token "
+      <> show currencySymbolOk
+      <> " "
+      <> show tokenNameOk
+      <> ") (Constant 10)) Close] 2 Close"
 
 nonIncreasingTimeouts :: forall m. MonadThrow Error m => m Unit
 nonIncreasingTimeouts = testWarningSimple "When [] 5 (When [] 5 Close)"

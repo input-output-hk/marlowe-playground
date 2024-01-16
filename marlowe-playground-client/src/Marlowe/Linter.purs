@@ -122,6 +122,9 @@ data WarningDetail
   | UndefinedChoice
   | UndefinedUse
   | ShadowedLet
+  | RoleNameTooLong
+  | PolicyIdWrongLength
+  | TokenNameTooLong
   | SimplifiableValue (Term Value) (Term Value)
   | SimplifiableObservation (Term Observation) (Term Observation)
   | PayBeforeDeposit S.AccountId
@@ -145,6 +148,12 @@ instance showWarningDetail :: Show WarningDetail where
   show UndefinedUse =
     "The contract uses a ValueId that has not been defined in a Let, so (Constant 0) will be used"
   show ShadowedLet = "Let is redefining a ValueId that already exists"
+  show RoleNameTooLong =
+    "Role name is too long (role names are limited to 32 bytes)"
+  show PolicyIdWrongLength =
+    "Policy ID is the wrong length (policy IDs must consist of 56 hexadecimal characters or 0 for ADA)"
+  show TokenNameTooLong =
+    "Token name is too long (token names are limited to 32 bytes)"
   show (SimplifiableValue oriVal newVal) = "The value \"" <> show oriVal
     <> "\" can be simplified to \""
     <> show newVal
