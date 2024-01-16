@@ -127,7 +127,7 @@ explicitRefunds = False
 seller, buyer, burnAddress :: Party
 buyer = Role "Buyer"
 seller = Role "Seller"
-burnAddress = Address testnet (P.Address (P.PubKeyCredential "0000000000000000000000000000000000000000000000000000000000000000") Nothing)
+burnAddress = Address testnet (P.Address (P.PubKeyCredential "00000000000000000000000000000000000000000000000000000000") Nothing)
 
 price, collateral :: Value
 price = ConstantParam "Price"
