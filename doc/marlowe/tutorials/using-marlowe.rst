@@ -12,13 +12,13 @@ Marlowe in Haskell
 
 This tutorial works in the version of Marlowe which can be found in the
 ``main`` branch of the `marlowe-cardano repository <https://github.com/input-output-hk/marlowe-cardano>`_.
-We can run ghci by using the `nix-shell` available in `marlowe-dependency-docs repository <https://github.com/input-output-hk/marlowe-dependency-docs>`_:
+We can run ghci by using the shell available in `marlowe-dependency-docs repository <https://github.com/input-output-hk/marlowe-dependency-docs>`_:
 
 .. code:: bash
 
    git clone "https://github.com/input-output-hk/marlowe-dependency-docs.git"
    cd marlowe-dependency-docs
-   nix-shell
+   nix develop
    ghci
 
 A standalone version and formalisation of the semantics can also be found in

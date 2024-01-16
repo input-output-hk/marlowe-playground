@@ -40,7 +40,7 @@ pre-commit run purs-tidy
 
 === How to build the code during development
 
-The `nix-shell` environment has the correct GHC with all the external Haskell dependencies of the project.
+The nix shell environment has the correct GHC with all the external Haskell dependencies of the project.
 From here you can build the project packages directly with `cabal`.
 
 NOTE: You may need to run `cabal update` so that `cabal` knows about the index state xref:update-index-state[we have pinned].
@@ -48,7 +48,7 @@ NOTE: You may need to run `cabal update` so that `cabal` knows about the index s
 
 [WARNING]
 ====
-You can also use `cabal` and `stack` outside the `nix-shell` environment to build the project.
+You can also use `cabal` and `stack` outside the nix shell environment to build the project.
 _However_ there are two caveats:
 
 * You may get different versions of packages.
