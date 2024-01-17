@@ -210,7 +210,7 @@ swap =
      (When [
         (Case
            (Deposit (Role "Dollar provider") (Role "Dollar provider")
-              (Token "85bb65" "dollar")
+              (Token "85bb65085bb65085bb65085bb65085bb65085bb65085bb65085bb650" "dollar")
               (ConstantParam "Amount of dollars"))
            (Pay (Role "Ada provider")
               (Party (Role "Dollar provider"))
@@ -220,7 +220,7 @@ swap =
                  (ConstantParam "Amount of Ada"))
               (Pay (Role "Dollar provider")
                  (Party (Role "Ada provider"))
-                 (Token "85bb65" "dollar")
+                 (Token "85bb65085bb65085bb65085bb65085bb65085bb65085bb65085bb650" "dollar")
                  (ConstantParam "Amount of dollars") Close)))] (TimeParam "Timeout for dollar deposit") Close))] (TimeParam "Timeout for Ada deposit") Close"""
 
 contractForDifferences :: String

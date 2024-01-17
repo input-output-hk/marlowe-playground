@@ -292,7 +292,7 @@ swap =
     const adaDepositTimeout: Timeout = TimeParam("Timeout for Ada deposit");
     const dollarDepositTimeout: Timeout = TimeParam("Timeout for dollar deposit");
 
-    const dollars: Token = Token("85bb65", "dollar")
+    const dollars: Token = Token("85bb65085bb65085bb65085bb65085bb65085bb65085bb65085bb650", "dollar")
 
     type SwapParty = {
         party: Party;
