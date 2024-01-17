@@ -125,6 +125,18 @@ let
       installPhase = "ln -s $src $out";
     };
 
+    "arraybuffer" = pkgs.stdenv.mkDerivation {
+      name = "arraybuffer";
+      version = "v13.0.0";
+      src = pkgs.fetchgit {
+        url = "https://github.com/purescript-contrib/purescript-arraybuffer.git";
+        rev = "3b5ba3040f060057e864805546a50f319853517d";
+        sha256 = "0cfi15r95zd7ikvs8v3pf2i3rzxjqxk7209j96d8qs6jzqlypbwd";
+      };
+      phases = "installPhase";
+      installPhase = "ln -s $src $out";
+    };
+
     "arraybuffer-types" = pkgs.stdenv.mkDerivation {
       name = "arraybuffer-types";
       version = "v3.0.2";
@@ -353,6 +365,18 @@ let
       installPhase = "ln -s $src $out";
     };
 
+    "encoding" = pkgs.stdenv.mkDerivation {
+      name = "encoding";
+      version = "v0.0.8";
+      src = pkgs.fetchgit {
+        url = "https://github.com/menelaos/purescript-encoding.git";
+        rev = "a9d1913de736821c133ecd7944a08b2ab07ad774";
+        sha256 = "0c23bpfw67ik1n821bq3s0w036sk7yqi4fy5fd7dgf4325abk6zn";
+      };
+      phases = "installPhase";
+      installPhase = "ln -s $src $out";
+    };
+
     "enums" = pkgs.stdenv.mkDerivation {
       name = "enums";
       version = "v6.0.0";
@@ -408,6 +432,18 @@ let
         url = "https://github.com/purescript-contrib/purescript-fixed-points.git";
         rev = "2b7f480038a15c707adf49178181cefed167afb2";
         sha256 = "1iib0yxl749lg4m7ysqmb9aby67a9829x38xc2rma5fk9fv30cw7";
+      };
+      phases = "installPhase";
+      installPhase = "ln -s $src $out";
+    };
+
+    "float32" = pkgs.stdenv.mkDerivation {
+      name = "float32";
+      version = "v2.0.0";
+      src = pkgs.fetchgit {
+        url = "https://github.com/purescript-contrib/purescript-float32.git";
+        rev = "3b70984d823c12c1b84a45a9b3d45199a4fcc67d";
+        sha256 = "0a1lvga6bbhbb8g3crp3fr0kmpkzjmffhfq71ig6flin13xijgys";
       };
       phases = "installPhase";
       installPhase = "ln -s $src $out";
@@ -1344,6 +1380,18 @@ let
         url = "https://github.com/purescript/purescript-typelevel-prelude.git";
         rev = "dca2fe3c8cfd5527d4fe70c4bedfda30148405bf";
         sha256 = "0x86mrg33kpnrnsfp4p3c92j5lpyqzy87bxdynwf7smk3inqr2jc";
+      };
+      phases = "installPhase";
+      installPhase = "ln -s $src $out";
+    };
+
+    "uint" = pkgs.stdenv.mkDerivation {
+      name = "uint";
+      version = "v7.0.0";
+      src = pkgs.fetchgit {
+        url = "https://github.com/purescript-contrib/purescript-uint.git";
+        rev = "9e4f76ffd5192472f75583844172fe8ab3c0cb9f";
+        sha256 = "173bhrd006q53s7agwyasxhfbr89x9jpz5b47vm2fr74l3jcw3lq";
       };
       phases = "installPhase";
       installPhase = "ln -s $src $out";
