@@ -15,6 +15,7 @@ module Marlowe.Linter
 import Prologue
 
 import Control.Monad.State as CMS
+import Data.ArrayBuffer.Typed (length)
 import Data.Bifunctor (bimap)
 import Data.BigInt.Argonaut (BigInt)
 import Data.DateTime.Instant (Instant)
@@ -34,6 +35,8 @@ import Data.Ord.Generic (genericCompare)
 import Data.Set (Set)
 import Data.Set as Set
 import Data.Set.Ordered.OSet as OSet
+import Data.String (length) as String
+import Data.TextEncoder (encodeUtf8)
 import Data.Tuple.Nested (type (/\), (/\))
 import Humanize (humanizeValue)
 import Language.Marlowe.Core.V1.Semantics
@@ -41,7 +44,16 @@ import Language.Marlowe.Core.V1.Semantics
   , evalValue
   , makeEnvironment
   )
-import Language.Marlowe.Core.V1.Semantics.Types as S
+import Language.Marlowe.Core.V1.Semantics.Types
+  ( AccountId
+  , ChoiceId
+  , CurrencySymbol
+  , State(..)
+  , Token
+  , TokenName
+  , Value(..)
+  , ValueId
+  ) as S
 import Language.Marlowe.Extended.V1 as EM
 import Language.Marlowe.Extended.V1.Metadata.Lenses
   ( _choiceNames
@@ -122,6 +134,9 @@ data WarningDetail
   | UndefinedChoice
   | UndefinedUse
   | ShadowedLet
+  | RoleNameTooLong
+  | PolicyIdWrongLength
+  | TokenNameTooLong
   | SimplifiableValue (Term Value) (Term Value)
   | SimplifiableObservation (Term Observation) (Term Observation)
   | PayBeforeDeposit S.AccountId
@@ -145,6 +160,12 @@ instance showWarningDetail :: Show WarningDetail where
   show UndefinedUse =
     "The contract uses a ValueId that has not been defined in a Let, so (Constant 0) will be used"
   show ShadowedLet = "Let is redefining a ValueId that already exists"
+  show RoleNameTooLong =
+    "Role name is too long (role names are limited to 32 bytes)"
+  show PolicyIdWrongLength =
+    "Policy ID is the wrong length (policy IDs must consist of 56 hexadecimal characters or 0 for ADA)"
+  show TokenNameTooLong =
+    "Token name is too long (token names are limited to 32 bytes)"
   show (SimplifiableValue oriVal newVal) = "The value \"" <> show oriVal
     <> "\" can be simplified to \""
     <> show newVal
@@ -374,6 +395,16 @@ constToObs false = Term FalseObs NoLocation
 constToVal :: BigInt -> Term Value
 constToVal x = Term (Constant x) NoLocation
 
+validTokenName :: S.TokenName -> Boolean
+validTokenName tn = length (encodeUtf8 tn) <= 32
+
+validCurrencySymbol :: S.CurrencySymbol -> Boolean
+validCurrencySymbol cs =
+  let
+    csLen = String.length cs
+  in
+    csLen == 56 || csLen == 0
+
 addMoneyToEnvAccount :: BigInt -> S.AccountId -> S.Token -> LintEnv -> LintEnv
 addMoneyToEnvAccount amountToAdd accTerm tokenTerm = over _deposits
   (Map.alter (addMoney amountToAdd) (accTerm /\ tokenTerm))
@@ -411,15 +442,27 @@ lintParty (Term (Address addr) pos) =
   if validPaymentShelleyAddress addr then pure unit
   else addWarning (InvalidAddress addr) pos
 
-lintParty (Term (Role role) _) =
+lintParty (Term (Role role) pos) = do
+  if validTokenName role then pure unit
+  else addWarning RoleNameTooLong pos
   modifying (_metadataHints <<< _roles) $ Set.insert role
 
 lintParty _ = pure unit
+
+lintToken :: Term MH.Token -> CMS.State State Unit
+lintToken (Term (MH.Token currencySymbol tokenName) pos) = do
+  if validTokenName tokenName then pure unit
+  else addWarning TokenNameTooLong pos
+  if validCurrencySymbol currencySymbol then pure unit
+  else addWarning PolicyIdWrongLength pos
+
+lintToken _ = pure unit
 
 lintContract :: LintEnv -> Term Contract -> CMS.State State Unit
 lintContract _ (Term Close _) = pure unit
 
 lintContract env (Term (Pay acc payee token payment cont) pos) = do
+  lintToken token
   lintParty acc
   case payee of
     Term (Account party) _ -> lintParty party
@@ -672,6 +715,7 @@ lintValue
   -> Term Value
   -> CMS.State State (TemporarySimplification BigInt Value)
 lintValue _ t@(Term (AvailableMoney acc token) pos) = do
+  lintToken token
   lintParty acc
   let
     gatherHoles = getHoles acc <> getHoles token
@@ -863,6 +907,7 @@ lintAction env (Term (Deposit acc party token value) pos) = do
       (fromTerm token)
 
     isReachable = view _isReachable env
+  lintToken token
   lintParty acc
   lintParty party
   modifying _holes (getHoles acc <> getHoles party <> getHoles token)
