@@ -4,6 +4,7 @@ import Component.BottomPanel.Types as BottomPanel
 import Data.Lens (Lens')
 import Data.Lens.Record (prop)
 import Help (HelpContext)
+import Marlowe.Linter (Networks)
 import Page.Simulation.Types (BottomPanelView, State)
 import Type.Proxy (Proxy(..))
 
@@ -18,3 +19,7 @@ _bottomPanelState = prop (Proxy :: _ "bottomPanelState")
 
 _decorationIds :: Lens' State (Array String)
 _decorationIds = prop (Proxy :: _ "decorationIds")
+
+_network :: Lens' State Networks
+_network = prop (Proxy :: _ "networks")
+

@@ -13,6 +13,7 @@ module Marlowe.Linter
   , _network
   , hasInvalidAddresses
   , isSeveralNetworks
+  , getNetworkFor
   ) where
 
 import Prologue
@@ -1041,3 +1042,6 @@ hasInvalidAddresses ec =
     State { warnings } = lint Nil (toTerm ec)
   in
     any isAddressWarning warnings
+
+getNetworkFor :: Term Contract -> Networks
+getNetworkFor c = let State { network: n } = lint Nil c in n

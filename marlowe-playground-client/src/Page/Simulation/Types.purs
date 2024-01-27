@@ -20,6 +20,7 @@ import Language.Marlowe.Core.V1.Semantics.Types
   , ChosenNum
   , InputContent
   )
+import Marlowe.Linter (Networks)
 import Marlowe.Symbolic.Types.Response (Result)
 import Network.RemoteData (RemoteData)
 import Simulator.Types (MarloweState)
@@ -32,6 +33,7 @@ type StateBase r =
   , helpContext :: HelpContext
   -- List of decoration ids used by the monaco editor to track the running contract
   , decorationIds :: Array String
+  , networks :: Networks
   | r
   }
 

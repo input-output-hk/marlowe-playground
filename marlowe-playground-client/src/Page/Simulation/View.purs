@@ -94,7 +94,7 @@ import Halogen.HTML
   , ul
   )
 import Halogen.HTML.Events (onClick)
-import Halogen.HTML.Properties (class_, classes, disabled, enabled, id)
+import Halogen.HTML.Properties (class_, classes, disabled, enabled, id, title)
 import Halogen.HTML.Properties.ARIA (label, role)
 import Halogen.Monaco (monacoComponent)
 import Humanize
@@ -129,6 +129,7 @@ import MainFrame.Types
   )
 import Marlowe.Holes (TransactionInputContent(..))
 import Marlowe.Holes as Holes
+import Marlowe.Linter (Networks(..))
 import Marlowe.Monaco as MM
 import Marlowe.Template (TemplateContent(..), orderContentUsingMetadata)
 import Marlowe.Time (unixEpoch)
@@ -329,13 +330,14 @@ sidebar
   => MetaData
   -> State
   -> Array (ComponentHTML Action ChildSlots m)
-sidebar metadata state =
+sidebar metadata state@({ networks: netw }) =
   case preview (_marloweState <<< _Head <<< _executionState) state of
     Just (SimulationNotStarted notStartedRecord) ->
       [ startSimulationWidget
           metadata
           notStartedRecord
           state.tzOffset
+          netw
       ]
     Just (SimulationRunning _) ->
       [ div [ class_ smallSpaceBottom ] [ simulationStateWidget state ]
@@ -360,13 +362,15 @@ startSimulationWidget
   => MetaData
   -> InitialConditionsRecord
   -> Minutes
+  -> Networks
   -> ComponentHTML Action ChildSlots m
 startSimulationWidget
   metadata
   { initialTime
   , templateContent
   }
-  tzOffset =
+  tzOffset
+  netwrks =
   cardWidget "Simulation has not started yet"
     $ div_
         [ div
@@ -395,10 +399,22 @@ startSimulationWidget
                 ]
                 [ text "Download as JSON" ]
             , button
-                [ classNames
-                    [ "btn", "bold", "flex-1", "max-w-[15rem]", "mx-2" ]
-                , onClick $ const ExportToRunner
-                ]
+                ( [ classNames
+                      [ "btn", "bold", "flex-1", "max-w-[15rem]", "mx-2" ]
+                  , onClick $ const ExportToRunner
+                  ] <> case netwrks of
+                    Unknown -> [ enabled true ]
+                    Mainnet ->
+                      [ enabled false
+                      , title "Exporting to mainnet Runner not supported"
+                      ]
+                    Testnet -> [ enabled true ]
+                    SeveralNetworks ->
+                      [ enabled false
+                      , title
+                          "Addresses from both mainnet and testnet were found in the contract"
+                      ]
+                )
                 [ text "Export to Marlowe Runner" ]
             , button
                 [ classNames
