@@ -56,6 +56,7 @@ import Marlowe (Api)
 import Marlowe as Server
 import Marlowe.Holes (Contract) as Term
 import Marlowe.Holes (Location(..), Term, fromTerm, getLocation)
+import Marlowe.Linter (getNetworkFor)
 import Marlowe.Monaco as MM
 import Marlowe.Parser (parseContract)
 import Marlowe.Template (_timeContent, _valueContent, fillTemplate)
@@ -65,6 +66,7 @@ import Page.Simulation.Lenses
   ( _bottomPanelState
   , _decorationIds
   , _helpContext
+  , _network
   , _showRightPanel
   )
 import Page.Simulation.Types (Action(..), BottomPanelView(..), State, StateBase)
@@ -112,6 +114,7 @@ mkStateBase tzOffset =
   , helpContext: MarloweHelp
   , bottomPanelState: BottomPanel.initialState CurrentStateView
   , decorationIds: []
+  , networks: mempty
   }
 
 toBottomPanel
@@ -248,14 +251,14 @@ handleAction metadata (LoadContract contents) = do
       _ -> pure Nothing
   let
     mTermContract = hush $ parseContract contents
-  for_ mTermContract \termContract ->
+  for_ mTermContract \termContract -> do
+    assign _network (getNetworkFor termContract)
     assign
       _marloweState
       ( NEL.singleton
           $ initialMarloweState currentTime termContract metadata
               prevTemplateContent
       )
-
   editorSetValue contents
 
 handleAction metadata (BottomPanelAction (BottomPanel.PanelAction action)) =

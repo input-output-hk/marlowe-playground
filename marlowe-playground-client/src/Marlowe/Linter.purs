@@ -1,5 +1,6 @@
 module Marlowe.Linter
   ( lint
+  , Networks(..)
   , State(..)
   , MaxTimeout(..)
   , Warning(..)
@@ -9,7 +10,10 @@ module Marlowe.Linter
   , _warnings
   , _metadataHints
   , _location
+  , _network
   , hasInvalidAddresses
+  , isSeveralNetworks
+  , getNetworkFor
   ) where
 
 import Prologue
@@ -23,18 +27,19 @@ import Data.Eq.Generic (genericEq)
 import Data.Foldable (any, foldM)
 import Data.FoldableWithIndex (traverseWithIndex_)
 import Data.Generic.Rep (class Generic)
-import Data.Lens (Lens', modifying, over, set, view)
+import Data.Lens (Lens', modifying, over, set, use, view)
 import Data.Lens.Iso.Newtype (_Newtype)
 import Data.Lens.Record (prop)
 import Data.List (List(..))
 import Data.Map (Map)
 import Data.Map as Map
-import Data.Maybe (isNothing, maybe)
+import Data.Maybe (isJust, isNothing, maybe)
 import Data.Newtype (class Newtype)
 import Data.Ord.Generic (genericCompare)
 import Data.Set (Set)
 import Data.Set as Set
 import Data.Set.Ordered.OSet as OSet
+import Data.String (Pattern(..), stripPrefix)
 import Data.String (length) as String
 import Data.TextEncoder (encodeUtf8)
 import Data.Tuple.Nested (type (/\), (/\))
@@ -137,6 +142,7 @@ data WarningDetail
   | RoleNameTooLong
   | PolicyIdWrongLength
   | TokenNameTooLong
+  | NetworkMismatch
   | SimplifiableValue (Term Value) (Term Value)
   | SimplifiableObservation (Term Observation) (Term Observation)
   | PayBeforeDeposit S.AccountId
@@ -166,6 +172,8 @@ instance showWarningDetail :: Show WarningDetail where
     "Policy ID is the wrong length (policy IDs must consist of 56 hexadecimal characters or 0 for ADA)"
   show TokenNameTooLong =
     "Token name is too long (token names are limited to 32 bytes)"
+  show NetworkMismatch =
+    "The contract uses addresses from both mainnet and testned. This is very dangerous and can make the Marlowe validator fail to run."
   show (SimplifiableValue oriVal newVal) = "The value \"" <> show oriVal
     <> "\" can be simplified to \""
     <> show newVal
@@ -214,11 +222,38 @@ instance ordWarning :: Ord Warning where
 instance showWarning :: Show Warning where
   show (Warning warn) = show warn.warning
 
+data Networks
+  = Unknown
+  | Mainnet
+  | Testnet
+  | SeveralNetworks
+
+derive instance eqNetwork :: Eq Networks
+
+derive instance ordNetwork :: Ord Networks
+
+instance semigroupNetworks :: Semigroup Networks where
+  append :: Networks -> Networks -> Networks
+  append Unknown x = x
+  append x Unknown = x
+  append x y
+    | x /= y = SeveralNetworks
+    | otherwise = x
+
+instance monoideNetwork :: Monoid Networks where
+  mempty :: Networks
+  mempty = Unknown
+
 newtype State = State
   { holes :: Holes
   , warnings :: Set Warning
   , metadataHints :: MetadataHintInfo
+  , network :: Networks
   }
+
+isSeveralNetworks :: Networks -> Boolean
+isSeveralNetworks SeveralNetworks = true
+isSeveralNetworks _ = false
 
 derive instance newtypeState :: Newtype State _
 
@@ -235,6 +270,9 @@ _warnings = _Newtype <<< prop (Proxy :: _ "warnings")
 _metadataHints :: Lens' State MetadataHintInfo
 _metadataHints = _Newtype <<< prop (Proxy :: _ "metadataHints")
 
+_network :: Lens' State Networks
+_network = _Newtype <<< prop (Proxy :: _ "network")
+
 hasHoles :: State -> Boolean
 hasHoles = not MH.isEmpty <<< view _holes
 
@@ -249,6 +287,23 @@ addValueParameter valueParam = modifying (_metadataHints <<< _valueParameters) $
 addChoiceName :: String -> CMS.State State Unit
 addChoiceName choiceName = modifying (_metadataHints <<< _choiceNames) $
   Set.insert choiceName
+
+addNetwork :: Networks -> CMS.State State Unit
+addNetwork network = modifying _network (\x -> x <> network)
+
+getNetwork :: String -> Networks
+getNetwork str =
+  let
+    startsWith pre = isJust $ stripPrefix (Pattern pre) str
+  in
+    case unit of
+      _
+        | startsWith "addr1" -> Mainnet
+        | startsWith "addr_test1" -> Testnet
+        | otherwise -> Unknown
+
+addAddressNetwork :: String -> CMS.State State Unit
+addAddressNetwork addr = addNetwork (getNetwork addr)
 
 newtype LintEnv = LintEnv
   { choicesMade :: Set S.ChoiceId
@@ -435,11 +490,26 @@ lint unreachablePaths contract =
   let
     env = emptyEnvironment unreachablePaths
   in
-    CMS.execState (lintContract env contract) mempty
+    CMS.execState (addNetworkMismatchWarning (lintContract env contract)) mempty
+
+addNetworkMismatchWarning :: CMS.State State Unit -> CMS.State State Unit
+addNetworkMismatchWarning m = do
+  m
+  n <- use _network
+  if isSeveralNetworks n then addWarning NetworkMismatch
+    ( Range
+        ( { startLineNumber: 0
+          , startColumn: 0
+          , endLineNumber: 0
+          , endColumn: 0
+          }
+        )
+    )
+  else pure unit
 
 lintParty :: Term Party -> CMS.State State Unit
 lintParty (Term (Address addr) pos) =
-  if validPaymentShelleyAddress addr then pure unit
+  if validPaymentShelleyAddress addr then addAddressNetwork addr
   else addWarning (InvalidAddress addr) pos
 
 lintParty (Term (Role role) pos) = do
@@ -972,3 +1042,6 @@ hasInvalidAddresses ec =
     State { warnings } = lint Nil (toTerm ec)
   in
     any isAddressWarning warnings
+
+getNetworkFor :: Term Contract -> Networks
+getNetworkFor c = let State { network: n } = lint Nil c in n

@@ -192,6 +192,7 @@ warningType (Warning { warning }) = case warning of
   RoleNameTooLong -> "RoleNameTooLong"
   PolicyIdWrongLength -> "PolicyIdWrongLength"
   TokenNameTooLong -> "TokenNameTooLong"
+  NetworkMismatch -> "NetworkMismatch"
   (SimplifiableValue _ _) -> "SimplifiableValue"
   (SimplifiableObservation _ _) -> "SimplifiableObservation"
   (PayBeforeDeposit _) -> "PayBeforeDeposit"

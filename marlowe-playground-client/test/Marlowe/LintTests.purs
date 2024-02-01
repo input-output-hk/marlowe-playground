@@ -61,6 +61,12 @@ all = do
     it "reports token name too many bytes" tokenNameTooLongBytesWarning
     it "does not report 32 ANSI-characters token name" tokenNameOkNoWarning
     it "does not report 32 bytes token name" tokenNameOkBytesNoWarning
+    it "reports contract with addresses from different network"
+      networkMismatchWarning
+    it "does not report contract with only addresses from mainnet"
+      mainnetNetworkNoWarning
+    it "does not report contract with only addresses from testnet"
+      testnetNetworkNoWarning
     it "reports bad practices Non-increasing timeouts" nonIncreasingTimeouts
     it "reports unreachable code Unreachable If branch (then)" unreachableThen
     it "reports unreachable code Unreachable If branch (else)" unreachableElse
@@ -554,6 +560,45 @@ tokenNameOkBytesNoWarning = testNoWarning contract
       <> " "
       <> show tokenNameOk
       <> ") (Constant 10)) Close] 2 Close"
+
+networkMismatchWarning :: forall m. MonadThrow Error m => m Unit
+networkMismatchWarning = testWarningSimple contract
+  "The contract uses addresses from both mainnet and testned. This is very dangerous and can make the Marlowe validator fail to run."
+  where
+  addressMainnet =
+    "Address \"addr1qxn6u4ffhafpfvsw876wxllvvae88wekwhsnvpuh4s8fgf0xjsn7s0z25ycztthswazwj7wj0yta5m7d0y32q5aseyys63phd5\""
+  addressTestnet =
+    "Address \"addr_test1qzn6u4ffhafpfvsw876wxllvvae88wekwhsnvpuh4s8fgf0xjsn7s0z25ycztthswazwj7wj0yta5m7d0y32q5aseyyse8uhpt\""
+  contract =
+    "When [Case (Deposit ("
+      <> addressMainnet
+      <> ") ("
+      <> addressTestnet
+      <> ") (Token \"\" \"\") (Constant 10)) Close] 2 Close"
+
+mainnetNetworkNoWarning :: forall m. MonadThrow Error m => m Unit
+mainnetNetworkNoWarning = testNoWarning contract
+  where
+  addressMainnet =
+    "Address \"addr1qxn6u4ffhafpfvsw876wxllvvae88wekwhsnvpuh4s8fgf0xjsn7s0z25ycztthswazwj7wj0yta5m7d0y32q5aseyys63phd5\""
+  contract =
+    "When [Case (Deposit ("
+      <> addressMainnet
+      <> ") ("
+      <> addressMainnet
+      <> ") (Token \"\" \"\") (Constant 10)) Close] 2 Close"
+
+testnetNetworkNoWarning :: forall m. MonadThrow Error m => m Unit
+testnetNetworkNoWarning = testNoWarning contract
+  where
+  addressTestnet =
+    "Address \"addr_test1qzn6u4ffhafpfvsw876wxllvvae88wekwhsnvpuh4s8fgf0xjsn7s0z25ycztthswazwj7wj0yta5m7d0y32q5aseyyse8uhpt\""
+  contract =
+    "When [Case (Deposit ("
+      <> addressTestnet
+      <> ") ("
+      <> addressTestnet
+      <> ") (Token \"\" \"\") (Constant 10)) Close] 2 Close"
 
 nonIncreasingTimeouts :: forall m. MonadThrow Error m => m Unit
 nonIncreasingTimeouts = testWarningSimple "When [] 5 (When [] 5 Close)"
