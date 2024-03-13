@@ -51,8 +51,8 @@
       "openssl-1.1.1w"
       "python-2.7.18.7"
     ];
+    flake.nixosModules.default = import ./nix/nixos.nix inputs.self;
   };
-
 
   nixConfig = {
     extra-substituters = [
