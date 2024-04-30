@@ -46,7 +46,7 @@ in
   config = {
     http-services.static-sites = mapAttrs'
       (name: playground: {
-        name = "${name}-frontend";
+        name = "marlowe-playground-${name}-frontend";
         value = {
           inherit (playground) domain;
           root = "${playground.flake.packages.x86_64-linux.marlowe-playground-client}/share/marlowe-playground-client/static";
@@ -61,7 +61,7 @@ in
           flakePkgs = playground.flake.packages.x86_64-linux;
         in
         {
-          name = "${name}-backend";
+          name = "marlowe-playground-${name}-backend";
           value = {
             inherit (playground) domain;
             prefix = "/api";
