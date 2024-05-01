@@ -76,7 +76,7 @@ in
                   --rawfile ghClientSecret $CREDENTIALS_DIRECTORY/ghcs \
                   --rawfile jwt $CREDENTIALS_DIRECTORY/jwt \
                   --arg ghClientId ${lib.escapeShellArg playground.github-client-id} \
-                  --arg frontendUrl ${lib.escapeShellArg playground.domain} \
+                  --arg frontendUrl ${lib.escapeShellArg "https://${playground.domain}"} \
                   '{ "github-client-id": $ghClientId
                    , "github-client-secret": $ghClientSecret
                    , "jwt-signature": $jwt
